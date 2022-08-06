@@ -1,0 +1,11 @@
+---
+config:
+  hostname: "review-gateway.npool.top"
+  http_port: 50450
+  grpc_port: 50451
+  healthz_port: 50452
+  prometheus_port: 50453
+  appid: "89089012783789789719823798127398"
+  serviceid: "2ff03b74-1595-11ed-85c6-72e9de4b20f6"
+  logdir: "./"
+  apolloAccessKey: "0147fb70b815403790e8634b899fac07"
