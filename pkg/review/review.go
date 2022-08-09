@@ -8,6 +8,7 @@ import (
 	reviewmgrpb "github.com/NpoolPlatform/message/npool/review/mgr/v2"
 
 	reviewcli "github.com/NpoolPlatform/review-service/pkg/client"
+	reviewconst "github.com/NpoolPlatform/review-service/pkg/const"
 
 	withdraw "github.com/NpoolPlatform/review-gateway/pkg/withdraw"
 
@@ -25,6 +26,10 @@ func UpdateReview(
 	rv, err := reviewcli.GetReview(ctx, id)
 	if err != nil {
 		return nil, err
+	}
+
+	if rv.State != reviewconst.StateWait {
+		return nil, fmt.Errorf("invalid review state")
 	}
 
 	reviewer, err := usercli.GetUser(ctx, reviewerAppID, reviewerID)
