@@ -23,6 +23,17 @@ func UpdateReview(
 ) (
 	*npool.Review, error,
 ) {
+	var stateStr string
+
+	switch state {
+	case reviewmgrpb.ReviewState_Approved:
+		stateStr = reviewconst.StateApproved
+	case reviewmgrpb.ReviewState_Rejected:
+		stateStr = reviewconst.StateRejected
+	default:
+		return nil, fmt.Errorf("invalid review state")
+	}
+
 	rv, err := reviewcli.GetReview(ctx, id)
 	if err != nil {
 		return nil, err
@@ -51,7 +62,7 @@ func UpdateReview(
 		return nil, err
 	}
 
-	rv.State = state.String()
+	rv.State = stateStr
 	rv.Message = message
 
 	rv, err = reviewcli.UpdateReview(ctx, rv)
