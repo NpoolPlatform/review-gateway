@@ -34,7 +34,8 @@ func UpdateReview(ctx context.Context, id string, state reviewmgrpb.ReviewState)
 		return nil, err
 	}
 
-	if w.PlatformTransactionID != "" {
+	invalidID := uuid.UUID{}.String()
+	if w.PlatformTransactionID != "" && w.PlatformTransactionID != invalidID {
 		return nil, fmt.Errorf("transaction ongoing")
 	}
 	if w.State != withdrawmgrpb.WithdrawState_Reviewing {
