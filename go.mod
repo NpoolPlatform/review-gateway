@@ -5,10 +5,11 @@ go 1.17
 require (
 	github.com/NpoolPlatform/api-manager v0.0.0-20220328101926-8907b2f76c6d
 	github.com/NpoolPlatform/appuser-middleware v0.0.0-20220802115439-5c2d3c2e193a
-	github.com/NpoolPlatform/cloud-hashing-billing v0.0.0-20220806102703-0570e7231a6c
-	github.com/NpoolPlatform/go-service-framework v0.0.0-20220722111225-08c2156ac8bf
-	github.com/NpoolPlatform/ledger-manager v0.0.0-20220806130110-16e673edb9d9
-	github.com/NpoolPlatform/message v0.0.0-20220806155840-88a831880e9b
+	github.com/NpoolPlatform/cloud-hashing-billing v0.0.0-20220811032942-1d1ae51970f8
+	github.com/NpoolPlatform/go-service-framework v0.0.0-20220726144547-41aefeaea336
+	github.com/NpoolPlatform/ledger-manager v0.0.0-20220810080525-bffa7a839d30
+	github.com/NpoolPlatform/ledger-middleware v0.0.0-20220810080700-56eacb5746c9
+	github.com/NpoolPlatform/message v0.0.0-20220811031336-a82c66606874
 	github.com/NpoolPlatform/oracle-manager v0.0.0-20220805135435-75cd3e5baec5
 	github.com/NpoolPlatform/review-service v0.0.0-20220806150215-be6314965b82
 	github.com/NpoolPlatform/sphinx-coininfo v0.0.0-20220731103603-21004f4341dc
@@ -40,6 +41,8 @@ require (
 	github.com/fsnotify/fsnotify v1.5.4 // indirect
 	github.com/go-chassis/go-archaius v1.5.3 // indirect
 	github.com/go-chassis/openlog v1.1.3 // indirect
+	github.com/go-logr/logr v1.2.3 // indirect
+	github.com/go-logr/stdr v1.2.2 // indirect
 	github.com/golang/protobuf v1.5.2 // indirect
 	github.com/grpc-ecosystem/go-grpc-middleware v1.3.0 // indirect
 	github.com/grpc-ecosystem/go-grpc-prometheus v1.2.0 // indirect
@@ -75,6 +78,11 @@ require (
 	github.com/spf13/pflag v1.0.5 // indirect
 	github.com/spf13/viper v1.11.0 // indirect
 	github.com/subosito/gotenv v1.2.0 // indirect
+	go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc v0.31.0 // indirect
+	go.opentelemetry.io/otel v1.8.0 // indirect
+	go.opentelemetry.io/otel/exporters/jaeger v1.6.3 // indirect
+	go.opentelemetry.io/otel/sdk v1.6.3 // indirect
+	go.opentelemetry.io/otel/trace v1.8.0 // indirect
 	go.uber.org/atomic v1.9.0 // indirect
 	go.uber.org/multierr v1.8.0 // indirect
 	go.uber.org/ratelimit v0.2.0 // indirect

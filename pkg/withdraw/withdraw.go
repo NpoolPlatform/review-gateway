@@ -13,6 +13,9 @@ import (
 	withdrawmgrcli "github.com/NpoolPlatform/ledger-manager/pkg/client/withdraw"
 	withdrawmgrpb "github.com/NpoolPlatform/message/npool/ledger/mgr/v1/ledger/withdraw"
 
+	ledgermwcli "github.com/NpoolPlatform/ledger-middleware/pkg/client/ledger"
+	ledgerdetailmgrpb "github.com/NpoolPlatform/message/npool/ledger/mgr/v1/ledger/detail"
+
 	billingcli "github.com/NpoolPlatform/cloud-hashing-billing/pkg/client"
 	billingpb "github.com/NpoolPlatform/message/npool/cloud-hashing-billing"
 
@@ -28,7 +31,7 @@ import (
 	"github.com/google/uuid"
 )
 
-func UpdateReview(ctx context.Context, id string, state reviewmgrpb.ReviewState) (*npool.Review, error) { //nolint
+func UpdateReview(ctx context.Context, id string, state reviewmgrpb.ReviewState) (*npool.Review, error) {
 	w, err := withdrawmgrcli.GetWithdraw(ctx, id)
 	if err != nil {
 		return nil, err
@@ -42,18 +45,77 @@ func UpdateReview(ctx context.Context, id string, state reviewmgrpb.ReviewState)
 		return nil, fmt.Errorf("not reviewing")
 	}
 
-	r := &npool.Review{}
+	var r *npool.Review
 
 	switch state {
 	case reviewmgrpb.ReviewState_Rejected:
-		return r, nil
+		r, err = reject(ctx, w)
 	case reviewmgrpb.ReviewState_Approved:
+		r, err = approve(ctx, w)
 	default:
 		return nil, fmt.Errorf("unknown state")
 	}
 
+	if err != nil {
+		return nil, err
+	}
+
+	return post(ctx, w, r)
+}
+
+func post(ctx context.Context, withdraw *withdrawmgrpb.Withdraw, review *npool.Review) (*npool.Review, error) {
+	user, err := usercli.GetUser(ctx, withdraw.AppID, withdraw.UserID)
+	if err != nil {
+		return nil, err
+	}
+	if user == nil {
+		return nil, fmt.Errorf("invalid user")
+	}
+
+	review.EmailAddress = user.EmailAddress
+	review.PhoneNO = user.PhoneNO
+
+	return review, nil
+}
+
+func reject(ctx context.Context, withdraw *withdrawmgrpb.Withdraw) (*npool.Review, error) {
+	unlocked, err := decimal.NewFromString(withdraw.Amount)
+	if err != nil {
+		return nil, err
+	}
+
+	state := withdrawmgrpb.WithdrawState_Rejected
+	// TODO: move to TX
+
+	if err := ledgermwcli.UnlockBalance(
+		ctx,
+		withdraw.AppID, withdraw.UserID, withdraw.CoinTypeID,
+		ledgerdetailmgrpb.IOSubType_Withdrawal,
+		unlocked, decimal.NewFromInt(0),
+		fmt.Sprintf(
+			`{"WithdrawID":"%v","AccountID":"%v"}`,
+			withdraw.ID,
+			withdraw.AccountID,
+		),
+	); err != nil {
+		return nil, err
+	}
+
+	// Update withdraw state
+	u := &withdrawmgrpb.WithdrawReq{
+		ID:    &withdraw.ID,
+		State: &state,
+	}
+	_, err = withdrawmgrcli.UpdateWithdraw(ctx, u)
+	return &npool.Review{}, err
+}
+
+// nolint
+func approve(ctx context.Context, withdraw *withdrawmgrpb.Withdraw) (*npool.Review, error) {
+	r := &npool.Review{}
+
 	// Check account
-	account, err := billingcli.GetAccount(ctx, w.AccountID)
+	account, err := billingcli.GetAccount(ctx, withdraw.AccountID)
 	if err != nil {
 		return nil, err
 	}
@@ -62,23 +124,19 @@ func UpdateReview(ctx context.Context, id string, state reviewmgrpb.ReviewState)
 	}
 
 	// Check account is belong to user and used for withdraw
-	was, err := billingcli.GetWithdrawAccounts(ctx, w.AppID, w.UserID)
+	wa, err := billingcli.GetWithdrawAccount(ctx, withdraw.AccountID)
 	if err != nil {
 		return nil, err
 	}
-	found := false
-	for _, wa := range was {
-		if wa.AccountID == account.ID {
-			found = true
-			break
-		}
+	if wa == nil {
+		return nil, fmt.Errorf("invalid withdraw account")
 	}
-	if !found {
-		return nil, fmt.Errorf("not user's withdraw address")
+	if wa.AppID != withdraw.AppID || wa.UserID != withdraw.UserID {
+		return nil, fmt.Errorf("invalid user withdraw account")
 	}
 
 	// Check hot wallet balance
-	coin, err := coininfocli.GetCoinInfo(ctx, w.CoinTypeID)
+	coin, err := coininfocli.GetCoinInfo(ctx, withdraw.CoinTypeID)
 	if err != nil {
 		return nil, err
 	}
@@ -114,7 +172,7 @@ func UpdateReview(ctx context.Context, id string, state reviewmgrpb.ReviewState)
 	}
 
 	balance := decimal.RequireFromString(bal.BalanceStr)
-	amount := decimal.RequireFromString(w.Amount)
+	amount := decimal.RequireFromString(withdraw.Amount)
 
 	if balance.Cmp(amount) <= 0 {
 		return nil, fmt.Errorf("insufficient funds")
@@ -133,28 +191,17 @@ func UpdateReview(ctx context.Context, id string, state reviewmgrpb.ReviewState)
 
 	r.ObjectInfo = fmt.Sprintf(
 		`{"ID":"%v","To":"%v","Amount":"%v","CoinName":"%v","FeeAmount":"%v"}`,
-		w.ID,
+		withdraw.ID,
 		account.Address,
-		w.Amount,
+		withdraw.Amount,
 		coin.Name,
 		feeAmount,
 	)
 
-	user, err := usercli.GetUser(ctx, w.AppID, w.UserID)
-	if err != nil {
-		return nil, err
-	}
-	if user == nil {
-		return nil, fmt.Errorf("invalid user")
-	}
-
-	r.EmailAddress = user.EmailAddress
-	r.PhoneNO = user.PhoneNO
-
 	tx, err := billingcli.CreateTransaction(ctx, &billingpb.CoinAccountTransaction{
-		AppID:          w.AppID,
-		UserID:         w.UserID,
-		CoinTypeID:     w.CoinTypeID,
+		AppID:          withdraw.AppID,
+		UserID:         withdraw.UserID,
+		CoinTypeID:     withdraw.CoinTypeID,
 		GoodID:         uuid.UUID{}.String(),
 		FromAddressID:  hotacc.ID,
 		ToAddressID:    account.ID,
@@ -168,7 +215,7 @@ func UpdateReview(ctx context.Context, id string, state reviewmgrpb.ReviewState)
 
 	state1 := withdrawmgrpb.WithdrawState_Transferring
 	if _, err := withdrawmgrcli.UpdateWithdraw(ctx, &withdrawmgrpb.WithdrawReq{
-		ID:                    &w.ID,
+		ID:                    &withdraw.ID,
 		PlatformTransactionID: &tx.ID,
 		State:                 &state1,
 	}); err != nil {
