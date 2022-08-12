@@ -23,6 +23,14 @@ func UpdateReview(
 ) (
 	*npool.Review, error,
 ) {
+	reviewer, err := usercli.GetUser(ctx, reviewerAppID, reviewerID)
+	if err != nil {
+		return nil, err
+	}
+	if reviewer == nil {
+		return nil, fmt.Errorf("invalid reviewer")
+	}
+
 	var stateStr string
 
 	switch state {
@@ -41,11 +49,6 @@ func UpdateReview(
 
 	if rv.State != reviewconst.StateWait {
 		return nil, fmt.Errorf("invalid review state")
-	}
-
-	reviewer, err := usercli.GetUser(ctx, reviewerAppID, reviewerID)
-	if err != nil {
-		return nil, err
 	}
 
 	var info *npool.Review
