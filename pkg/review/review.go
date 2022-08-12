@@ -46,6 +46,9 @@ func UpdateReview(
 	if err != nil {
 		return nil, err
 	}
+	if rv == nil {
+		return nil, fmt.Errorf("invalid review id")
+	}
 
 	if rv.State != reviewconst.StateWait {
 		return nil, fmt.Errorf("invalid review state")
