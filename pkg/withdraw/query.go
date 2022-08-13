@@ -266,7 +266,7 @@ func GetWithdrawReview(ctx context.Context, reviewID string) (*npool.WithdrawRev
 	if err != nil {
 		return nil, err
 	}
-	if err == nil {
+	if coin == nil {
 		return nil, fmt.Errorf("invalid coin")
 	}
 

@@ -39,14 +39,17 @@ func UpdateWithdrawReview(
 ) (
 	*npool.WithdrawReview, error,
 ) {
-	err := review1.ValidateReview(ctx, id, appID, reviewerAppID, reviewerID, state)
+	objID, err := review1.ValidateReview(ctx, id, appID, reviewerAppID, reviewerID, state)
 	if err != nil {
 		return nil, err
 	}
 
-	w, err := withdrawmgrcli.GetWithdraw(ctx, id)
+	w, err := withdrawmgrcli.GetWithdraw(ctx, objID)
 	if err != nil {
 		return nil, err
+	}
+	if w == nil {
+		return nil, fmt.Errorf("invalid withdraw")
 	}
 
 	if w.State != withdrawmgrpb.WithdrawState_Reviewing {

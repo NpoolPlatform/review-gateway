@@ -16,33 +16,33 @@ func ValidateReview(
 	ctx context.Context,
 	id, appID, reviewerAppID, reviewerID string,
 	state reviewmgrpb.ReviewState,
-) error {
+) (string, error) {
 	reviewer, err := usercli.GetUser(ctx, reviewerAppID, reviewerID)
 	if err != nil {
-		return err
+		return "", err
 	}
 	if reviewer == nil {
-		return fmt.Errorf("invalid reviewer")
+		return "", fmt.Errorf("invalid reviewer")
 	}
 
 	switch state {
 	case reviewmgrpb.ReviewState_Approved:
 	case reviewmgrpb.ReviewState_Rejected:
 	default:
-		return fmt.Errorf("invalid review state")
+		return "", fmt.Errorf("invalid review state")
 	}
 
 	rv, err := reviewcli.GetReview(ctx, id)
 	if err != nil {
-		return err
+		return "", err
 	}
 	if rv == nil {
-		return fmt.Errorf("invalid review id")
+		return "", fmt.Errorf("invalid review id")
 	}
 
 	if rv.State != reviewconst.StateWait {
-		return fmt.Errorf("invalid review state")
+		return "", fmt.Errorf("invalid review state")
 	}
 
-	return nil
+	return rv.ObjectID, nil
 }
