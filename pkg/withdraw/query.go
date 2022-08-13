@@ -40,6 +40,9 @@ func GetWithdrawReviews(ctx context.Context, appID string, offset, limit int32) 
 	if err != nil {
 		return nil, 0, err
 	}
+	if len(withdraws) == 0 {
+		return nil, 0, nil
+	}
 
 	rvs, err := reviewcli.GetDomainReviews(ctx, appID, billingconst.ServiceName, "withdraw")
 	if err != nil {
