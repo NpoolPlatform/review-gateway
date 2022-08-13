@@ -159,6 +159,7 @@ func GetWithdrawReviews(ctx context.Context, appID string, offset, limit int32) 
 
 		infos = append(infos, &npool.WithdrawReview{
 			WithdrawID:            rv.ObjectID,
+			WithdrawState:         withdraw.State,
 			ReviewID:              rv.ID,
 			UserID:                user.ID,
 			KycState:              reviewmgrpb.ReviewState_DefaultReviewState,
@@ -276,6 +277,7 @@ func GetWithdrawReview(ctx context.Context, reviewID string) (*npool.WithdrawRev
 
 	return &npool.WithdrawReview{
 		WithdrawID:            rv.ObjectID,
+		WithdrawState:         withdraw.State,
 		ReviewID:              rv.ID,
 		UserID:                user.ID,
 		KycState:              reviewmgrpb.ReviewState_DefaultReviewState,
