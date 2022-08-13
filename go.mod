@@ -9,7 +9,7 @@ require (
 	github.com/NpoolPlatform/go-service-framework v0.0.0-20220812032117-44ecffa2bb95
 	github.com/NpoolPlatform/ledger-manager v0.0.0-20220810080525-bffa7a839d30
 	github.com/NpoolPlatform/ledger-middleware v0.0.0-20220810080700-56eacb5746c9
-	github.com/NpoolPlatform/message v0.0.0-20220813152525-f0a3e40cbae3
+	github.com/NpoolPlatform/message v0.0.0-20220813155718-eb3b348de709
 	github.com/NpoolPlatform/oracle-manager v0.0.0-20220805135435-75cd3e5baec5
 	github.com/NpoolPlatform/review-service v0.0.0-20220806150215-be6314965b82
 	github.com/NpoolPlatform/sphinx-coininfo v0.0.0-20220731103603-21004f4341dc

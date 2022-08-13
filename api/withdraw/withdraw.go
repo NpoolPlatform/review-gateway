@@ -17,7 +17,11 @@ import (
 	"github.com/google/uuid"
 )
 
-func (s *Server) GetWithdrawReviews(ctx context.Context, in *npool.GetWithdrawReviewsRequest) (*npool.GetWithdrawReviewsResponse, error) {
+func (s *Server) GetWithdrawReviews(
+	ctx context.Context, in *npool.GetWithdrawReviewsRequest,
+) (
+	*npool.GetWithdrawReviewsResponse, error,
+) {
 	if _, err := uuid.Parse(in.GetAppID()); err != nil {
 		logger.Sugar().Errorw("GetWithdrawReviews", "AppID", in.GetAppID(), "error", err)
 		return &npool.GetWithdrawReviewsResponse{}, status.Error(codes.InvalidArgument, "AppID is invalid")
@@ -28,7 +32,7 @@ func (s *Server) GetWithdrawReviews(ctx context.Context, in *npool.GetWithdrawRe
 		limit = constant.DefaultLimitRows
 	}
 
-	infos, total, err := withdraw1.GetWithdrawReviews(ctx, in.GetAppID(), in.GetOffset(), in.GetLimit())
+	infos, total, err := withdraw1.GetWithdrawReviews(ctx, in.GetAppID(), in.GetOffset(), limit)
 	if err != nil {
 		logger.Sugar().Errorw("GetWithdrawReviews", "AppID", in.GetAppID(), "error", err)
 		return &npool.GetWithdrawReviewsResponse{}, status.Error(codes.InvalidArgument, "fail get withdraw reviews")
@@ -40,7 +44,11 @@ func (s *Server) GetWithdrawReviews(ctx context.Context, in *npool.GetWithdrawRe
 	}, nil
 }
 
-func (s *Server) GetAppWithdrawReviews(ctx context.Context, in *npool.GetAppWithdrawReviewsRequest) (*npool.GetAppWithdrawReviewsResponse, error) {
+func (s *Server) GetAppWithdrawReviews(
+	ctx context.Context, in *npool.GetAppWithdrawReviewsRequest,
+) (
+	*npool.GetAppWithdrawReviewsResponse, error,
+) {
 	resp, err := s.GetWithdrawReviews(ctx, &npool.GetWithdrawReviewsRequest{
 		AppID:  in.TargetAppID,
 		Offset: in.Offset,
@@ -57,7 +65,11 @@ func (s *Server) GetAppWithdrawReviews(ctx context.Context, in *npool.GetAppWith
 	}, nil
 }
 
-func (s *Server) UpdateWithdrawReview(ctx context.Context, in *npool.UpdateWithdrawReviewRequest) (*npool.UpdateWithdrawReviewResponse, error) {
+func (s *Server) UpdateWithdrawReview(
+	ctx context.Context, in *npool.UpdateWithdrawReviewRequest,
+) (
+	*npool.UpdateWithdrawReviewResponse, error,
+) {
 	if _, err := uuid.Parse(in.GetReviewID()); err != nil {
 		logger.Sugar().Errorw("UpdateWithdrawReview", "ID", in.GetReviewID(), "error", err)
 		return &npool.UpdateWithdrawReviewResponse{}, status.Error(codes.InvalidArgument, "ReviewID is invalid")
@@ -105,7 +117,11 @@ func (s *Server) UpdateWithdrawReview(ctx context.Context, in *npool.UpdateWithd
 	}, nil
 }
 
-func (s *Server) UpdateAppWithdrawReview(ctx context.Context, in *npool.UpdateAppWithdrawReviewRequest) (*npool.UpdateAppWithdrawReviewResponse, error) {
+func (s *Server) UpdateAppWithdrawReview(
+	ctx context.Context, in *npool.UpdateAppWithdrawReviewRequest,
+) (
+	*npool.UpdateAppWithdrawReviewResponse, error,
+) {
 	if _, err := uuid.Parse(in.GetReviewID()); err != nil {
 		logger.Sugar().Errorw("UpdateAppWithdrawReview", "ReviewID", in.GetReviewID(), "error", err)
 		return &npool.UpdateAppWithdrawReviewResponse{}, status.Error(codes.InvalidArgument, "ReviewID is invalid")
