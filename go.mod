@@ -3,13 +3,13 @@ module github.com/NpoolPlatform/review-gateway
 go 1.17
 
 require (
-	github.com/NpoolPlatform/api-manager v0.0.0-20220328101926-8907b2f76c6d
-	github.com/NpoolPlatform/appuser-middleware v0.0.0-20220802115439-5c2d3c2e193a
+	github.com/NpoolPlatform/api-manager v0.0.0-20220714064853-e3bf392e2c17
+	github.com/NpoolPlatform/appuser-middleware v0.0.0-20220813042624-b76499b6435d
 	github.com/NpoolPlatform/cloud-hashing-billing v0.0.0-20220811032942-1d1ae51970f8
-	github.com/NpoolPlatform/go-service-framework v0.0.0-20220726144547-41aefeaea336
+	github.com/NpoolPlatform/go-service-framework v0.0.0-20220812032117-44ecffa2bb95
 	github.com/NpoolPlatform/ledger-manager v0.0.0-20220810080525-bffa7a839d30
 	github.com/NpoolPlatform/ledger-middleware v0.0.0-20220810080700-56eacb5746c9
-	github.com/NpoolPlatform/message v0.0.0-20220811031336-a82c66606874
+	github.com/NpoolPlatform/message v0.0.0-20220813040740-adfb180ecd8f
 	github.com/NpoolPlatform/oracle-manager v0.0.0-20220805135435-75cd3e5baec5
 	github.com/NpoolPlatform/review-service v0.0.0-20220806150215-be6314965b82
 	github.com/NpoolPlatform/sphinx-coininfo v0.0.0-20220731103603-21004f4341dc
@@ -87,8 +87,8 @@ require (
 	go.uber.org/multierr v1.8.0 // indirect
 	go.uber.org/ratelimit v0.2.0 // indirect
 	go.uber.org/zap v1.21.0 // indirect
-	golang.org/x/net v0.0.0-20220418201149-a630d4f3e7a2 // indirect
-	golang.org/x/sys v0.0.0-20220702020025-31831981b65f // indirect
+	golang.org/x/net v0.0.0-20220722155237-a158d28d115b // indirect
+	golang.org/x/sys v0.0.0-20220722155257-8c9f86f7a55f // indirect
 	golang.org/x/text v0.3.7 // indirect
 	golang.org/x/xerrors v0.0.0-20220609144429-65e65417b02f // indirect
 	google.golang.org/genproto v0.0.0-20220519153652-3a47de7e79bd // indirect
