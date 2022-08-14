@@ -21,7 +21,7 @@ spec:
     - host: api.npool.top
       http: &http_rules
         paths:
-          - path: /api/review/v1/version
+          - path: /api/review/v2/version
             backend:
               serviceName: review-gateway
               servicePort: 50450
@@ -57,21 +57,14 @@ spec:
     - host: api.npool.top
       http: &http_rules
         paths:
-          - path: /api/review/v1/get/objecttypes
+          - path: /api/review/v2/get
             backend:
               serviceName: review-gateway
               servicePort: 50410
           ######
           # Enable for app admin
           ######
-          - path: /api/review/v1/update/review
-            backend:
-              serviceName: review-gateway
-              servicePort: 50410
-          ######
-          # Enable for church admin
-          ######
-          - path: /api/review/v1/update/app/review
+          - path: /api/review/v2/update
             backend:
               serviceName: review-gateway
               servicePort: 50410
