@@ -57,6 +57,7 @@ func UpdateWithdrawReview(
 	}
 
 	// TODO: get user kyc state
+	// TODO: make sure review state and withdraw state integrity
 
 	switch state {
 	case reviewmgrpb.ReviewState_Rejected:
@@ -68,6 +69,10 @@ func UpdateWithdrawReview(
 	}
 
 	if err != nil {
+		return nil, err
+	}
+
+	if err := review1.UpdateReview(ctx, id, appID, reviewerAppID, reviewerID, state, message); err != nil {
 		return nil, err
 	}
 
