@@ -60,14 +60,14 @@ spec:
           - path: /api/review/v2/get
             backend:
               serviceName: review-gateway
-              servicePort: 50410
+              servicePort: 50450
           ######
           # Enable for app admin
           ######
           - path: /api/review/v2/update
             backend:
               serviceName: review-gateway
-              servicePort: 50410
+              servicePort: 50450
     - host: api.procyon.vip
       http: *http_rules
     - host: api.xpool.top
