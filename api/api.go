@@ -3,6 +3,8 @@ package api
 import (
 	"context"
 
+	"github.com/NpoolPlatform/review-gateway/api/kyc"
+
 	review "github.com/NpoolPlatform/message/npool/review/gw/v2"
 
 	"github.com/NpoolPlatform/review-gateway/api/withdraw"
@@ -18,6 +20,7 @@ type Server struct {
 func Register(server grpc.ServiceRegistrar) {
 	review.RegisterGatewayServer(server, &Server{})
 	withdraw.Register(server)
+	kyc.Register(server)
 }
 
 func RegisterGateway(mux *runtime.ServeMux, endpoint string, opts []grpc.DialOption) error {
@@ -25,6 +28,9 @@ func RegisterGateway(mux *runtime.ServeMux, endpoint string, opts []grpc.DialOpt
 		return err
 	}
 	if err := withdraw.RegisterGateway(mux, endpoint, opts); err != nil {
+		return err
+	}
+	if err := kyc.RegisterGateway(mux, endpoint, opts); err != nil {
 		return err
 	}
 	return nil
