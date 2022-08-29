@@ -2,6 +2,7 @@ package main
 
 import (
 	"github.com/NpoolPlatform/review-gateway/api"
+	"github.com/NpoolPlatform/review-service/pkg/db"
 
 	grpc2 "github.com/NpoolPlatform/go-service-framework/pkg/grpc"
 	"github.com/NpoolPlatform/go-service-framework/pkg/logger"
@@ -22,6 +23,10 @@ var runCmd = &cli.Command{
 	Aliases: []string{"s"},
 	Usage:   "Run the daemon",
 	Action: func(c *cli.Context) error {
+		if err := db.Init(); err != nil {
+			return err
+		}
+
 		go func() {
 			if err := grpc2.RunGRPC(rpcRegister); err != nil {
 				logger.Sugar().Errorf("fail to run grpc server: %v", err)
@@ -46,7 +51,7 @@ func rpcGatewayRegister(mux *runtime.ServeMux, endpoint string, opts []grpc.Dial
 		return err
 	}
 
-	apimgrcli.Register(mux) //nolint
+	_ = apimgrcli.Register(mux)
 
 	return nil
 }

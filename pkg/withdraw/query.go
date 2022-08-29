@@ -1,4 +1,3 @@
-//nolint:dupl
 package withdraw
 
 import (
@@ -46,7 +45,7 @@ func GetWithdrawReviews(ctx context.Context, appID string, offset, limit int32) 
 
 	rvs, err := reviewcli.GetDomainReviews(ctx, appID, billingconst.ServiceName, "withdraw")
 	if err != nil {
-		return nil, 0, err
+		//return nil, 0, err
 	}
 
 	rvs1, err := reviewcli.GetDomainReviews(ctx, appID, ledgerconst.ServiceName,
