@@ -3,19 +3,21 @@ module github.com/NpoolPlatform/review-gateway
 go 1.17
 
 require (
-	github.com/NpoolPlatform/api-manager v0.0.0-20220820093920-25cb3a5d5e3a
+	github.com/NpoolPlatform/api-manager v0.0.0-20220826022307-d72866fe3ec0
 	github.com/NpoolPlatform/appuser-gateway v0.0.9
-	github.com/NpoolPlatform/appuser-manager v0.0.0-20220825074336-3f96fc5ed8fa
-	github.com/NpoolPlatform/appuser-middleware v0.0.0-20220816085636-1efbe7b69b69
+	github.com/NpoolPlatform/appuser-manager v0.0.0-20220829023336-2041fdaab4cd
+	github.com/NpoolPlatform/appuser-middleware v0.0.0-20220829024723-44838f6b9d9e
+	github.com/NpoolPlatform/cloud-hashing-apis v0.0.0-20220828063318-667ea182fc42
 	github.com/NpoolPlatform/cloud-hashing-billing v0.0.0-20220813093402-2273d71145f8
 	github.com/NpoolPlatform/go-service-framework v0.0.0-20220818105452-9457611ae070
+	github.com/NpoolPlatform/kyc-management v0.0.0-20220716053838-1a0c1957144a
 	github.com/NpoolPlatform/ledger-gateway v0.0.0-20220813124620-9cbc5e1a2318
 	github.com/NpoolPlatform/ledger-manager v0.0.0-20220810080525-bffa7a839d30
 	github.com/NpoolPlatform/ledger-middleware v0.0.0-20220811054139-8ee942532891
 	github.com/NpoolPlatform/libent-cruder v0.0.0-20220821121920-9559f5776d15
-	github.com/NpoolPlatform/message v0.0.0-20220825070229-f169ea99cac3
+	github.com/NpoolPlatform/message v0.0.0-20220829024818-f4092e1ecfde
 	github.com/NpoolPlatform/oracle-manager v0.0.0-20220805135435-75cd3e5baec5
-	github.com/NpoolPlatform/review-service v0.0.0-20220806150215-be6314965b82
+	github.com/NpoolPlatform/review-service v0.0.0-20220826135931-2f311aae9cbd
 	github.com/NpoolPlatform/sphinx-coininfo v0.0.0-20220731103603-21004f4341dc
 	github.com/NpoolPlatform/sphinx-proxy v0.0.0-20220803040820-2b7bd4158e8b
 	github.com/go-resty/resty/v2 v2.7.0
@@ -51,7 +53,7 @@ require (
 	github.com/go-logr/logr v1.2.3 // indirect
 	github.com/go-logr/stdr v1.2.2 // indirect
 	github.com/go-openapi/inflect v0.19.0 // indirect
-	github.com/go-playground/universal-translator v0.18.0 // indirect
+	github.com/go-playground/locales v0.14.0 // indirect
 	github.com/go-sql-driver/mysql v1.6.0 // indirect
 	github.com/golang/protobuf v1.5.2 // indirect
 	github.com/google/go-cmp v0.5.8 // indirect
@@ -68,7 +70,6 @@ require (
 	github.com/hashicorp/hcl v1.0.0 // indirect
 	github.com/hashicorp/hcl/v2 v2.10.0 // indirect
 	github.com/hashicorp/serf v0.9.7 // indirect
-	github.com/leodido/go-urn v1.2.1 // indirect
 	github.com/magiconair/properties v1.8.6 // indirect
 	github.com/mattn/go-colorable v0.1.12 // indirect
 	github.com/mattn/go-isatty v0.0.14 // indirect

@@ -5,19 +5,19 @@ import (
 	"fmt"
 
 	appusergateway "github.com/NpoolPlatform/appuser-gateway/pkg/message/const"
-	appusermanager "github.com/NpoolPlatform/appuser-manager/pkg/message/const"
+	kycmgrconst "github.com/NpoolPlatform/kyc-management/pkg/message/const"
 	reviewpb "github.com/NpoolPlatform/message/npool/review-service"
 	npool "github.com/NpoolPlatform/message/npool/review/gw/v2/kyc"
 
 	kyccli "github.com/NpoolPlatform/appuser-manager/pkg/client/kyc"
 	usercli "github.com/NpoolPlatform/appuser-middleware/pkg/client/user"
+	apisconstant "github.com/NpoolPlatform/cloud-hashing-apis/pkg/const"
+	cruder "github.com/NpoolPlatform/libent-cruder/pkg/cruder"
 	commonpb "github.com/NpoolPlatform/message/npool"
 	kycmgrpb "github.com/NpoolPlatform/message/npool/appuser/mgr/v2/kyc"
 	userpb "github.com/NpoolPlatform/message/npool/appuser/mw/v1/user"
 	reviewmgrpb "github.com/NpoolPlatform/message/npool/review/mgr/v2"
 	reviewcli "github.com/NpoolPlatform/review-service/pkg/client"
-
-	cruder "github.com/NpoolPlatform/libent-cruder/pkg/cruder"
 )
 
 // nolint
@@ -43,16 +43,13 @@ func GetkycReviews(ctx context.Context, appID string, offset, limit int32) ([]*n
 	if err != nil {
 		return nil, 0, err
 	}
-	rvs1, err := reviewcli.GetDomainReviews(ctx, appID, appusermanager.ServiceName,
-		reviewmgrpb.ReviewObjectType_ObjectKyc.String())
+	rvs1, err := reviewcli.GetDomainReviews(ctx, appID, kycmgrconst.ServiceName,
+		apisconstant.ReviewObjectKyc)
 	if err != nil {
 		return nil, 0, err
 	}
 
 	rvs = append(rvs, rvs1...)
-
-	fmt.Println("******************")
-	fmt.Println(rvs)
 
 	rvMap := map[string]*reviewpb.Review{}
 	for _, rv := range rvs {
