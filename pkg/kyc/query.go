@@ -203,27 +203,6 @@ func GetKycReview(ctx context.Context, reviewID string) (*npool.KycReview, error
 		return nil, fmt.Errorf("invalid state")
 	}
 
-	trigger := reviewmgrpb.ReviewTriggerType_InsufficientFunds
-
-	switch rv.Trigger {
-	case "large amount":
-		fallthrough // nolint
-	case reviewmgrpb.ReviewTriggerType_LargeAmount.String():
-		trigger = reviewmgrpb.ReviewTriggerType_LargeAmount
-	case "insufficient":
-		fallthrough // nolint
-	case reviewmgrpb.ReviewTriggerType_InsufficientFunds.String():
-		trigger = reviewmgrpb.ReviewTriggerType_InsufficientFunds
-	case "auto review":
-		fallthrough // nolint
-	case reviewmgrpb.ReviewTriggerType_AutoReviewed.String():
-		trigger = reviewmgrpb.ReviewTriggerType_AutoReviewed
-	case reviewmgrpb.ReviewTriggerType_InsufficientGas.String():
-		trigger = reviewmgrpb.ReviewTriggerType_InsufficientGas
-	default:
-		return nil, fmt.Errorf("invalid trigger")
-	}
-
 	return &npool.KycReview{
 		UserID:       user.ID,
 		EmailAddress: user.EmailAddress,
@@ -240,7 +219,6 @@ func GetKycReview(ctx context.Context, reviewID string) (*npool.KycReview, error
 		Domain:       rv.Domain,
 		Reviewer:     "TODO: to be filled",
 		State:        state,
-		Trigger:      trigger,
 		Message:      rv.Message,
 		CreatedAt:    rv.CreateAt,
 		UpdatedAt:    rv.CreateAt,
