@@ -3,10 +3,9 @@ package api
 import (
 	"context"
 
-	"github.com/NpoolPlatform/review-gateway/api/kyc"
-
 	review "github.com/NpoolPlatform/message/npool/review/gw/v2"
 
+	"github.com/NpoolPlatform/review-gateway/api/kyc"
 	"github.com/NpoolPlatform/review-gateway/api/withdraw"
 
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
