@@ -6,7 +6,7 @@ require (
 	github.com/NpoolPlatform/api-manager v0.0.0-20220826022307-d72866fe3ec0
 	github.com/NpoolPlatform/appuser-gateway v0.0.9
 	github.com/NpoolPlatform/appuser-manager v0.0.0-20220829023336-2041fdaab4cd
-	github.com/NpoolPlatform/appuser-middleware v0.0.0-20220829024723-44838f6b9d9e
+	github.com/NpoolPlatform/appuser-middleware v0.0.0-20220829071341-b6736e2c1c01
 	github.com/NpoolPlatform/cloud-hashing-apis v0.0.0-20220828063318-667ea182fc42
 	github.com/NpoolPlatform/cloud-hashing-billing v0.0.0-20220813093402-2273d71145f8
 	github.com/NpoolPlatform/go-service-framework v0.0.0-20220818105452-9457611ae070

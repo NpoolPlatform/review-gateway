@@ -84,8 +84,8 @@ github.com/NpoolPlatform/appuser-gateway v0.0.9 h1:LY+1knY6RxBLpAQCVYnPoYZgRTgKg
 github.com/NpoolPlatform/appuser-gateway v0.0.9/go.mod h1:GXUEOvyFJHsDedXA9q+xfyrSz05FgUx4/HBSHdycpmw=
 github.com/NpoolPlatform/appuser-manager v0.0.0-20220829023336-2041fdaab4cd h1:ACwuhQSW7POhVDYwHyQFq8d7qNfPEZNuXYu9ogyfYi0=
 github.com/NpoolPlatform/appuser-manager v0.0.0-20220829023336-2041fdaab4cd/go.mod h1:skBIsgrkDPxX6+mP31nWh0psf1ytnTLJSl73wJRXC5Y=
-github.com/NpoolPlatform/appuser-middleware v0.0.0-20220829024723-44838f6b9d9e h1:b2U7HCyzNegQtNwWEcVKJDMZayJ4RJUrwaBM0BsaIIA=
-github.com/NpoolPlatform/appuser-middleware v0.0.0-20220829024723-44838f6b9d9e/go.mod h1:WYSbWpY84NyLkRIXYVBUl/9iFobhmVrs7NDdR52J6Ec=
+github.com/NpoolPlatform/appuser-middleware v0.0.0-20220829071341-b6736e2c1c01 h1:YYAlfdmv/JjkUotR97/wGXpE0X65iNrb0msOyoOoMt8=
+github.com/NpoolPlatform/appuser-middleware v0.0.0-20220829071341-b6736e2c1c01/go.mod h1:WYSbWpY84NyLkRIXYVBUl/9iFobhmVrs7NDdR52J6Ec=
 github.com/NpoolPlatform/cloud-hashing-apis v0.0.0-20220828063318-667ea182fc42 h1:WhRjGOriefg0ZouqIwW0NrzZNARPDtu9KIXZzA8lujY=
 github.com/NpoolPlatform/cloud-hashing-apis v0.0.0-20220828063318-667ea182fc42/go.mod h1:+d4WCOqJRIPIl8awsuGsCCs6YUF+DmiYSHODxdZcCpo=
 github.com/NpoolPlatform/cloud-hashing-billing v0.0.0-20220813093402-2273d71145f8 h1:Ja+SzJuKW+mz09jUUd5b6LBpbEy8o74DdSZ4aY1zy4M=
