@@ -61,20 +61,20 @@ func UpdateWithdrawReview(
 		return nil, fmt.Errorf("not reviewing")
 	}
 
-	kyc, _, err := kyccli.GetKycs(ctx, &kycpb.Conds{
+	kyc, err := kyccli.GetKycOnly(ctx, &kycpb.Conds{
 		UserID: &npool.StringVal{
 			Op:    cruder.EQ,
 			Value: w.UserID,
 		},
-	}, 0, 1)
+	})
 	if err != nil {
 		return nil, err
 	}
-	if len(kyc) == 0 {
+	if kyc == nil {
 		return nil, fmt.Errorf("kyc review not created")
 	}
 
-	if kyc[0].State != kycpb.KycState_Approved {
+	if kyc.State != kycpb.KycState_Approved {
 		return nil, fmt.Errorf("kyc review not approved")
 	}
 
