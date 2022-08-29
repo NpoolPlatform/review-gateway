@@ -34,7 +34,7 @@ func (s *Server) GetKycReviews(
 	infos, total, err := kyc1.GetkycReviews(ctx, in.GetAppID(), in.GetOffset(), limit)
 	if err != nil {
 		logger.Sugar().Errorw("GetKycReviews", "AppID", in.GetAppID(), "error", err)
-		return &npool.GetKycReviewsResponse{}, status.Error(codes.InvalidArgument, "fail get withdraw reviews")
+		return &npool.GetKycReviewsResponse{}, status.Error(codes.InvalidArgument, "fail get kyc reviews")
 	}
 
 	return &npool.GetKycReviewsResponse{

@@ -4,6 +4,8 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/NpoolPlatform/go-service-framework/pkg/logger"
+
 	appusergateway "github.com/NpoolPlatform/appuser-gateway/pkg/message/const"
 	kycmgrconst "github.com/NpoolPlatform/kyc-management/pkg/message/const"
 	reviewpb "github.com/NpoolPlatform/message/npool/review-service"
@@ -75,12 +77,14 @@ func GetkycReviews(ctx context.Context, appID string, offset, limit int32) ([]*n
 	for _, kyc := range kycs {
 		rv, ok := rvMap[kyc.ID]
 		if !ok {
-			return nil, 0, fmt.Errorf("invalid kyc review")
+			logger.Sugar().Warnw("GetKycReviews", "Kyc", kyc.ID)
+			continue
 		}
 
 		user, ok := userMap[kyc.UserID]
 		if !ok {
-			return nil, 0, fmt.Errorf("invalid user")
+			logger.Sugar().Warnw("GetKycReviews", "User", kyc.UserID)
+			continue
 		}
 
 		state := reviewmgrpb.ReviewState_Wait
@@ -99,7 +103,8 @@ func GetkycReviews(ctx context.Context, appID string, offset, limit int32) ([]*n
 		case reviewmgrpb.ReviewState_Wait.String():
 			state = reviewmgrpb.ReviewState_Wait
 		default:
-			return nil, 0, fmt.Errorf("invalid state")
+			logger.Sugar().Warnw("GetKycReviews", "State", rv.State)
+			continue
 		}
 
 		trigger := reviewmgrpb.ReviewTriggerType_InsufficientFunds
@@ -120,7 +125,8 @@ func GetkycReviews(ctx context.Context, appID string, offset, limit int32) ([]*n
 		case reviewmgrpb.ReviewTriggerType_InsufficientGas.String():
 			trigger = reviewmgrpb.ReviewTriggerType_InsufficientGas
 		default:
-			return nil, 0, fmt.Errorf("invalid trigger")
+			logger.Sugar().Warnw("GetKycReviews", "Trigger", rv.Trigger)
+			continue
 		}
 
 		infos = append(infos, &npool.KycReview{
