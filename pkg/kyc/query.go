@@ -99,7 +99,6 @@ func GetkycReviews(ctx context.Context, appID string, offset, limit int32) ([]*n
 				state = reviewmgrpb.ReviewState_Wait
 			default:
 				logger.Sugar().Warnw("GetKycReviews", "State", rv.State)
-				continue
 			}
 
 			switch rv.Trigger {
@@ -119,7 +118,6 @@ func GetkycReviews(ctx context.Context, appID string, offset, limit int32) ([]*n
 				trigger = reviewmgrpb.ReviewTriggerType_InsufficientGas
 			default:
 				logger.Sugar().Warnw("GetKycReviews", "Trigger", rv.Trigger)
-				continue
 			}
 		}
 
