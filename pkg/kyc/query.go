@@ -75,58 +75,68 @@ func GetkycReviews(ctx context.Context, appID string, offset, limit int32) ([]*n
 
 	infos := []*npool.KycReview{}
 	for _, kyc := range kycs {
-		rv, ok := rvMap[kyc.ID]
-		if !ok {
-			logger.Sugar().Warnw("GetKycReviews", "Kyc", kyc.ID)
-			continue
+		rv := &reviewpb.Review{
+			ID:       "",
+			ObjectID: "",
+			Domain:   "",
+			Message:  "",
+			CreateAt: 0,
 		}
 
-		user, ok := userMap[kyc.UserID]
-		if !ok {
-			logger.Sugar().Warnw("GetKycReviews", "User", kyc.UserID)
-			continue
+		state := reviewmgrpb.ReviewState_DefaultReviewState
+		trigger := reviewmgrpb.ReviewTriggerType_DefaultTriggerType
+
+		rvM, ok := rvMap[kyc.ID]
+		if ok {
+			rv = rvM
+
+			switch rv.State {
+			case "approved":
+				fallthrough // nolint
+			case reviewmgrpb.ReviewState_Approved.String():
+				state = reviewmgrpb.ReviewState_Approved
+			case "rejected":
+				fallthrough // nolint
+			case reviewmgrpb.ReviewState_Rejected.String():
+				state = reviewmgrpb.ReviewState_Rejected
+			case "wait":
+				fallthrough // nolint
+			case reviewmgrpb.ReviewState_Wait.String():
+				state = reviewmgrpb.ReviewState_Wait
+			default:
+				logger.Sugar().Warnw("GetKycReviews", "State", rv.State)
+				continue
+			}
+
+			switch rv.Trigger {
+			case "large amount":
+				fallthrough // nolint
+			case reviewmgrpb.ReviewTriggerType_LargeAmount.String():
+				trigger = reviewmgrpb.ReviewTriggerType_LargeAmount
+			case "insufficient":
+				fallthrough // nolint
+			case reviewmgrpb.ReviewTriggerType_InsufficientFunds.String():
+				trigger = reviewmgrpb.ReviewTriggerType_InsufficientFunds
+			case "auto review":
+				fallthrough // nolint
+			case reviewmgrpb.ReviewTriggerType_AutoReviewed.String():
+				trigger = reviewmgrpb.ReviewTriggerType_AutoReviewed
+			case reviewmgrpb.ReviewTriggerType_InsufficientGas.String():
+				trigger = reviewmgrpb.ReviewTriggerType_InsufficientGas
+			default:
+				logger.Sugar().Warnw("GetKycReviews", "Trigger", rv.Trigger)
+				continue
+			}
 		}
 
-		state := reviewmgrpb.ReviewState_Wait
-
-		switch rv.State {
-		case "approved":
-			fallthrough // nolint
-		case reviewmgrpb.ReviewState_Approved.String():
-			state = reviewmgrpb.ReviewState_Approved
-		case "rejected":
-			fallthrough // nolint
-		case reviewmgrpb.ReviewState_Rejected.String():
-			state = reviewmgrpb.ReviewState_Rejected
-		case "wait":
-			fallthrough // nolint
-		case reviewmgrpb.ReviewState_Wait.String():
-			state = reviewmgrpb.ReviewState_Wait
-		default:
-			logger.Sugar().Warnw("GetKycReviews", "State", rv.State)
-			continue
+		user := &userpb.User{
+			ID:           "",
+			EmailAddress: "",
+			PhoneNO:      "",
 		}
-
-		trigger := reviewmgrpb.ReviewTriggerType_InsufficientFunds
-
-		switch rv.Trigger {
-		case "large amount":
-			fallthrough // nolint
-		case reviewmgrpb.ReviewTriggerType_LargeAmount.String():
-			trigger = reviewmgrpb.ReviewTriggerType_LargeAmount
-		case "insufficient":
-			fallthrough // nolint
-		case reviewmgrpb.ReviewTriggerType_InsufficientFunds.String():
-			trigger = reviewmgrpb.ReviewTriggerType_InsufficientFunds
-		case "auto review":
-			fallthrough // nolint
-		case reviewmgrpb.ReviewTriggerType_AutoReviewed.String():
-			trigger = reviewmgrpb.ReviewTriggerType_AutoReviewed
-		case reviewmgrpb.ReviewTriggerType_InsufficientGas.String():
-			trigger = reviewmgrpb.ReviewTriggerType_InsufficientGas
-		default:
-			logger.Sugar().Warnw("GetKycReviews", "Trigger", rv.Trigger)
-			continue
+		userM, ok := userMap[kyc.UserID]
+		if ok {
+			user = userM
 		}
 
 		infos = append(infos, &npool.KycReview{
