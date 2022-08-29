@@ -80,6 +80,11 @@ github.com/Masterminds/sprig v2.22.0+incompatible/go.mod h1:y6hNFY5UBTIWBxnzTeuN
 github.com/NpoolPlatform/api-manager v0.0.0-20220205130236-69d286e72dba/go.mod h1:ubnvHuhc0o6drhdYrT+nM5DXZW/yEesObWky6oRsHoQ=
 github.com/NpoolPlatform/api-manager v0.0.0-20220826022307-d72866fe3ec0 h1:yIEwS7NTQhBBmfpf6yigvPCbxffMOrtBK/yUPM5ukbo=
 github.com/NpoolPlatform/api-manager v0.0.0-20220826022307-d72866fe3ec0/go.mod h1:+Xj8fVgWZWGakBtqZbFn/zY0qd47AywCjLPOGdTqJDU=
+<<<<<<< HEAD
+github.com/NpoolPlatform/appuser-manager v0.0.0-20220813041802-fb43d9fcaece h1:y1tXkSYOFelsQy1DRLI3WpJp4HFwho+JXdOhwMrMYw4=
+github.com/NpoolPlatform/appuser-middleware v0.0.0-20220813042624-b76499b6435d h1:0bAwDBPj1/zz7crGrtaDdtxCoFyqHxVPvhRIVso5Lb0=
+github.com/NpoolPlatform/appuser-middleware v0.0.0-20220813042624-b76499b6435d/go.mod h1:GR4x7gp+GHm9MFEImHhAvMFuxI2YFszo9o48gx3L0kg=
+=======
 github.com/NpoolPlatform/appuser-gateway v0.0.9 h1:LY+1knY6RxBLpAQCVYnPoYZgRTgKgO7F2bNGpziipPA=
 github.com/NpoolPlatform/appuser-gateway v0.0.9/go.mod h1:GXUEOvyFJHsDedXA9q+xfyrSz05FgUx4/HBSHdycpmw=
 github.com/NpoolPlatform/appuser-manager v0.0.0-20220829023336-2041fdaab4cd h1:ACwuhQSW7POhVDYwHyQFq8d7qNfPEZNuXYu9ogyfYi0=
@@ -88,6 +93,7 @@ github.com/NpoolPlatform/appuser-middleware v0.0.0-20220829024723-44838f6b9d9e h
 github.com/NpoolPlatform/appuser-middleware v0.0.0-20220829024723-44838f6b9d9e/go.mod h1:WYSbWpY84NyLkRIXYVBUl/9iFobhmVrs7NDdR52J6Ec=
 github.com/NpoolPlatform/cloud-hashing-apis v0.0.0-20220828063318-667ea182fc42 h1:WhRjGOriefg0ZouqIwW0NrzZNARPDtu9KIXZzA8lujY=
 github.com/NpoolPlatform/cloud-hashing-apis v0.0.0-20220828063318-667ea182fc42/go.mod h1:+d4WCOqJRIPIl8awsuGsCCs6YUF+DmiYSHODxdZcCpo=
+>>>>>>> fix/get-kyc
 github.com/NpoolPlatform/cloud-hashing-billing v0.0.0-20220813093402-2273d71145f8 h1:Ja+SzJuKW+mz09jUUd5b6LBpbEy8o74DdSZ4aY1zy4M=
 github.com/NpoolPlatform/cloud-hashing-billing v0.0.0-20220813093402-2273d71145f8/go.mod h1:/nAiuTp/5o1jNOrpKPYlKuePAR3ARt+CtJqLHnRKkNI=
 github.com/NpoolPlatform/cloud-hashing-goods v0.0.0-20211224023221-a715aef93510/go.mod h1:YcH4tmsnOFfsFeBG6tqT6W5Z6yKvQA2W+b9RBhSAzMo=
@@ -96,8 +102,11 @@ github.com/NpoolPlatform/go-service-framework v0.0.0-20211222114515-4928e6cf3f1f
 github.com/NpoolPlatform/go-service-framework v0.0.0-20220120091626-4e8035637592/go.mod h1:JqrktA7gNQe/Uprnr6DCs5UCFpheCZ30lDd0OkyRtC4=
 github.com/NpoolPlatform/go-service-framework v0.0.0-20220818105452-9457611ae070 h1:BARdOYP/2s4Oxk7GnM0oXw5oSGevx2TZL+wPfgPz7Nc=
 github.com/NpoolPlatform/go-service-framework v0.0.0-20220818105452-9457611ae070/go.mod h1:QPI3Fu/AU5iUOUnf9EictZP1lqPQdPcVLqveIB2HovI=
+<<<<<<< HEAD
+=======
 github.com/NpoolPlatform/kyc-management v0.0.0-20220716053838-1a0c1957144a h1:k8ejWQEadGmUcQkbZN/X7YF0iKWY0ZsTQh2PlROoq/M=
 github.com/NpoolPlatform/kyc-management v0.0.0-20220716053838-1a0c1957144a/go.mod h1:Zdf1mQcER/oePPIFUvEUyqAXv02Wv8ONhv7iqEkVmhQ=
+>>>>>>> fix/get-kyc
 github.com/NpoolPlatform/ledger-gateway v0.0.0-20220813124620-9cbc5e1a2318 h1:ULbJwp5A0Jb7R7dmCTe//e72THxlLYOxI0IBto74k7w=
 github.com/NpoolPlatform/ledger-gateway v0.0.0-20220813124620-9cbc5e1a2318/go.mod h1:4JtS+8j9tymkOTwFSTDqIKkoPCApiPh4d0sUyb0YzbQ=
 github.com/NpoolPlatform/ledger-manager v0.0.0-20220810080525-bffa7a839d30 h1:EYuaZgp4UvWwfKekiHVUTOM8/ywL2Q83X353Nox25Js=
@@ -112,9 +121,14 @@ github.com/NpoolPlatform/message v0.0.0-20220120075427-38182760a780/go.mod h1:tn
 github.com/NpoolPlatform/message v0.0.0-20220121040326-31d316062cdc/go.mod h1:tnsf7zHQ5Mv2uG0ezOwCfm/bxluiRW10DeuIl4SjG4Y=
 github.com/NpoolPlatform/message v0.0.0-20220210124827-36110d474a7c/go.mod h1:r9cCQsBi8z8pljMAHa6sK6o2iXIG9tRpZ9idBxVpc44=
 github.com/NpoolPlatform/message v0.0.0-20220501030927-34f296682c0c/go.mod h1:i/F/sQWjQk44RGvfgEB0zH0oAK/0qLvgJ1AsJDZQDkk=
+<<<<<<< HEAD
+github.com/NpoolPlatform/message v0.0.0-20220819134247-1dc75c85fe43 h1:KSLzpe9dlq/CeOx+mUZKOSwuPrKg0JBCuy9CjSZW890=
+github.com/NpoolPlatform/message v0.0.0-20220819134247-1dc75c85fe43/go.mod h1:8YXp4MghMHLZ9bBdQQyfjcRtLI2RbEHAQoNCejT2nZU=
+=======
 github.com/NpoolPlatform/message v0.0.0-20220819134247-1dc75c85fe43/go.mod h1:8YXp4MghMHLZ9bBdQQyfjcRtLI2RbEHAQoNCejT2nZU=
 github.com/NpoolPlatform/message v0.0.0-20220829024818-f4092e1ecfde h1:VE2lCCCo5Zn8Yszhvjql1zXntKyesm2tQf133F0KjzE=
 github.com/NpoolPlatform/message v0.0.0-20220829024818-f4092e1ecfde/go.mod h1:8YXp4MghMHLZ9bBdQQyfjcRtLI2RbEHAQoNCejT2nZU=
+>>>>>>> fix/get-kyc
 github.com/NpoolPlatform/oracle-manager v0.0.0-20220805135435-75cd3e5baec5 h1:oiRkGjKBLYY33K0ryuHXY9c0RIv44g8uQrEQPn4FVrI=
 github.com/NpoolPlatform/oracle-manager v0.0.0-20220805135435-75cd3e5baec5/go.mod h1:f9Seypsw5N+Kc0P13IurAD/WNHXhzYsBt+d/R17oLfA=
 github.com/NpoolPlatform/review-service v0.0.0-20220826135931-2f311aae9cbd h1:0qa4gaXzBKydLrLvbnb1rQnIdW2+LpXyXdK8r0hJWGs=
@@ -513,6 +527,10 @@ github.com/mattn/go-sqlite3 v1.14.8/go.mod h1:NyWgC/yNuGj7Q9rpYnZvas74GogHl5/Z4A
 github.com/mattn/go-sqlite3 v1.14.10/go.mod h1:NyWgC/yNuGj7Q9rpYnZvas74GogHl5/Z4A/KQRfk6bU=
 github.com/mattn/go-sqlite3 v1.14.13 h1:1tj15ngiFfcZzii7yd82foL+ks+ouQcj8j/TPq3fk1I=
 github.com/mattn/go-sqlite3 v1.14.13/go.mod h1:NyWgC/yNuGj7Q9rpYnZvas74GogHl5/Z4A/KQRfk6bU=
+<<<<<<< HEAD
+github.com/matttproud/golang_protobuf_extensions v1.0.1 h1:4hp9jkHxhMHkqkrB3Ix0jegS5sx/RkqARlsWZ6pIwiU=
+=======
+>>>>>>> fix/get-kyc
 github.com/matttproud/golang_protobuf_extensions v1.0.1/go.mod h1:D8He9yQNgCq6Z5Ld7szi9bcBfOoFv/3dc6xSMkL2PC0=
 github.com/matttproud/golang_protobuf_extensions v1.0.2-0.20181231171920-c182affec369 h1:I0XW9+e1XWDxdcEniV4rQAIOPUGDq67JSCiRCgGCZLI=
 github.com/matttproud/golang_protobuf_extensions v1.0.2-0.20181231171920-c182affec369/go.mod h1:BSXmuO+STAnVfrANrmjBb36TMTDstsz7MSK+HVaYKv4=
@@ -1078,7 +1096,10 @@ golang.org/x/tools v0.1.3/go.mod h1:o0xws9oXOQQZyjljx8fwUC0k7L1pTE6eaCbjGeHmOkk=
 golang.org/x/tools v0.1.4/go.mod h1:o0xws9oXOQQZyjljx8fwUC0k7L1pTE6eaCbjGeHmOkk=
 golang.org/x/tools v0.1.5/go.mod h1:o0xws9oXOQQZyjljx8fwUC0k7L1pTE6eaCbjGeHmOkk=
 golang.org/x/tools v0.1.9-0.20211216111533-8d383106f7e7/go.mod h1:nABZi5QlRsZVlzPpHl034qft6wpY4eDcsTt5AaioBiU=
+<<<<<<< HEAD
+=======
 golang.org/x/tools v0.1.13-0.20220804200503-81c7dc4e4efa h1:uKcci2q7Qtp6nMTC/AAvfNUAldFtJuHWV9/5QWiypts=
+>>>>>>> fix/get-kyc
 golang.org/x/tools v0.1.13-0.20220804200503-81c7dc4e4efa/go.mod h1:hNGJHUnrk76NpqgfD5Aqm5Crs+Hm0VOH/i9J2+nxYbc=
 golang.org/x/xerrors v0.0.0-20190717185122-a985d3407aa7/go.mod h1:I/5z698sn9Ka8TeJc9MKroUUfqBBauWjQqLJ2OPfmY0=
 golang.org/x/xerrors v0.0.0-20191011141410-1b5146add898/go.mod h1:I/5z698sn9Ka8TeJc9MKroUUfqBBauWjQqLJ2OPfmY0=
