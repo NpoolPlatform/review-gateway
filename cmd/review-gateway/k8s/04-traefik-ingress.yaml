@@ -57,14 +57,36 @@ spec:
     - host: api.npool.top
       http: &http_rules
         paths:
-          - path: /api/review/v2/get
+          - path: /api/review/v2/get/kycreviews
             backend:
               serviceName: review-gateway
               servicePort: 50450
-          ######
-          # Enable for app admin
-          ######
-          - path: /api/review/v2/update
+          - path: /api/review/v2/get/app/kycreviews
+            backend:
+              serviceName: review-gateway
+              servicePort: 50450
+          - path: /api/review/v2/update/kycreview
+            backend:
+              serviceName: review-gateway
+              servicePort: 50450
+          - path: /api/review/v2/update/app/kycreview
+            backend:
+              serviceName: review-gateway
+              servicePort: 50450
+
+          - path: /api/review/v2/get/withdrawreviews
+            backend:
+              serviceName: review-gateway
+              servicePort: 50450
+          - path: /api/review/v2/get/app/withdrawreviews
+            backend:
+              serviceName: review-gateway
+              servicePort: 50450
+          - path: /api/review/v2/update/withdrawreview
+            backend:
+              serviceName: review-gateway
+              servicePort: 50450
+          - path: /api/review/v2/update/app/withdrawreview
             backend:
               serviceName: review-gateway
               servicePort: 50450
