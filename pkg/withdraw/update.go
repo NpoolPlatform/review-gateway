@@ -74,7 +74,7 @@ func UpdateWithdrawReview(
 		return nil, fmt.Errorf("kyc review not created")
 	}
 
-	if kyc[0].ReviewState != reviewmgrpb.ReviewState_Approved {
+	if kyc[0].State != kycpb.KycState_Approved {
 		return nil, fmt.Errorf("kyc review not approved")
 	}
 
