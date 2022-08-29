@@ -5,9 +5,14 @@ import (
 	"fmt"
 	"time"
 
+	kyccli "github.com/NpoolPlatform/appuser-manager/pkg/client/kyc"
+	"github.com/NpoolPlatform/libent-cruder/pkg/cruder"
+	"github.com/NpoolPlatform/message/npool"
+	kycpb "github.com/NpoolPlatform/message/npool/appuser/mgr/v2/kyc"
+
 	"github.com/shopspring/decimal"
 
-	npool "github.com/NpoolPlatform/message/npool/review/gw/v2/withdraw"
+	"github.com/NpoolPlatform/message/npool/review/gw/v2/withdraw"
 	reviewmgrpb "github.com/NpoolPlatform/message/npool/review/mgr/v2"
 
 	withdrawmgrcli "github.com/NpoolPlatform/ledger-manager/pkg/client/withdraw"
@@ -37,7 +42,7 @@ func UpdateWithdrawReview(
 	state reviewmgrpb.ReviewState,
 	message string,
 ) (
-	*npool.WithdrawReview, error,
+	*withdraw.WithdrawReview, error,
 ) {
 	objID, err := review1.ValidateReview(ctx, id, appID, reviewerAppID, reviewerID, state)
 	if err != nil {
@@ -56,7 +61,23 @@ func UpdateWithdrawReview(
 		return nil, fmt.Errorf("not reviewing")
 	}
 
-	// TODO: get user kyc state
+	kyc, _, err := kyccli.GetKycs(ctx, &kycpb.Conds{
+		UserID: &npool.StringVal{
+			Op:    cruder.EQ,
+			Value: w.UserID,
+		},
+	}, 0, 1)
+	if err != nil {
+		return nil, err
+	}
+	if len(kyc) == 0 {
+		return nil, fmt.Errorf("kyc review not created")
+	}
+
+	if kyc[0].State != kycpb.KycState_Approved {
+		return nil, fmt.Errorf("kyc review not approved")
+	}
+
 	// TODO: make sure review state and withdraw state integrity
 
 	switch state {
@@ -79,8 +100,8 @@ func UpdateWithdrawReview(
 	return GetWithdrawReview(ctx, id)
 }
 
-func reject(ctx context.Context, withdraw *withdrawmgrpb.Withdraw) error {
-	unlocked, err := decimal.NewFromString(withdraw.Amount)
+func reject(ctx context.Context, withdrawInfo *withdrawmgrpb.Withdraw) error {
+	unlocked, err := decimal.NewFromString(withdrawInfo.Amount)
 	if err != nil {
 		return err
 	}
@@ -90,13 +111,13 @@ func reject(ctx context.Context, withdraw *withdrawmgrpb.Withdraw) error {
 
 	if err := ledgermwcli.UnlockBalance(
 		ctx,
-		withdraw.AppID, withdraw.UserID, withdraw.CoinTypeID,
+		withdrawInfo.AppID, withdrawInfo.UserID, withdrawInfo.CoinTypeID,
 		ledgerdetailmgrpb.IOSubType_Withdrawal,
 		unlocked, decimal.NewFromInt(0),
 		fmt.Sprintf(
 			`{"WithdrawID":"%v","AccountID":"%v"}`,
-			withdraw.ID,
-			withdraw.AccountID,
+			withdrawInfo.ID,
+			withdrawInfo.AccountID,
 		),
 	); err != nil {
 		return err
@@ -104,7 +125,7 @@ func reject(ctx context.Context, withdraw *withdrawmgrpb.Withdraw) error {
 
 	// Update withdraw state
 	u := &withdrawmgrpb.WithdrawReq{
-		ID:    &withdraw.ID,
+		ID:    &withdrawInfo.ID,
 		State: &state,
 	}
 	_, err = withdrawmgrcli.UpdateWithdraw(ctx, u)
