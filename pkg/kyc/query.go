@@ -75,13 +75,7 @@ func GetkycReviews(ctx context.Context, appID string, offset, limit int32) ([]*n
 
 	infos := []*npool.KycReview{}
 	for _, kyc := range kycs {
-		rv := &reviewpb.Review{
-			ID:       "",
-			ObjectID: "",
-			Domain:   "",
-			Message:  "",
-			CreateAt: 0,
-		}
+		rv := &reviewpb.Review{}
 
 		state := reviewmgrpb.ReviewState_DefaultReviewState
 		trigger := reviewmgrpb.ReviewTriggerType_DefaultTriggerType
@@ -129,11 +123,7 @@ func GetkycReviews(ctx context.Context, appID string, offset, limit int32) ([]*n
 			}
 		}
 
-		user := &userpb.User{
-			ID:           "",
-			EmailAddress: "",
-			PhoneNO:      "",
-		}
+		user := &userpb.User{}
 		userM, ok := userMap[kyc.UserID]
 		if ok {
 			user = userM
