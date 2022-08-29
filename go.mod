@@ -4,7 +4,7 @@ go 1.17
 
 require (
 	github.com/NpoolPlatform/api-manager v0.0.0-20220826022307-d72866fe3ec0
-	github.com/NpoolPlatform/appuser-gateway v0.0.9
+	github.com/NpoolPlatform/appuser-gateway v0.0.6-0.20220828042118-89808c8705fb
 	github.com/NpoolPlatform/appuser-manager v0.0.0-20220829023336-2041fdaab4cd
 	github.com/NpoolPlatform/appuser-middleware v0.0.0-20220829071341-b6736e2c1c01
 	github.com/NpoolPlatform/cloud-hashing-apis v0.0.0-20220828063318-667ea182fc42
