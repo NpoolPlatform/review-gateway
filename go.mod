@@ -15,7 +15,7 @@ require (
 	github.com/NpoolPlatform/ledger-manager v0.0.0-20220810080525-bffa7a839d30
 	github.com/NpoolPlatform/ledger-middleware v0.0.0-20220811054139-8ee942532891
 	github.com/NpoolPlatform/libent-cruder v0.0.0-20220821121920-9559f5776d15
-	github.com/NpoolPlatform/message v0.0.0-20220829153402-b57228248008
+	github.com/NpoolPlatform/message v0.0.0-20220830080959-19d175a2ed94
 	github.com/NpoolPlatform/oracle-manager v0.0.0-20220805135435-75cd3e5baec5
 	github.com/NpoolPlatform/review-service v0.0.0-20220826135931-2f311aae9cbd
 	github.com/NpoolPlatform/sphinx-coininfo v0.0.0-20220731103603-21004f4341dc
