@@ -8,6 +8,7 @@ import (
 	reviewmgrpb "github.com/NpoolPlatform/message/npool/review/mgr/v2"
 
 	kycmgrcli "github.com/NpoolPlatform/appuser-manager/pkg/client/kyc"
+	kycmgrpb "github.com/NpoolPlatform/message/npool/appuser/mgr/v2/kyc"
 	review1 "github.com/NpoolPlatform/review-gateway/pkg/review"
 )
 
@@ -36,5 +37,17 @@ func UpdateKycReview(
 		return nil, err
 	}
 
+	kycState := kycmgrpb.KycState_Approved
+	if state == reviewmgrpb.ReviewState_Rejected {
+		kycState = kycmgrpb.KycState_Rejected
+	}
+
+	_, err = kycmgrcli.UpdateKyc(ctx, &kycmgrpb.KycReq{
+		ID:    &objID,
+		State: &kycState,
+	})
+	if err != nil {
+		return nil, err
+	}
 	return GetKycReview(ctx, id)
 }

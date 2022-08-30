@@ -78,7 +78,6 @@ func GetkycReviews(ctx context.Context, appID string, offset, limit int32) ([]*n
 		rv := &reviewpb.Review{}
 
 		state := reviewmgrpb.ReviewState_DefaultReviewState
-		trigger := reviewmgrpb.ReviewTriggerType_DefaultTriggerType
 
 		rvM, ok := rvMap[kyc.ID]
 		if ok {
@@ -99,25 +98,6 @@ func GetkycReviews(ctx context.Context, appID string, offset, limit int32) ([]*n
 				state = reviewmgrpb.ReviewState_Wait
 			default:
 				logger.Sugar().Warnw("GetKycReviews", "State", rv.State)
-			}
-
-			switch rv.Trigger {
-			case "large amount":
-				fallthrough // nolint
-			case reviewmgrpb.ReviewTriggerType_LargeAmount.String():
-				trigger = reviewmgrpb.ReviewTriggerType_LargeAmount
-			case "insufficient":
-				fallthrough // nolint
-			case reviewmgrpb.ReviewTriggerType_InsufficientFunds.String():
-				trigger = reviewmgrpb.ReviewTriggerType_InsufficientFunds
-			case "auto review":
-				fallthrough // nolint
-			case reviewmgrpb.ReviewTriggerType_AutoReviewed.String():
-				trigger = reviewmgrpb.ReviewTriggerType_AutoReviewed
-			case reviewmgrpb.ReviewTriggerType_InsufficientGas.String():
-				trigger = reviewmgrpb.ReviewTriggerType_InsufficientGas
-			default:
-				logger.Sugar().Warnw("GetKycReviews", "Trigger", rv.Trigger)
 			}
 		}
 
@@ -142,8 +122,8 @@ func GetkycReviews(ctx context.Context, appID string, offset, limit int32) ([]*n
 			ObjectType:   rv.ObjectID,
 			Domain:       rv.Domain,
 			Reviewer:     "TODO: to be filled",
-			State:        state,
-			Trigger:      trigger,
+			ReviewState:  state,
+			KycState:     kyc.State,
 			Message:      rv.Message,
 			CreatedAt:    rv.CreateAt,
 			UpdatedAt:    rv.CreateAt,
@@ -218,7 +198,8 @@ func GetKycReview(ctx context.Context, reviewID string) (*npool.KycReview, error
 		ObjectType:   rv.ObjectType,
 		Domain:       rv.Domain,
 		Reviewer:     "TODO: to be filled",
-		State:        state,
+		ReviewState:  state,
+		KycState:     kyc.State,
 		Message:      rv.Message,
 		CreatedAt:    rv.CreateAt,
 		UpdatedAt:    rv.CreateAt,
