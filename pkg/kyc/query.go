@@ -55,7 +55,7 @@ func GetkycReviews(ctx context.Context, appID string, offset, limit int32) ([]*n
 
 	rvMap := map[string]*reviewpb.Review{}
 	for _, rv := range rvs {
-		rvMap[rv.ObjectID] = rv
+		rvMap[rv.ID] = rv
 	}
 
 	uids := []string{}
@@ -79,7 +79,7 @@ func GetkycReviews(ctx context.Context, appID string, offset, limit int32) ([]*n
 
 		state := reviewmgrpb.ReviewState_DefaultReviewState
 
-		rvM, ok := rvMap[kyc.ID]
+		rvM, ok := rvMap[kyc.ReviewID]
 		if ok {
 			rv = rvM
 
