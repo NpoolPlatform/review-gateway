@@ -4,25 +4,26 @@ import (
 	"context"
 	"fmt"
 
+	coininfocli "github.com/NpoolPlatform/chain-middleware/pkg/client/coin"
+
 	npool "github.com/NpoolPlatform/message/npool/review/gw/v2/withdraw"
 
 	usercli "github.com/NpoolPlatform/appuser-middleware/pkg/client/user"
+	appcoininfocli "github.com/NpoolPlatform/chain-middleware/pkg/client/appcoin"
 	billingcli "github.com/NpoolPlatform/cloud-hashing-billing/pkg/client"
 	withdrawcli "github.com/NpoolPlatform/ledger-manager/pkg/client/withdraw"
 	reviewcli "github.com/NpoolPlatform/review-service/pkg/client"
-	coininfocli "github.com/NpoolPlatform/sphinx-coininfo/pkg/client"
 
 	billingconst "github.com/NpoolPlatform/cloud-hashing-billing/pkg/message/const"
 	ledgerconst "github.com/NpoolPlatform/ledger-gateway/pkg/message/const"
 
+	commonpb "github.com/NpoolPlatform/message/npool"
 	userpb "github.com/NpoolPlatform/message/npool/appuser/mw/v1/user"
+	appcoinpb "github.com/NpoolPlatform/message/npool/chain/mw/v1/appcoin"
 	billingpb "github.com/NpoolPlatform/message/npool/cloud-hashing-billing"
-	coininfopb "github.com/NpoolPlatform/message/npool/coininfo"
 	withdrawmgrpb "github.com/NpoolPlatform/message/npool/ledger/mgr/v1/ledger/withdraw"
 	reviewpb "github.com/NpoolPlatform/message/npool/review-service"
 	reviewmgrpb "github.com/NpoolPlatform/message/npool/review/mgr/v2"
-
-	commonpb "github.com/NpoolPlatform/message/npool"
 
 	cruder "github.com/NpoolPlatform/libent-cruder/pkg/cruder"
 )
@@ -61,12 +62,26 @@ func GetWithdrawReviews(ctx context.Context, appID string, offset, limit int32) 
 		rvMap[rv.ObjectID] = rv
 	}
 
-	coins, err := coininfocli.GetCoinInfos(ctx, cruder.NewFilterConds())
+	coinTypeIDs := []string{}
+	for _, val := range withdraws {
+		coinTypeIDs = append(coinTypeIDs, val.CoinTypeID)
+	}
+
+	coins, _, err := appcoininfocli.GetCoins(ctx, &appcoinpb.Conds{
+		AppID: &commonpb.StringVal{
+			Op:    cruder.EQ,
+			Value: appID,
+		},
+		CoinTypeIDs: &commonpb.StringSliceVal{
+			Op:    cruder.EQ,
+			Value: coinTypeIDs,
+		},
+	}, 0, int32(len(coinTypeIDs)))
 	if err != nil {
 		return nil, 0, err
 	}
 
-	coinMap := map[string]*coininfopb.CoinInfo{}
+	coinMap := map[string]*appcoinpb.Coin{}
 	for _, coin := range coins {
 		coinMap[coin.ID] = coin
 	}
@@ -261,7 +276,7 @@ func GetWithdrawReview(ctx context.Context, reviewID string) (*npool.WithdrawRev
 		return nil, fmt.Errorf("invalid trigger")
 	}
 
-	coin, err := coininfocli.GetCoinInfo(ctx, withdraw.CoinTypeID)
+	coin, err := coininfocli.GetCoin(ctx, withdraw.CoinTypeID)
 	if err != nil {
 		return nil, err
 	}

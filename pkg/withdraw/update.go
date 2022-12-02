@@ -24,7 +24,7 @@ import (
 	billingcli "github.com/NpoolPlatform/cloud-hashing-billing/pkg/client"
 	billingpb "github.com/NpoolPlatform/message/npool/cloud-hashing-billing"
 
-	coininfocli "github.com/NpoolPlatform/sphinx-coininfo/pkg/client"
+	coininfocli "github.com/NpoolPlatform/chain-middleware/pkg/client/coin"
 
 	sphinxproxypb "github.com/NpoolPlatform/message/npool/sphinxproxy"
 	sphinxproxycli "github.com/NpoolPlatform/sphinx-proxy/pkg/client"
@@ -156,7 +156,7 @@ func approve(ctx context.Context, withdraw *withdrawmgrpb.Withdraw) error {
 	}
 
 	// Check hot wallet balance
-	coin, err := coininfocli.GetCoinInfo(ctx, withdraw.CoinTypeID)
+	coin, err := coininfocli.GetCoin(ctx, withdraw.CoinTypeID)
 	if err != nil {
 		return err
 	}
