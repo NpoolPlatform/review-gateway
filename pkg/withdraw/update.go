@@ -3,11 +3,8 @@ package withdraw
 import (
 	"context"
 	"fmt"
-	"time"
 
 	kyccli "github.com/NpoolPlatform/appuser-manager/pkg/client/kyc"
-	"github.com/NpoolPlatform/libent-cruder/pkg/cruder"
-	"github.com/NpoolPlatform/message/npool"
 	kycpb "github.com/NpoolPlatform/message/npool/appuser/mgr/v2/kyc"
 
 	"github.com/shopspring/decimal"
@@ -21,19 +18,29 @@ import (
 	ledgermwcli "github.com/NpoolPlatform/ledger-middleware/pkg/client/ledger"
 	ledgerdetailmgrpb "github.com/NpoolPlatform/message/npool/ledger/mgr/v1/ledger/detail"
 
-	billingcli "github.com/NpoolPlatform/cloud-hashing-billing/pkg/client"
-	billingpb "github.com/NpoolPlatform/message/npool/cloud-hashing-billing"
+	useraccmwcli "github.com/NpoolPlatform/account-middleware/pkg/client/user"
+	useraccmwpb "github.com/NpoolPlatform/message/npool/account/mw/v1/user"
 
-	coininfocli "github.com/NpoolPlatform/chain-middleware/pkg/client/coin"
+	appcoinmwcli "github.com/NpoolPlatform/chain-middleware/pkg/client/appcoin"
+	appcoinmwpb "github.com/NpoolPlatform/message/npool/chain/mw/v1/appcoin"
+
+	pltfaccmwcli "github.com/NpoolPlatform/account-middleware/pkg/client/platform"
+	pltfaccmwpb "github.com/NpoolPlatform/message/npool/account/mw/v1/platform"
+
+	accountmgrpb "github.com/NpoolPlatform/message/npool/account/mgr/v1/account"
+
+	txmwcli "github.com/NpoolPlatform/chain-middleware/pkg/client/tx"
+	txmgrpb "github.com/NpoolPlatform/message/npool/chain/mgr/v1/tx"
+
+	"github.com/NpoolPlatform/libent-cruder/pkg/cruder"
+	commonpb "github.com/NpoolPlatform/message/npool"
+
+	currvalmwcli "github.com/NpoolPlatform/chain-middleware/pkg/client/coin/currency/value"
 
 	sphinxproxypb "github.com/NpoolPlatform/message/npool/sphinxproxy"
 	sphinxproxycli "github.com/NpoolPlatform/sphinx-proxy/pkg/client"
 
-	currency "github.com/NpoolPlatform/oracle-manager/pkg/middleware/currency"
-
 	review1 "github.com/NpoolPlatform/review-gateway/pkg/review"
-
-	"github.com/google/uuid"
 )
 
 func UpdateWithdrawReview(
@@ -62,7 +69,7 @@ func UpdateWithdrawReview(
 	}
 
 	kyc, err := kyccli.GetKycOnly(ctx, &kycpb.Conds{
-		UserID: &npool.StringVal{
+		UserID: &commonpb.StringVal{
 			Op:    cruder.EQ,
 			Value: w.UserID,
 		},
@@ -134,17 +141,20 @@ func reject(ctx context.Context, withdrawInfo *withdrawmgrpb.Withdraw) error {
 
 // nolint
 func approve(ctx context.Context, withdraw *withdrawmgrpb.Withdraw) error {
-	// Check account
-	account, err := billingcli.GetAccount(ctx, withdraw.AccountID)
-	if err != nil {
-		return err
-	}
-	if account == nil {
-		return fmt.Errorf("invalid account")
-	}
-
-	// Check account is belong to user and used for withdraw
-	wa, err := billingcli.GetWithdrawAccount(ctx, withdraw.AccountID)
+	wa, err := useraccmwcli.GetAccountOnly(ctx, &useraccmwpb.Conds{
+		AppID: &commonpb.StringVal{
+			Op:    cruder.EQ,
+			Value: withdraw.AppID,
+		},
+		AccountID: &commonpb.StringVal{
+			Op:    cruder.EQ,
+			Value: withdraw.AccountID,
+		},
+		UsedFor: &commonpb.Int32Val{
+			Op:    cruder.EQ,
+			Value: int32(accountmgrpb.AccountUsedFor_UserWithdraw),
+		},
+	})
 	if err != nil {
 		return err
 	}
@@ -154,9 +164,20 @@ func approve(ctx context.Context, withdraw *withdrawmgrpb.Withdraw) error {
 	if wa.AppID != withdraw.AppID || wa.UserID != withdraw.UserID {
 		return fmt.Errorf("invalid user withdraw account")
 	}
+	if wa.CoinTypeID != withdraw.CoinTypeID {
+		return fmt.Errorf("invalid coin")
+	}
 
-	// Check hot wallet balance
-	coin, err := coininfocli.GetCoin(ctx, withdraw.CoinTypeID)
+	coin, err := appcoinmwcli.GetCoinOnly(ctx, &appcoinmwpb.Conds{
+		AppID: &commonpb.StringVal{
+			Op:    cruder.EQ,
+			Value: withdraw.AppID,
+		},
+		CoinTypeID: &commonpb.StringVal{
+			Op:    cruder.EQ,
+			Value: withdraw.CoinTypeID,
+		},
+	})
 	if err != nil {
 		return err
 	}
@@ -164,20 +185,21 @@ func approve(ctx context.Context, withdraw *withdrawmgrpb.Withdraw) error {
 		return fmt.Errorf("invalid coin")
 	}
 
-	cs, err := billingcli.GetCoinSetting(ctx, coin.ID)
-	if err != nil {
-		return err
-	}
-	if cs == nil {
-		return fmt.Errorf("invalid coin setting")
-	}
-
-	hotacc, err := billingcli.GetAccount(ctx, cs.UserOnlineAccountID)
+	hotacc, err := pltfaccmwcli.GetAccountOnly(ctx, &pltfaccmwpb.Conds{
+		CoinTypeID: &commonpb.StringVal{
+			Op:    cruder.EQ,
+			Value: withdraw.CoinTypeID,
+		},
+		UsedFor: &commonpb.Int32Val{
+			Op:    cruder.EQ,
+			Value: int32(accountmgrpb.AccountUsedFor_UserBenefitHot),
+		},
+	})
 	if err != nil {
 		return err
 	}
 	if hotacc == nil {
-		return fmt.Errorf("invalid account")
+		return fmt.Errorf("invalid hot account")
 	}
 
 	bal, err := sphinxproxycli.GetBalance(ctx, &sphinxproxypb.GetBalanceRequest{
@@ -198,27 +220,43 @@ func approve(ctx context.Context, withdraw *withdrawmgrpb.Withdraw) error {
 		return fmt.Errorf("insufficient funds")
 	}
 
-	price, err := currency.USDPrice(ctx, coin.Name)
+	feeAmount, err := decimal.NewFromString(coin.WithdrawFeeAmount)
 	if err != nil {
 		return err
 	}
-	if price <= 0 {
-		return fmt.Errorf("invalid coin price")
+
+	if coin.WithdrawFeeByStableUSD {
+		curr, err := currvalmwcli.GetCoinCurrency(ctx, withdraw.CoinTypeID)
+		if err != nil {
+			return err
+		}
+		if curr == nil {
+			return fmt.Errorf("invalid coin currency")
+		}
+
+		val, err := decimal.NewFromString(curr.MarketValueLow)
+		if err != nil {
+			return err
+		}
+
+		feeAmount = val
 	}
 
-	const feeUSDAmount = 2
-	feeAmount := feeUSDAmount / price
+	amountS := amount.String()
+	feeAmountS := feeAmount.String()
+	txType := txmgrpb.TxType_TxWithdraw
+	txExtra := fmt.Sprintf("{\"AppID\":\"%v\",\"UserID\":\"%v\"}",
+		withdraw.AppID,
+		withdraw.UserID)
 
-	tx, err := billingcli.CreateTransaction(ctx, &billingpb.CoinAccountTransaction{
-		AppID:          withdraw.AppID,
-		UserID:         withdraw.UserID,
-		CoinTypeID:     withdraw.CoinTypeID,
-		GoodID:         uuid.UUID{}.String(),
-		FromAddressID:  hotacc.ID,
-		ToAddressID:    account.ID,
-		Amount:         amount.InexactFloat64(),
-		TransactionFee: feeAmount,
-		Message:        fmt.Sprintf("user withdraw at %v", time.Now()),
+	tx, err := txmwcli.CreateTx(ctx, &txmgrpb.TxReq{
+		CoinTypeID:    &withdraw.CoinTypeID,
+		FromAccountID: &hotacc.ID,
+		ToAccountID:   &withdraw.AccountID,
+		Amount:        &amountS,
+		FeeAmount:     &feeAmountS,
+		Extra:         &txExtra,
+		Type:          &txType,
 	})
 	if err != nil {
 		return err

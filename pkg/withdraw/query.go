@@ -10,17 +10,19 @@ import (
 
 	usercli "github.com/NpoolPlatform/appuser-middleware/pkg/client/user"
 	appcoininfocli "github.com/NpoolPlatform/chain-middleware/pkg/client/appcoin"
-	billingcli "github.com/NpoolPlatform/cloud-hashing-billing/pkg/client"
 	withdrawcli "github.com/NpoolPlatform/ledger-manager/pkg/client/withdraw"
 	reviewcli "github.com/NpoolPlatform/review-service/pkg/client"
 
-	billingconst "github.com/NpoolPlatform/cloud-hashing-billing/pkg/message/const"
+	useraccmwcli "github.com/NpoolPlatform/account-middleware/pkg/client/user"
+	useraccmwpb "github.com/NpoolPlatform/message/npool/account/mw/v1/user"
+
+	accountmgrpb "github.com/NpoolPlatform/message/npool/account/mgr/v1/account"
+
 	ledgerconst "github.com/NpoolPlatform/ledger-gateway/pkg/message/const"
 
 	commonpb "github.com/NpoolPlatform/message/npool"
 	userpb "github.com/NpoolPlatform/message/npool/appuser/mw/v1/user"
 	appcoinpb "github.com/NpoolPlatform/message/npool/chain/mw/v1/appcoin"
-	billingpb "github.com/NpoolPlatform/message/npool/cloud-hashing-billing"
 	withdrawmgrpb "github.com/NpoolPlatform/message/npool/ledger/mgr/v1/ledger/withdraw"
 	reviewpb "github.com/NpoolPlatform/message/npool/review-service"
 	reviewmgrpb "github.com/NpoolPlatform/message/npool/review/mgr/v2"
@@ -44,18 +46,11 @@ func GetWithdrawReviews(ctx context.Context, appID string, offset, limit int32) 
 		return nil, 0, nil
 	}
 
-	rvs, err := reviewcli.GetDomainReviews(ctx, appID, billingconst.ServiceName, "withdraw")
-	if err != nil {
-		//return nil, 0, err
-	}
-
-	rvs1, err := reviewcli.GetDomainReviews(ctx, appID, ledgerconst.ServiceName,
+	rvs, err := reviewcli.GetDomainReviews(ctx, appID, ledgerconst.ServiceName,
 		reviewmgrpb.ReviewObjectType_ObjectWithdrawal.String())
 	if err != nil {
 		return nil, 0, err
 	}
-
-	rvs = append(rvs, rvs1...)
 
 	rvMap := map[string]*reviewpb.Review{}
 	for _, rv := range rvs {
@@ -101,12 +96,22 @@ func GetWithdrawReviews(ctx context.Context, appID string, offset, limit int32) 
 		userMap[user.ID] = user
 	}
 
-	accounts, err := billingcli.GetAccounts(ctx)
+	ids := []string{}
+	for _, w := range withdraws {
+		ids = append(ids, w.AccountID)
+	}
+
+	accounts, _, err := useraccmwcli.GetAccounts(ctx, &useraccmwpb.Conds{
+		AccountIDs: &commonpb.StringSliceVal{
+			Op:    cruder.IN,
+			Value: ids,
+		},
+	}, 0, int32(len(ids)))
 	if err != nil {
 		return nil, 0, err
 	}
 
-	accMap := map[string]*billingpb.CoinAccountInfo{}
+	accMap := map[string]*useraccmwpb.Account{}
 	for _, acc := range accounts {
 		accMap[acc.ID] = acc
 	}
@@ -284,7 +289,20 @@ func GetWithdrawReview(ctx context.Context, reviewID string) (*npool.WithdrawRev
 		return nil, fmt.Errorf("invalid coin")
 	}
 
-	account, err := billingcli.GetAccount(ctx, withdraw.AccountID)
+	account, err := useraccmwcli.GetAccountOnly(ctx, &useraccmwpb.Conds{
+		AppID: &commonpb.StringVal{
+			Op:    cruder.EQ,
+			Value: withdraw.AppID,
+		},
+		AccountID: &commonpb.StringVal{
+			Op:    cruder.EQ,
+			Value: withdraw.AccountID,
+		},
+		UsedFor: &commonpb.Int32Val{
+			Op:    cruder.EQ,
+			Value: int32(accountmgrpb.AccountUsedFor_UserWithdraw),
+		},
+	})
 	if err != nil {
 		return nil, err
 	}
