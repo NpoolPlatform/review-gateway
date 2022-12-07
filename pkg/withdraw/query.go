@@ -68,7 +68,7 @@ func GetWithdrawReviews(ctx context.Context, appID string, offset, limit int32) 
 			Value: appID,
 		},
 		CoinTypeIDs: &commonpb.StringSliceVal{
-			Op:    cruder.EQ,
+			Op:    cruder.IN,
 			Value: coinTypeIDs,
 		},
 	}, 0, int32(len(coinTypeIDs)))
@@ -78,7 +78,7 @@ func GetWithdrawReviews(ctx context.Context, appID string, offset, limit int32) 
 
 	coinMap := map[string]*appcoinpb.Coin{}
 	for _, coin := range coins {
-		coinMap[coin.ID] = coin
+		coinMap[coin.CoinTypeID] = coin
 	}
 
 	uids := []string{}
