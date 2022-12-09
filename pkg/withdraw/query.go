@@ -4,6 +4,8 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/NpoolPlatform/go-service-framework/pkg/logger"
+
 	coininfocli "github.com/NpoolPlatform/chain-middleware/pkg/client/coin"
 
 	npool "github.com/NpoolPlatform/message/npool/review/gw/v2/withdraw"
@@ -125,7 +127,8 @@ func GetWithdrawReviews(ctx context.Context, appID string, offset, limit int32) 
 
 		coin, ok := coinMap[withdraw.CoinTypeID]
 		if !ok {
-			return nil, 0, fmt.Errorf("invalid coin")
+			logger.Sugar().Warnw("app coin not exist", "AppID", withdraw.AppID, "CoinTypeID", withdraw.CoinTypeID)
+			continue
 		}
 
 		user, ok := userMap[withdraw.UserID]
