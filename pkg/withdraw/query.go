@@ -115,7 +115,7 @@ func GetWithdrawReviews(ctx context.Context, appID string, offset, limit int32) 
 
 	accMap := map[string]*useraccmwpb.Account{}
 	for _, acc := range accounts {
-		accMap[acc.ID] = acc
+		accMap[acc.AccountID] = acc
 	}
 
 	infos := []*npool.WithdrawReview{}
@@ -139,7 +139,7 @@ func GetWithdrawReviews(ctx context.Context, appID string, offset, limit int32) 
 
 		acc, ok := accMap[withdraw.AccountID]
 		if !ok {
-			logger.Sugar().Warnw("account not exist", "AppID", withdraw.AppID, "CoinTypeID", withdraw.AccountID)
+			logger.Sugar().Warnw("account not exist", "AppID", withdraw.AppID, "AccountID", withdraw.AccountID)
 			continue
 		}
 

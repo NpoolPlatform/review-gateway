@@ -146,7 +146,7 @@ func approve(ctx context.Context, withdraw *withdrawmgrpb.Withdraw) error {
 			Op:    cruder.EQ,
 			Value: withdraw.AppID,
 		},
-		AccountID: &commonpb.StringVal{
+		ID: &commonpb.StringVal{
 			Op:    cruder.EQ,
 			Value: withdraw.AccountID,
 		},
