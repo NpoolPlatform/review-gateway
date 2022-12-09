@@ -133,12 +133,14 @@ func GetWithdrawReviews(ctx context.Context, appID string, offset, limit int32) 
 
 		user, ok := userMap[withdraw.UserID]
 		if !ok {
-			return nil, 0, fmt.Errorf("invalid user")
+			logger.Sugar().Warnw("user not exist", "AppID", withdraw.AppID, "CoinTypeID", withdraw.UserID)
+			continue
 		}
 
 		acc, ok := accMap[withdraw.AccountID]
 		if !ok {
-			return nil, 0, fmt.Errorf("invalid account")
+			logger.Sugar().Warnw("account not exist", "AppID", withdraw.AppID, "CoinTypeID", withdraw.AccountID)
+			continue
 		}
 
 		// TODO: we need fill reviewer name, but we miss appid in reviews table
