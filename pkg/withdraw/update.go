@@ -264,16 +264,24 @@ func approve(ctx context.Context, withdraw *withdrawmgrpb.Withdraw) error {
 		if err != nil {
 			return err
 		}
+		if val.Cmp(decimal.NewFromInt(0) <= 0) {
+			return fmt.Errorf("invalid coin currency")
+		}
 
-		feeAmount = val
+		feeAmount = feeAmount.Div(val)
 	}
 
 	amountS := amount.String()
 	feeAmountS := feeAmount.String()
 	txType := txmgrpb.TxType_TxWithdraw
-	txExtra := fmt.Sprintf("{\"AppID\":\"%v\",\"UserID\":\"%v\"}",
+	txExtra := fmt.Sprintf(
+		`{"AppID":"%v","UserID":"%v","Address":"%v","CoinName":"%v","WithdrawID":"%v"}`,
 		withdraw.AppID,
-		withdraw.UserID)
+		withdraw.UserID,
+		wa.Address,
+		coin.Name,
+		withdraw.ID,
+	)
 
 	tx, err := txmwcli.CreateTx(ctx, &txmgrpb.TxReq{
 		CoinTypeID:    &withdraw.CoinTypeID,
