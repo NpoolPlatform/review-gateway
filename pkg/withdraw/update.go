@@ -264,7 +264,7 @@ func approve(ctx context.Context, withdraw *withdrawmgrpb.Withdraw) error {
 		if err != nil {
 			return err
 		}
-		if val.Cmp(decimal.NewFromInt(0) <= 0) {
+		if val.Cmp(decimal.NewFromInt(0)) <= 0 {
 			return fmt.Errorf("invalid coin currency")
 		}
 
