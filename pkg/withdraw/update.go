@@ -35,7 +35,7 @@ import (
 	"github.com/NpoolPlatform/libent-cruder/pkg/cruder"
 	commonpb "github.com/NpoolPlatform/message/npool"
 
-	currvalmwcli "github.com/NpoolPlatform/chain-middleware/pkg/client/coin/currency/value"
+	currvalmwcli "github.com/NpoolPlatform/chain-middleware/pkg/client/coin/currency"
 
 	sphinxproxypb "github.com/NpoolPlatform/message/npool/sphinxproxy"
 	sphinxproxycli "github.com/NpoolPlatform/sphinx-proxy/pkg/client"
@@ -69,6 +69,10 @@ func UpdateWithdrawReview(
 	}
 
 	kyc, err := kyccli.GetKycOnly(ctx, &kycpb.Conds{
+		AppID: &commonpb.StringVal{
+			Op:    cruder.EQ,
+			Value: w.AppID,
+		},
 		UserID: &commonpb.StringVal{
 			Op:    cruder.EQ,
 			Value: w.UserID,
@@ -146,7 +150,15 @@ func approve(ctx context.Context, withdraw *withdrawmgrpb.Withdraw) error {
 			Op:    cruder.EQ,
 			Value: withdraw.AppID,
 		},
-		ID: &commonpb.StringVal{
+		UserID: &commonpb.StringVal{
+			Op:    cruder.EQ,
+			Value: withdraw.UserID,
+		},
+		CoinTypeID: &commonpb.StringVal{
+			Op:    cruder.EQ,
+			Value: withdraw.CoinTypeID,
+		},
+		AccountID: &commonpb.StringVal{
 			Op:    cruder.EQ,
 			Value: withdraw.AccountID,
 		},
@@ -154,18 +166,20 @@ func approve(ctx context.Context, withdraw *withdrawmgrpb.Withdraw) error {
 			Op:    cruder.EQ,
 			Value: int32(accountmgrpb.AccountUsedFor_UserWithdraw),
 		},
+		Active: &commonpb.BoolVal{
+			Op:    cruder.EQ,
+			Value: true,
+		},
+		Blocked: &commonpb.BoolVal{
+			Op:    cruder.EQ,
+			Value: false,
+		},
 	})
 	if err != nil {
 		return err
 	}
 	if wa == nil {
 		return fmt.Errorf("invalid withdraw account")
-	}
-	if wa.AppID != withdraw.AppID || wa.UserID != withdraw.UserID {
-		return fmt.Errorf("invalid user withdraw account")
-	}
-	if wa.CoinTypeID != withdraw.CoinTypeID {
-		return fmt.Errorf("invalid coin")
 	}
 
 	coin, err := appcoinmwcli.GetCoinOnly(ctx, &appcoinmwpb.Conds{
@@ -193,6 +207,18 @@ func approve(ctx context.Context, withdraw *withdrawmgrpb.Withdraw) error {
 		UsedFor: &commonpb.Int32Val{
 			Op:    cruder.EQ,
 			Value: int32(accountmgrpb.AccountUsedFor_UserBenefitHot),
+		},
+		Backup: &commonpb.BoolVal{
+			Op:    cruder.EQ,
+			Value: false,
+		},
+		Active: &commonpb.BoolVal{
+			Op:    cruder.EQ,
+			Value: true,
+		},
+		Blocked: &commonpb.BoolVal{
+			Op:    cruder.EQ,
+			Value: false,
 		},
 	})
 	if err != nil {
