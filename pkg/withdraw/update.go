@@ -285,7 +285,7 @@ func approve(ctx context.Context, withdraw *withdrawmgrpb.Withdraw) error {
 
 	tx, err := txmwcli.CreateTx(ctx, &txmgrpb.TxReq{
 		CoinTypeID:    &withdraw.CoinTypeID,
-		FromAccountID: &hotacc.ID,
+		FromAccountID: &hotacc.AccountID,
 		ToAccountID:   &withdraw.AccountID,
 		Amount:        &amountS,
 		FeeAmount:     &feeAmountS,
