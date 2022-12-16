@@ -4,25 +4,30 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/NpoolPlatform/go-service-framework/pkg/logger"
+
+	coininfocli "github.com/NpoolPlatform/chain-middleware/pkg/client/coin"
+
 	npool "github.com/NpoolPlatform/message/npool/review/gw/v2/withdraw"
 
 	usercli "github.com/NpoolPlatform/appuser-middleware/pkg/client/user"
-	billingcli "github.com/NpoolPlatform/cloud-hashing-billing/pkg/client"
+	appcoininfocli "github.com/NpoolPlatform/chain-middleware/pkg/client/appcoin"
 	withdrawcli "github.com/NpoolPlatform/ledger-manager/pkg/client/withdraw"
 	reviewcli "github.com/NpoolPlatform/review-service/pkg/client"
-	coininfocli "github.com/NpoolPlatform/sphinx-coininfo/pkg/client"
 
-	billingconst "github.com/NpoolPlatform/cloud-hashing-billing/pkg/message/const"
+	useraccmwcli "github.com/NpoolPlatform/account-middleware/pkg/client/user"
+	useraccmwpb "github.com/NpoolPlatform/message/npool/account/mw/v1/user"
+
+	accountmgrpb "github.com/NpoolPlatform/message/npool/account/mgr/v1/account"
+
 	ledgerconst "github.com/NpoolPlatform/ledger-gateway/pkg/message/const"
 
+	commonpb "github.com/NpoolPlatform/message/npool"
 	userpb "github.com/NpoolPlatform/message/npool/appuser/mw/v1/user"
-	billingpb "github.com/NpoolPlatform/message/npool/cloud-hashing-billing"
-	coininfopb "github.com/NpoolPlatform/message/npool/coininfo"
+	appcoinpb "github.com/NpoolPlatform/message/npool/chain/mw/v1/appcoin"
 	withdrawmgrpb "github.com/NpoolPlatform/message/npool/ledger/mgr/v1/ledger/withdraw"
 	reviewpb "github.com/NpoolPlatform/message/npool/review-service"
 	reviewmgrpb "github.com/NpoolPlatform/message/npool/review/mgr/v2"
-
-	commonpb "github.com/NpoolPlatform/message/npool"
 
 	cruder "github.com/NpoolPlatform/libent-cruder/pkg/cruder"
 )
@@ -43,32 +48,39 @@ func GetWithdrawReviews(ctx context.Context, appID string, offset, limit int32) 
 		return nil, 0, nil
 	}
 
-	rvs, err := reviewcli.GetDomainReviews(ctx, appID, billingconst.ServiceName, "withdraw")
-	if err != nil {
-		//return nil, 0, err
-	}
-
-	rvs1, err := reviewcli.GetDomainReviews(ctx, appID, ledgerconst.ServiceName,
+	rvs, err := reviewcli.GetDomainReviews(ctx, appID, ledgerconst.ServiceName,
 		reviewmgrpb.ReviewObjectType_ObjectWithdrawal.String())
 	if err != nil {
 		return nil, 0, err
 	}
-
-	rvs = append(rvs, rvs1...)
 
 	rvMap := map[string]*reviewpb.Review{}
 	for _, rv := range rvs {
 		rvMap[rv.ObjectID] = rv
 	}
 
-	coins, err := coininfocli.GetCoinInfos(ctx, cruder.NewFilterConds())
+	coinTypeIDs := []string{}
+	for _, val := range withdraws {
+		coinTypeIDs = append(coinTypeIDs, val.CoinTypeID)
+	}
+
+	coins, _, err := appcoininfocli.GetCoins(ctx, &appcoinpb.Conds{
+		AppID: &commonpb.StringVal{
+			Op:    cruder.EQ,
+			Value: appID,
+		},
+		CoinTypeIDs: &commonpb.StringSliceVal{
+			Op:    cruder.IN,
+			Value: coinTypeIDs,
+		},
+	}, 0, int32(len(coinTypeIDs)))
 	if err != nil {
 		return nil, 0, err
 	}
 
-	coinMap := map[string]*coininfopb.CoinInfo{}
+	coinMap := map[string]*appcoinpb.Coin{}
 	for _, coin := range coins {
-		coinMap[coin.ID] = coin
+		coinMap[coin.CoinTypeID] = coin
 	}
 
 	uids := []string{}
@@ -86,14 +98,24 @@ func GetWithdrawReviews(ctx context.Context, appID string, offset, limit int32) 
 		userMap[user.ID] = user
 	}
 
-	accounts, err := billingcli.GetAccounts(ctx)
+	ids := []string{}
+	for _, w := range withdraws {
+		ids = append(ids, w.AccountID)
+	}
+
+	accounts, _, err := useraccmwcli.GetAccounts(ctx, &useraccmwpb.Conds{
+		AccountIDs: &commonpb.StringSliceVal{
+			Op:    cruder.IN,
+			Value: ids,
+		},
+	}, 0, int32(len(ids)))
 	if err != nil {
 		return nil, 0, err
 	}
 
-	accMap := map[string]*billingpb.CoinAccountInfo{}
+	accMap := map[string]*useraccmwpb.Account{}
 	for _, acc := range accounts {
-		accMap[acc.ID] = acc
+		accMap[acc.AccountID] = acc
 	}
 
 	infos := []*npool.WithdrawReview{}
@@ -105,17 +127,20 @@ func GetWithdrawReviews(ctx context.Context, appID string, offset, limit int32) 
 
 		coin, ok := coinMap[withdraw.CoinTypeID]
 		if !ok {
-			return nil, 0, fmt.Errorf("invalid coin")
+			logger.Sugar().Warnw("app coin not exist", "AppID", withdraw.AppID, "CoinTypeID", withdraw.CoinTypeID)
+			continue
 		}
 
 		user, ok := userMap[withdraw.UserID]
 		if !ok {
-			return nil, 0, fmt.Errorf("invalid user")
+			logger.Sugar().Warnw("user not exist", "AppID", withdraw.AppID, "CoinTypeID", withdraw.UserID)
+			continue
 		}
 
 		acc, ok := accMap[withdraw.AccountID]
 		if !ok {
-			return nil, 0, fmt.Errorf("invalid account")
+			logger.Sugar().Warnw("account not exist", "AppID", withdraw.AppID, "AccountID", withdraw.AccountID)
+			continue
 		}
 
 		// TODO: we need fill reviewer name, but we miss appid in reviews table
@@ -261,7 +286,7 @@ func GetWithdrawReview(ctx context.Context, reviewID string) (*npool.WithdrawRev
 		return nil, fmt.Errorf("invalid trigger")
 	}
 
-	coin, err := coininfocli.GetCoinInfo(ctx, withdraw.CoinTypeID)
+	coin, err := coininfocli.GetCoin(ctx, withdraw.CoinTypeID)
 	if err != nil {
 		return nil, err
 	}
@@ -269,7 +294,20 @@ func GetWithdrawReview(ctx context.Context, reviewID string) (*npool.WithdrawRev
 		return nil, fmt.Errorf("invalid coin")
 	}
 
-	account, err := billingcli.GetAccount(ctx, withdraw.AccountID)
+	account, err := useraccmwcli.GetAccountOnly(ctx, &useraccmwpb.Conds{
+		AppID: &commonpb.StringVal{
+			Op:    cruder.EQ,
+			Value: withdraw.AppID,
+		},
+		AccountID: &commonpb.StringVal{
+			Op:    cruder.EQ,
+			Value: withdraw.AccountID,
+		},
+		UsedFor: &commonpb.Int32Val{
+			Op:    cruder.EQ,
+			Value: int32(accountmgrpb.AccountUsedFor_UserWithdraw),
+		},
+	})
 	if err != nil {
 		return nil, err
 	}
