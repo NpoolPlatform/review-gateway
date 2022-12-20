@@ -7,19 +7,17 @@ import (
 	"github.com/NpoolPlatform/go-service-framework/pkg/logger"
 
 	appusergateway "github.com/NpoolPlatform/appuser-gateway/pkg/message/const"
-	kycmgrconst "github.com/NpoolPlatform/kyc-management/pkg/message/const"
-	reviewpb "github.com/NpoolPlatform/message/npool/review-service"
 	npool "github.com/NpoolPlatform/message/npool/review/gw/v2/kyc"
 
 	kyccli "github.com/NpoolPlatform/appuser-manager/pkg/client/kyc"
 	usercli "github.com/NpoolPlatform/appuser-middleware/pkg/client/user"
-	apisconstant "github.com/NpoolPlatform/cloud-hashing-apis/pkg/const"
 	cruder "github.com/NpoolPlatform/libent-cruder/pkg/cruder"
 	commonpb "github.com/NpoolPlatform/message/npool"
 	kycmgrpb "github.com/NpoolPlatform/message/npool/appuser/mgr/v2/kyc"
 	userpb "github.com/NpoolPlatform/message/npool/appuser/mw/v1/user"
-	reviewmgrpb "github.com/NpoolPlatform/message/npool/review/mgr/v2"
-	reviewcli "github.com/NpoolPlatform/review-service/pkg/client"
+	reviewpb "github.com/NpoolPlatform/message/npool/review/mgr/v2"
+	reviewcli "github.com/NpoolPlatform/review-manager/pkg/client/review"
+	reviewmwcli "github.com/NpoolPlatform/review-middleware/pkg/client/review"
 )
 
 // nolint
@@ -38,20 +36,21 @@ func GetkycReviews(ctx context.Context, appID string, offset, limit int32) ([]*n
 		return nil, 0, nil
 	}
 
-	rvs := []*reviewpb.Review{}
+	ids := []string{}
+	for _, k := range kycs {
+		ids = append(ids, k.ID)
+	}
 
-	rvs, err = reviewcli.GetDomainReviews(ctx, appID, appusergateway.ServiceName,
-		reviewmgrpb.ReviewObjectType_ObjectKyc.String())
+	rvs, err := reviewmwcli.GetObjectReviews(
+		ctx,
+		appID,
+		appusergateway.ServiceName,
+		ids,
+		reviewpb.ReviewObjectType_ObjectKyc,
+	)
 	if err != nil {
 		return nil, 0, err
 	}
-	rvs1, err := reviewcli.GetDomainReviews(ctx, appID, kycmgrconst.ServiceName,
-		apisconstant.ReviewObjectKyc)
-	if err != nil {
-		return nil, 0, err
-	}
-
-	rvs = append(rvs, rvs1...)
 
 	rvMap := map[string]*reviewpb.Review{}
 	for _, rv := range rvs {
@@ -77,25 +76,14 @@ func GetkycReviews(ctx context.Context, appID string, offset, limit int32) ([]*n
 	for _, kyc := range kycs {
 		rv := &reviewpb.Review{}
 
-		state := reviewmgrpb.ReviewState_DefaultReviewState
-
 		rvM, ok := rvMap[kyc.ReviewID]
 		if ok {
 			rv = rvM
 
 			switch rv.State {
-			case "approved":
-				fallthrough // nolint
-			case reviewmgrpb.ReviewState_Approved.String():
-				state = reviewmgrpb.ReviewState_Approved
-			case "rejected":
-				fallthrough // nolint
-			case reviewmgrpb.ReviewState_Rejected.String():
-				state = reviewmgrpb.ReviewState_Rejected
-			case "wait":
-				fallthrough // nolint
-			case reviewmgrpb.ReviewState_Wait.String():
-				state = reviewmgrpb.ReviewState_Wait
+			case reviewpb.ReviewState_Approved:
+			case reviewpb.ReviewState_Rejected:
+			case reviewpb.ReviewState_Wait:
 			default:
 				logger.Sugar().Warnw("GetKycReviews", "State", rv.State)
 			}
@@ -122,14 +110,14 @@ func GetkycReviews(ctx context.Context, appID string, offset, limit int32) ([]*n
 			SelfieImg:    kyc.SelfieImg,
 			EntityType:   kyc.EntityType,
 			ReviewID:     rv.ID,
-			ObjectType:   rv.ObjectID,
+			ObjectType:   rv.ObjectType,
 			Domain:       rv.Domain,
 			Reviewer:     "TODO: to be filled",
-			ReviewState:  state,
+			ReviewState:  rv.State,
 			KycState:     kyc.State,
 			Message:      rv.Message,
-			CreatedAt:    rv.CreateAt,
-			UpdatedAt:    rv.CreateAt,
+			CreatedAt:    rv.CreatedAt,
+			UpdatedAt:    rv.UpdatedAt,
 		})
 	}
 
@@ -144,8 +132,7 @@ func GetKycReview(ctx context.Context, reviewID string) (*npool.KycReview, error
 	}
 
 	switch rv.ObjectType {
-	case "kyc":
-	case reviewmgrpb.ReviewObjectType_ObjectKyc.String():
+	case reviewpb.ReviewObjectType_ObjectKyc:
 	default:
 		return nil, fmt.Errorf("invalid object type")
 	}
@@ -167,21 +154,11 @@ func GetKycReview(ctx context.Context, reviewID string) (*npool.KycReview, error
 	}
 
 	// TODO: we need fill reviewer name, but we miss appid in reviews table
-	state := reviewmgrpb.ReviewState_Wait
 
 	switch rv.State {
-	case "approved":
-		fallthrough // nolint
-	case reviewmgrpb.ReviewState_Approved.String():
-		state = reviewmgrpb.ReviewState_Approved
-	case "rejected":
-		fallthrough // nolint
-	case reviewmgrpb.ReviewState_Rejected.String():
-		state = reviewmgrpb.ReviewState_Rejected
-	case "wait":
-		fallthrough // nolint
-	case reviewmgrpb.ReviewState_Wait.String():
-		state = reviewmgrpb.ReviewState_Wait
+	case reviewpb.ReviewState_Approved:
+	case reviewpb.ReviewState_Rejected:
+	case reviewpb.ReviewState_Wait:
 	default:
 		return nil, fmt.Errorf("invalid state")
 	}
@@ -204,10 +181,10 @@ func GetKycReview(ctx context.Context, reviewID string) (*npool.KycReview, error
 		ObjectType:   rv.ObjectType,
 		Domain:       rv.Domain,
 		Reviewer:     "TODO: to be filled",
-		ReviewState:  state,
+		ReviewState:  rv.State,
 		KycState:     kyc.State,
 		Message:      rv.Message,
-		CreatedAt:    rv.CreateAt,
-		UpdatedAt:    rv.CreateAt,
+		CreatedAt:    rv.CreatedAt,
+		UpdatedAt:    rv.UpdatedAt,
 	}, nil
 }

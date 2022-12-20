@@ -13,7 +13,8 @@ import (
 	usercli "github.com/NpoolPlatform/appuser-middleware/pkg/client/user"
 	appcoininfocli "github.com/NpoolPlatform/chain-middleware/pkg/client/appcoin"
 	withdrawcli "github.com/NpoolPlatform/ledger-manager/pkg/client/withdraw"
-	reviewcli "github.com/NpoolPlatform/review-service/pkg/client"
+	reviewcli "github.com/NpoolPlatform/review-manager/pkg/client/review"
+	reviewmwcli "github.com/NpoolPlatform/review-middleware/pkg/client/review"
 
 	useraccmwcli "github.com/NpoolPlatform/account-middleware/pkg/client/user"
 	useraccmwpb "github.com/NpoolPlatform/message/npool/account/mw/v1/user"
@@ -26,8 +27,7 @@ import (
 	userpb "github.com/NpoolPlatform/message/npool/appuser/mw/v1/user"
 	appcoinpb "github.com/NpoolPlatform/message/npool/chain/mw/v1/appcoin"
 	withdrawmgrpb "github.com/NpoolPlatform/message/npool/ledger/mgr/v1/ledger/withdraw"
-	reviewpb "github.com/NpoolPlatform/message/npool/review-service"
-	reviewmgrpb "github.com/NpoolPlatform/message/npool/review/mgr/v2"
+	reviewpb "github.com/NpoolPlatform/message/npool/review/mgr/v2"
 
 	cruder "github.com/NpoolPlatform/libent-cruder/pkg/cruder"
 )
@@ -48,8 +48,18 @@ func GetWithdrawReviews(ctx context.Context, appID string, offset, limit int32) 
 		return nil, 0, nil
 	}
 
-	rvs, err := reviewcli.GetDomainReviews(ctx, appID, ledgerconst.ServiceName,
-		reviewmgrpb.ReviewObjectType_ObjectWithdrawal.String())
+	wids := []string{}
+	for _, w := range withdraws {
+		wids = append(wids, w.ID)
+	}
+
+	rvs, err := reviewmwcli.GetObjectReviews(
+		ctx,
+		appID,
+		ledgerconst.ServiceName,
+		wids,
+		reviewpb.ReviewObjectType_ObjectWithdrawal,
+	)
 	if err != nil {
 		return nil, 0, err
 	}
@@ -144,42 +154,21 @@ func GetWithdrawReviews(ctx context.Context, appID string, offset, limit int32) 
 		}
 
 		// TODO: we need fill reviewer name, but we miss appid in reviews table
-		state := reviewmgrpb.ReviewState_Wait
 
 		switch rv.State {
-		case "approved":
-			fallthrough // nolint
-		case reviewmgrpb.ReviewState_Approved.String():
-			state = reviewmgrpb.ReviewState_Approved
-		case "rejected":
-			fallthrough // nolint
-		case reviewmgrpb.ReviewState_Rejected.String():
-			state = reviewmgrpb.ReviewState_Rejected
-		case "wait":
-			fallthrough // nolint
-		case reviewmgrpb.ReviewState_Wait.String():
-			state = reviewmgrpb.ReviewState_Wait
+		case reviewpb.ReviewState_Approved:
+		case reviewpb.ReviewState_Rejected:
+		case reviewpb.ReviewState_Wait:
 		default:
 			return nil, 0, fmt.Errorf("invalid state")
 		}
 
-		trigger := reviewmgrpb.ReviewTriggerType_InsufficientFunds
-
 		switch rv.Trigger {
-		case "large amount":
-			fallthrough // nolint
-		case reviewmgrpb.ReviewTriggerType_LargeAmount.String():
-			trigger = reviewmgrpb.ReviewTriggerType_LargeAmount
-		case "insufficient":
-			fallthrough // nolint
-		case reviewmgrpb.ReviewTriggerType_InsufficientFunds.String():
-			trigger = reviewmgrpb.ReviewTriggerType_InsufficientFunds
-		case "auto review":
-			fallthrough // nolint
-		case reviewmgrpb.ReviewTriggerType_AutoReviewed.String():
-			trigger = reviewmgrpb.ReviewTriggerType_AutoReviewed
-		case reviewmgrpb.ReviewTriggerType_InsufficientGas.String():
-			trigger = reviewmgrpb.ReviewTriggerType_InsufficientGas
+		case reviewpb.ReviewTriggerType_LargeAmount:
+		case reviewpb.ReviewTriggerType_InsufficientFunds:
+		case reviewpb.ReviewTriggerType_AutoReviewed:
+		case reviewpb.ReviewTriggerType_InsufficientGas:
+		case reviewpb.ReviewTriggerType_InsufficientFundsGas:
 		default:
 			return nil, 0, fmt.Errorf("invalid trigger")
 		}
@@ -189,17 +178,17 @@ func GetWithdrawReviews(ctx context.Context, appID string, offset, limit int32) 
 			WithdrawState:         withdraw.State,
 			ReviewID:              rv.ID,
 			UserID:                user.ID,
-			KycState:              reviewmgrpb.ReviewState_DefaultReviewState,
+			KycState:              reviewpb.ReviewState_DefaultReviewState,
 			EmailAddress:          user.EmailAddress,
 			PhoneNO:               user.PhoneNO,
 			Reviewer:              "TODO: to be filled",
 			ObjectType:            rv.ObjectType,
 			Domain:                rv.Domain,
-			CreatedAt:             rv.CreateAt,
-			UpdatedAt:             rv.CreateAt,
+			CreatedAt:             rv.CreatedAt,
+			UpdatedAt:             rv.UpdatedAt,
 			Message:               rv.Message,
-			State:                 state,
-			Trigger:               trigger,
+			State:                 rv.State,
+			Trigger:               rv.Trigger,
 			Amount:                withdraw.Amount,
 			FeeAmount:             "TODO: to be filled",
 			CoinTypeID:            withdraw.CoinTypeID,
@@ -223,8 +212,7 @@ func GetWithdrawReview(ctx context.Context, reviewID string) (*npool.WithdrawRev
 	}
 
 	switch rv.ObjectType {
-	case "withdraw":
-	case reviewmgrpb.ReviewObjectType_ObjectWithdrawal.String():
+	case reviewpb.ReviewObjectType_ObjectWithdrawal:
 	default:
 		return nil, fmt.Errorf("invalid object type")
 	}
@@ -246,42 +234,21 @@ func GetWithdrawReview(ctx context.Context, reviewID string) (*npool.WithdrawRev
 	}
 
 	// TODO: we need fill reviewer name, but we miss appid in reviews table
-	state := reviewmgrpb.ReviewState_Wait
 
 	switch rv.State {
-	case "approved":
-		fallthrough // nolint
-	case reviewmgrpb.ReviewState_Approved.String():
-		state = reviewmgrpb.ReviewState_Approved
-	case "rejected":
-		fallthrough // nolint
-	case reviewmgrpb.ReviewState_Rejected.String():
-		state = reviewmgrpb.ReviewState_Rejected
-	case "wait":
-		fallthrough // nolint
-	case reviewmgrpb.ReviewState_Wait.String():
-		state = reviewmgrpb.ReviewState_Wait
+	case reviewpb.ReviewState_Approved:
+	case reviewpb.ReviewState_Rejected:
+	case reviewpb.ReviewState_Wait:
 	default:
 		return nil, fmt.Errorf("invalid state")
 	}
 
-	trigger := reviewmgrpb.ReviewTriggerType_InsufficientFunds
-
 	switch rv.Trigger {
-	case "large amount":
-		fallthrough // nolint
-	case reviewmgrpb.ReviewTriggerType_LargeAmount.String():
-		trigger = reviewmgrpb.ReviewTriggerType_LargeAmount
-	case "insufficient":
-		fallthrough // nolint
-	case reviewmgrpb.ReviewTriggerType_InsufficientFunds.String():
-		trigger = reviewmgrpb.ReviewTriggerType_InsufficientFunds
-	case "auto review":
-		fallthrough // nolint
-	case reviewmgrpb.ReviewTriggerType_AutoReviewed.String():
-		trigger = reviewmgrpb.ReviewTriggerType_AutoReviewed
-	case reviewmgrpb.ReviewTriggerType_InsufficientGas.String():
-		trigger = reviewmgrpb.ReviewTriggerType_InsufficientGas
+	case reviewpb.ReviewTriggerType_LargeAmount:
+	case reviewpb.ReviewTriggerType_InsufficientFunds:
+	case reviewpb.ReviewTriggerType_AutoReviewed:
+	case reviewpb.ReviewTriggerType_InsufficientGas:
+	case reviewpb.ReviewTriggerType_InsufficientFundsGas:
 	default:
 		return nil, fmt.Errorf("invalid trigger")
 	}
@@ -320,17 +287,17 @@ func GetWithdrawReview(ctx context.Context, reviewID string) (*npool.WithdrawRev
 		WithdrawState:         withdraw.State,
 		ReviewID:              rv.ID,
 		UserID:                user.ID,
-		KycState:              reviewmgrpb.ReviewState_DefaultReviewState,
+		KycState:              reviewpb.ReviewState_DefaultReviewState,
 		EmailAddress:          user.EmailAddress,
 		PhoneNO:               user.PhoneNO,
 		Reviewer:              "TODO: to be filled",
 		ObjectType:            rv.ObjectType,
 		Domain:                rv.Domain,
-		CreatedAt:             rv.CreateAt,
-		UpdatedAt:             rv.CreateAt,
+		CreatedAt:             rv.CreatedAt,
+		UpdatedAt:             rv.UpdatedAt,
 		Message:               rv.Message,
-		State:                 state,
-		Trigger:               trigger,
+		State:                 rv.State,
+		Trigger:               rv.Trigger,
 		Amount:                withdraw.Amount,
 		FeeAmount:             "TODO: to be filled",
 		CoinTypeID:            withdraw.CoinTypeID,

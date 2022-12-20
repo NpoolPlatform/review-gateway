@@ -47,7 +47,7 @@ func UpdateWithdrawReview(
 	ctx context.Context,
 	id, appID, reviewerAppID, reviewerID string,
 	state reviewmgrpb.ReviewState,
-	message string,
+	message *string,
 ) (
 	*withdraw.WithdrawReview, error,
 ) {
