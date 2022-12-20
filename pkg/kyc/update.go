@@ -16,7 +16,7 @@ func UpdateKycReview(
 	ctx context.Context,
 	id, appID, reviewerAppID, reviewerID string,
 	state reviewmgrpb.ReviewState,
-	message string,
+	message *string,
 ) (
 	*npool.KycReview, error,
 ) {
