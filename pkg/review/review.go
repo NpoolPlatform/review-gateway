@@ -6,8 +6,7 @@ import (
 
 	reviewmgrpb "github.com/NpoolPlatform/message/npool/review/mgr/v2"
 
-	reviewcli "github.com/NpoolPlatform/review-service/pkg/client"
-	reviewconst "github.com/NpoolPlatform/review-service/pkg/const"
+	reviewcli "github.com/NpoolPlatform/review-manager/pkg/client/review"
 
 	usercli "github.com/NpoolPlatform/appuser-middleware/pkg/client/user"
 )
@@ -40,7 +39,7 @@ func ValidateReview(
 		return "", fmt.Errorf("invalid review id")
 	}
 
-	if rv.State != reviewconst.StateWait {
+	if rv.State != reviewmgrpb.ReviewState_Wait {
 		return "", fmt.Errorf("invalid review state")
 	}
 
@@ -51,7 +50,7 @@ func UpdateReview(
 	ctx context.Context,
 	id, appID, reviewerAppID, reviewerID string,
 	state reviewmgrpb.ReviewState,
-	message string,
+	message *string,
 ) error {
 	reviewer, err := usercli.GetUser(ctx, reviewerAppID, reviewerID)
 	if err != nil {
@@ -61,13 +60,9 @@ func UpdateReview(
 		return fmt.Errorf("invalid reviewer")
 	}
 
-	var rstate string
-
 	switch state {
 	case reviewmgrpb.ReviewState_Approved:
-		rstate = reviewconst.StateApproved
 	case reviewmgrpb.ReviewState_Rejected:
-		rstate = reviewconst.StateRejected
 	default:
 		return fmt.Errorf("invalid review state")
 	}
@@ -80,13 +75,16 @@ func UpdateReview(
 		return fmt.Errorf("invalid review id")
 	}
 
-	if rv.State != reviewconst.StateWait {
+	if rv.State != reviewmgrpb.ReviewState_Wait {
 		return fmt.Errorf("invalid review state")
 	}
 
-	rv.State = rstate
-	rv.Message = message
-	_, err = reviewcli.UpdateReview(ctx, rv)
+	_, err = reviewcli.UpdateReview(ctx, &reviewmgrpb.ReviewReq{
+		ID:         &rv.ID,
+		ReviewerID: &reviewerID,
+		State:      &state,
+		Message:    message,
+	})
 
 	return err
 }
