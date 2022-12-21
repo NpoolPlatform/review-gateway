@@ -3,6 +3,7 @@ module github.com/NpoolPlatform/review-gateway
 go 1.17
 
 require (
+	entgo.io/ent v0.11.2
 	github.com/NpoolPlatform/account-middleware v0.0.0-20221216032556-c0953cebb9a4
 	github.com/NpoolPlatform/api-manager v0.0.0-20220826022307-d72866fe3ec0
 	github.com/NpoolPlatform/appuser-gateway v0.0.0-20220830035249-3ca22bbbcd03
@@ -17,6 +18,7 @@ require (
 	github.com/NpoolPlatform/message v0.0.0-20221220123045-60ceca153822
 	github.com/NpoolPlatform/review-manager v0.0.0-20221220080139-e060acbc0a9f
 	github.com/NpoolPlatform/review-middleware v0.0.0-20221220122427-467680e5dde2
+	github.com/NpoolPlatform/review-service v0.0.0-20220826135931-2f311aae9cbd
 	github.com/NpoolPlatform/sphinx-proxy v0.0.0-20221216033352-21a0a47434fe
 	github.com/go-resty/resty/v2 v2.7.0
 	github.com/google/uuid v1.3.0
@@ -31,7 +33,6 @@ require (
 
 require (
 	ariga.io/atlas v0.5.1-0.20220717122844-8593d7eb1a8e // indirect
-	entgo.io/ent v0.11.2 // indirect
 	github.com/Shonminh/apollo-client v0.4.0 // indirect
 	github.com/agext/levenshtein v1.2.1 // indirect
 	github.com/andres-erbsen/clock v0.0.0-20160526145045-9e14626cd129 // indirect
