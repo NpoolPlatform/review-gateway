@@ -101,8 +101,11 @@ func migrateReview(ctx context.Context, conn *sql.DB) error {
 			return err
 		}
 		if len(_rvs) > 0 {
+			logger.Sugar().Infow("migrateReview", "Reviews", _rvs)
 			return nil
 		}
+
+		logger.Sugar().Infow("migrateReview", "Reviews", len(rvs))
 
 		for _, rv := range rvs {
 			objectType := rv.ObjectType
