@@ -18,6 +18,7 @@ require (
 	github.com/NpoolPlatform/message v0.0.0-20221220123045-60ceca153822
 	github.com/NpoolPlatform/review-manager v0.0.0-20221220080139-e060acbc0a9f
 	github.com/NpoolPlatform/review-middleware v0.0.0-20221220122427-467680e5dde2
+	github.com/NpoolPlatform/review-service v0.0.0-20220826135931-2f311aae9cbd
 	github.com/NpoolPlatform/sphinx-proxy v0.0.0-20221216033352-21a0a47434fe
 	github.com/go-resty/resty/v2 v2.7.0
 	github.com/google/uuid v1.3.0
