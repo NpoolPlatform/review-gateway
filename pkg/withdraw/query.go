@@ -54,6 +54,13 @@ func GetWithdrawReviews(ctx context.Context, appID string, offset, limit int32) 
 		return nil, 0, err
 	}
 
+	_rvs, err := reviewcli.GetDomainReviews(ctx, appID, "cloud-hashing-billing.npool.top", "withdraw")
+	if err != nil {
+		return nil, 0, err
+	}
+
+	rvs = append(rvs, _rvs...)
+
 	rvMap := map[string]*reviewpb.Review{}
 	for _, rv := range rvs {
 		rvMap[rv.ObjectID] = rv
@@ -122,7 +129,7 @@ func GetWithdrawReviews(ctx context.Context, appID string, offset, limit int32) 
 	for _, withdraw := range withdraws {
 		rv, ok := rvMap[withdraw.ID]
 		if !ok {
-			return nil, 0, fmt.Errorf("invalid withdraw review")
+			return nil, 0, fmt.Errorf("invalid withdraw review: %v", withdraw)
 		}
 
 		coin, ok := coinMap[withdraw.CoinTypeID]
@@ -175,6 +182,8 @@ func GetWithdrawReviews(ctx context.Context, appID string, offset, limit int32) 
 			fallthrough // nolint
 		case reviewmgrpb.ReviewTriggerType_InsufficientFunds.String():
 			trigger = reviewmgrpb.ReviewTriggerType_InsufficientFunds
+		case reviewmgrpb.ReviewTriggerType_InsufficientFundsGas.String():
+			trigger = reviewmgrpb.ReviewTriggerType_InsufficientFundsGas
 		case "auto review":
 			fallthrough // nolint
 		case reviewmgrpb.ReviewTriggerType_AutoReviewed.String():
@@ -182,7 +191,7 @@ func GetWithdrawReviews(ctx context.Context, appID string, offset, limit int32) 
 		case reviewmgrpb.ReviewTriggerType_InsufficientGas.String():
 			trigger = reviewmgrpb.ReviewTriggerType_InsufficientGas
 		default:
-			return nil, 0, fmt.Errorf("invalid trigger")
+			return nil, 0, fmt.Errorf("invalid trigger: %v", rv.Trigger)
 		}
 
 		infos = append(infos, &npool.WithdrawReview{
@@ -277,6 +286,8 @@ func GetWithdrawReview(ctx context.Context, reviewID string) (*npool.WithdrawRev
 		fallthrough // nolint
 	case reviewmgrpb.ReviewTriggerType_InsufficientFunds.String():
 		trigger = reviewmgrpb.ReviewTriggerType_InsufficientFunds
+	case reviewmgrpb.ReviewTriggerType_InsufficientFundsGas.String():
+		trigger = reviewmgrpb.ReviewTriggerType_InsufficientFundsGas
 	case "auto review":
 		fallthrough // nolint
 	case reviewmgrpb.ReviewTriggerType_AutoReviewed.String():
@@ -284,7 +295,7 @@ func GetWithdrawReview(ctx context.Context, reviewID string) (*npool.WithdrawRev
 	case reviewmgrpb.ReviewTriggerType_InsufficientGas.String():
 		trigger = reviewmgrpb.ReviewTriggerType_InsufficientGas
 	default:
-		return nil, fmt.Errorf("invalid trigger")
+		return nil, fmt.Errorf("invalid trigger: %v", rv.Trigger)
 	}
 
 	coin, err := coininfocli.GetCoin(ctx, withdraw.CoinTypeID)
