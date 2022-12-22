@@ -137,7 +137,7 @@ func GetWithdrawReviews(ctx context.Context, appID string, offset, limit int32) 
 			continue
 		}
 
-		address := "WITHDRAW-ACCOUNT NOT EXIST"
+		address := withdraw.AccountID + " WITHDRAW-ACCOUNT NOT EXIST"
 
 		acc, ok := accMap[withdraw.AccountID]
 		if ok {
@@ -295,7 +295,7 @@ func GetWithdrawReview(ctx context.Context, reviewID string) (*npool.WithdrawRev
 		return nil, fmt.Errorf("invalid coin")
 	}
 
-	address := "WITHDRAW ACCOUNT NOT EXIST"
+	address := withdraw.AccountID + " WITHDRAW ACCOUNT NOT EXIST"
 
 	account, _ := useraccmwcli.GetAccountOnly(ctx, &useraccmwpb.Conds{
 		AppID: &commonpb.StringVal{
