@@ -137,10 +137,11 @@ func GetWithdrawReviews(ctx context.Context, appID string, offset, limit int32) 
 			continue
 		}
 
+		address := "WITHDRAW-ACCOUNT NOT EXIST"
+
 		acc, ok := accMap[withdraw.AccountID]
-		if !ok {
-			logger.Sugar().Warnw("account not exist", "AppID", withdraw.AppID, "AccountID", withdraw.AccountID)
-			continue
+		if ok {
+			address = acc.Address
 		}
 
 		// TODO: we need fill reviewer name, but we miss appid in reviews table
@@ -206,7 +207,7 @@ func GetWithdrawReviews(ctx context.Context, appID string, offset, limit int32) 
 			CoinName:              coin.Name,
 			CoinLogo:              coin.Logo,
 			CoinUnit:              coin.Unit,
-			Address:               acc.Address,
+			Address:               address,
 			PlatformTransactionID: withdraw.PlatformTransactionID,
 			ChainTransactionID:    withdraw.ChainTransactionID,
 		})
@@ -294,7 +295,9 @@ func GetWithdrawReview(ctx context.Context, reviewID string) (*npool.WithdrawRev
 		return nil, fmt.Errorf("invalid coin")
 	}
 
-	account, err := useraccmwcli.GetAccountOnly(ctx, &useraccmwpb.Conds{
+	address := "WITHDRAW ACCOUNT NOT EXIST"
+
+	account, _ := useraccmwcli.GetAccountOnly(ctx, &useraccmwpb.Conds{
 		AppID: &commonpb.StringVal{
 			Op:    cruder.EQ,
 			Value: withdraw.AppID,
@@ -308,11 +311,8 @@ func GetWithdrawReview(ctx context.Context, reviewID string) (*npool.WithdrawRev
 			Value: int32(accountmgrpb.AccountUsedFor_UserWithdraw),
 		},
 	})
-	if err != nil {
-		return nil, err
-	}
-	if account == nil {
-		return nil, fmt.Errorf("invalid account")
+	if account != nil {
+		address = account.Address
 	}
 
 	return &npool.WithdrawReview{
@@ -337,7 +337,7 @@ func GetWithdrawReview(ctx context.Context, reviewID string) (*npool.WithdrawRev
 		CoinName:              coin.Name,
 		CoinLogo:              coin.Logo,
 		CoinUnit:              coin.Unit,
-		Address:               account.Address,
+		Address:               address,
 		PlatformTransactionID: withdraw.PlatformTransactionID,
 		ChainTransactionID:    withdraw.ChainTransactionID,
 	}, nil
