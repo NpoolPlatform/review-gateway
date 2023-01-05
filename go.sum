@@ -114,10 +114,10 @@ github.com/NpoolPlatform/message v0.0.0-20220501030927-34f296682c0c/go.mod h1:i/
 github.com/NpoolPlatform/message v0.0.0-20220819134247-1dc75c85fe43/go.mod h1:8YXp4MghMHLZ9bBdQQyfjcRtLI2RbEHAQoNCejT2nZU=
 github.com/NpoolPlatform/message v0.0.0-20221220123045-60ceca153822 h1:hZRt9J7FG95WPaSK2KZs2qCxoGL7VcNzSC9tqJ8lvdE=
 github.com/NpoolPlatform/message v0.0.0-20221220123045-60ceca153822/go.mod h1:G4b3QmQYYHn2okxu8KfD6INUALqno3369SLciqevhtQ=
-github.com/NpoolPlatform/review-manager v0.0.0-20230105065346-98e9ef79ff48 h1:1C31eGsGtUo2s83hbNgRpk+blzW0C5rhlotb62l6z7g=
-github.com/NpoolPlatform/review-manager v0.0.0-20230105065346-98e9ef79ff48/go.mod h1:xau3mKanIgvOvKJemFyjZBZocSujc6L1gVa8p0vpyQY=
-github.com/NpoolPlatform/review-middleware v0.0.0-20230105065427-9f59cd5949a4 h1:y3ajzxxmU4myzGSisdZHPYQJXWjt8RNSzILM1cpUNYw=
-github.com/NpoolPlatform/review-middleware v0.0.0-20230105065427-9f59cd5949a4/go.mod h1:Zd67vWLDhoZ+0O53d4MdQzQ8zDvbDm6zhaMqm+GV46c=
+github.com/NpoolPlatform/review-manager v0.0.0-20230105071741-54c6aaed8d37 h1:1wAnExDlXXOnz3cd3EMXbd7t9lxSWNgH85jiynNo0ys=
+github.com/NpoolPlatform/review-manager v0.0.0-20230105071741-54c6aaed8d37/go.mod h1:xau3mKanIgvOvKJemFyjZBZocSujc6L1gVa8p0vpyQY=
+github.com/NpoolPlatform/review-middleware v0.0.0-20230105072527-025b5576faf7 h1:I/a1RYA73gGktyHZH+1s571qQ+4+lIzJuZVFgYpJuIM=
+github.com/NpoolPlatform/review-middleware v0.0.0-20230105072527-025b5576faf7/go.mod h1:dbzpH8cynu/nxD55Z8PHfb7fvASkzMo6AIWgwjh3koI=
 github.com/NpoolPlatform/review-service v0.0.0-20220826135931-2f311aae9cbd h1:0qa4gaXzBKydLrLvbnb1rQnIdW2+LpXyXdK8r0hJWGs=
 github.com/NpoolPlatform/review-service v0.0.0-20220826135931-2f311aae9cbd/go.mod h1:smU9zn3y/oPgj3sQ3IqQt1luOEkzH9ImW7HQlCe4bh4=
 github.com/NpoolPlatform/sphinx-proxy v0.0.0-20221216033352-21a0a47434fe h1:a7UXGo1jxy6VproT8OQdXZDbk0ZKYWq4X6IQ3GCHh5E=
