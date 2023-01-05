@@ -267,7 +267,7 @@ func approve(ctx context.Context, withdraw *withdrawmgrpb.Withdraw) error {
 			return fmt.Errorf("invalid balance")
 		}
 
-		feeAmount, err := decimal.NewFromString(coin.HotWalletFeeAmount)
+		feeAmount, err := decimal.NewFromString(feecoin.LowFeeAmount)
 		if err != nil {
 			return err
 		}
