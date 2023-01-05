@@ -22,6 +22,7 @@ import (
 	useraccmwpb "github.com/NpoolPlatform/message/npool/account/mw/v1/user"
 
 	appcoinmwcli "github.com/NpoolPlatform/chain-middleware/pkg/client/appcoin"
+	coinmwcli "github.com/NpoolPlatform/chain-middleware/pkg/client/coin"
 	appcoinmwpb "github.com/NpoolPlatform/message/npool/chain/mw/v1/appcoin"
 
 	pltfaccmwcli "github.com/NpoolPlatform/account-middleware/pkg/client/platform"
@@ -47,7 +48,7 @@ func UpdateWithdrawReview(
 	ctx context.Context,
 	id, appID, reviewerAppID, reviewerID string,
 	state reviewmgrpb.ReviewState,
-	message string,
+	message *string,
 ) (
 	*withdraw.WithdrawReview, error,
 ) {
@@ -244,6 +245,37 @@ func approve(ctx context.Context, withdraw *withdrawmgrpb.Withdraw) error {
 
 	if balance.Cmp(amount) <= 0 {
 		return fmt.Errorf("insufficient funds")
+	}
+
+	if coin.ID != coin.FeeCoinTypeID {
+		feecoin, err := coinmwcli.GetCoin(ctx, coin.FeeCoinTypeID)
+		if err != nil {
+			return err
+		}
+		if feecoin == nil {
+			return fmt.Errorf("invalid fee coin")
+		}
+
+		bal, err := sphinxproxycli.GetBalance(ctx, &sphinxproxypb.GetBalanceRequest{
+			Name:    feecoin.Name,
+			Address: hotacc.Address,
+		})
+		if err != nil {
+			return err
+		}
+		if bal == nil {
+			return fmt.Errorf("invalid balance")
+		}
+
+		feeAmount, err := decimal.NewFromString(feecoin.LowFeeAmount)
+		if err != nil {
+			return err
+		}
+
+		balance := decimal.RequireFromString(bal.BalanceStr)
+		if balance.Cmp(feeAmount) <= 0 {
+			return fmt.Errorf("insufficient gas")
+		}
 	}
 
 	feeAmount, err := decimal.NewFromString(coin.WithdrawFeeAmount)
