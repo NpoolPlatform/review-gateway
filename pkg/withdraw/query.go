@@ -4,8 +4,6 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/NpoolPlatform/go-service-framework/pkg/logger"
-
 	coininfocli "github.com/NpoolPlatform/chain-middleware/pkg/client/coin"
 
 	npool "github.com/NpoolPlatform/message/npool/review/gw/v2/withdraw"
@@ -145,7 +143,7 @@ func GetWithdrawReviews(ctx context.Context, appID string, offset, limit int32) 
 			continue
 		}
 
-		address := withdraw.AccountID + " WITHDRAW-ACCOUNT NOT EXIST"
+		address := withdraw.Address
 
 		acc, ok := accMap[withdraw.AccountID]
 		if ok {
@@ -260,7 +258,7 @@ func GetWithdrawReview(ctx context.Context, reviewID string) (*npool.WithdrawRev
 		return nil, fmt.Errorf("invalid coin")
 	}
 
-	address := withdraw.AccountID + " WITHDRAW ACCOUNT NOT EXIST"
+	address := withdraw.Address
 
 	account, _ := useraccmwcli.GetAccountOnly(ctx, &useraccmwpb.Conds{
 		AppID: &commonpb.StringVal{

@@ -10,12 +10,12 @@ require (
 	github.com/NpoolPlatform/appuser-manager v0.0.0-20220829153511-c579ddb3686d
 	github.com/NpoolPlatform/appuser-middleware v0.0.0-20220829153642-da84c07abb79
 	github.com/NpoolPlatform/chain-middleware v0.0.0-20221216021206-c73dbc7ea1ce
-	github.com/NpoolPlatform/go-service-framework v0.0.0-20220927113434-7c153f087a8c
+	github.com/NpoolPlatform/go-service-framework v0.0.0-20221102072657-7fcc5e6f1012
 	github.com/NpoolPlatform/ledger-gateway v0.0.0-20220813124620-9cbc5e1a2318
-	github.com/NpoolPlatform/ledger-manager v0.0.0-20220810080525-bffa7a839d30
-	github.com/NpoolPlatform/ledger-middleware v0.0.0-20220811054139-8ee942532891
+	github.com/NpoolPlatform/ledger-manager v0.0.0-20221222080228-e0b64d8fc4d2
+	github.com/NpoolPlatform/ledger-middleware v0.0.0-20221222080503-edf65d38e64b
 	github.com/NpoolPlatform/libent-cruder v0.0.0-20221109023947-366125b690fb
-	github.com/NpoolPlatform/message v0.0.0-20221220123045-60ceca153822
+	github.com/NpoolPlatform/message v0.0.0-20221222074628-16f9daf4c9f7
 	github.com/NpoolPlatform/review-manager v0.0.0-20230105071741-54c6aaed8d37
 	github.com/NpoolPlatform/review-middleware v0.0.0-20230105072527-025b5576faf7
 	github.com/NpoolPlatform/review-service v0.0.0-20220826135931-2f311aae9cbd
