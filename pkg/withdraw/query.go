@@ -137,13 +137,11 @@ func GetWithdrawReviews(ctx context.Context, appID string, offset, limit int32) 
 
 		coin, ok := coinMap[withdraw.CoinTypeID]
 		if !ok {
-			logger.Sugar().Warnw("app coin not exist", "AppID", withdraw.AppID, "CoinTypeID", withdraw.CoinTypeID)
 			continue
 		}
 
 		user, ok := userMap[withdraw.UserID]
 		if !ok {
-			logger.Sugar().Warnw("user not exist", "AppID", withdraw.AppID, "CoinTypeID", withdraw.UserID)
 			continue
 		}
 
