@@ -10,6 +10,7 @@ metadata:
     traefik.ingress.kubernetes.io/router.entrypoints: web,websecure
     traefik.ingress.kubernetes.io/router.middlewares:
       kube-system-strip-review-gateway-prefix@kubernetescrd,
+      kube-system-http-redirect-https@kubernetescrd,
       kube-system-common-headers@kubernetescrd,
       kube-system-headers-appid-to-body@kubernetescrd,
       kube-system-headers-userid-to-body@kubernetescrd,
@@ -56,6 +57,7 @@ metadata:
     traefik.ingress.kubernetes.io/router.entrypoints: web,websecure
     traefik.ingress.kubernetes.io/router.middlewares:
       kube-system-strip-review-gateway-prefix@kubernetescrd,
+      kube-system-http-redirect-https@kubernetescrd,
       kube-system-common-headers@kubernetescrd,
       kube-system-headers-appid-to-body@kubernetescrd,
       kube-system-headers-userid-to-body@kubernetescrd,
