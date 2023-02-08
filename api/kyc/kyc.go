@@ -108,7 +108,7 @@ func (s *Server) UpdateKycReview(
 
 	info, err := kyc1.UpdateKycReview(
 		ctx,
-		in.GetReviewID(), in.GetAppID(), in.GetAppID(), in.GetUserID(),
+		in.GetReviewID(), in.GetAppID(), in.GetAppID(), in.GetUserID(), in.GetLangID(),
 		in.GetState(), in.Message,
 	)
 	if err != nil {
@@ -165,7 +165,7 @@ func (s *Server) UpdateAppKycReview(
 
 	info, err := kyc1.UpdateKycReview(
 		ctx,
-		in.GetReviewID(), in.GetTargetAppID(), in.GetAppID(), in.GetUserID(),
+		in.GetReviewID(), in.GetTargetAppID(), in.GetAppID(), in.GetUserID(), in.GetLangID(),
 		in.GetState(), in.Message,
 	)
 	if err != nil {

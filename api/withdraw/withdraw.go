@@ -104,7 +104,7 @@ func (s *Server) UpdateWithdrawReview(
 
 	info, err := withdraw1.UpdateWithdrawReview(
 		ctx,
-		in.GetReviewID(), in.GetAppID(), in.GetAppID(), in.GetUserID(),
+		in.GetReviewID(), in.GetAppID(), in.GetLangID(), in.GetAppID(), in.GetUserID(),
 		in.GetState(), in.Message,
 	)
 	if err != nil {
@@ -161,7 +161,7 @@ func (s *Server) UpdateAppWithdrawReview(
 
 	info, err := withdraw1.UpdateWithdrawReview(
 		ctx,
-		in.GetReviewID(), in.GetTargetAppID(), in.GetAppID(), in.GetUserID(),
+		in.GetReviewID(), in.GetTargetAppID(), in.GetLangID(), in.GetAppID(), in.GetUserID(),
 		in.GetState(), in.Message,
 	)
 	if err != nil {

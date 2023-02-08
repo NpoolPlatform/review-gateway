@@ -4,6 +4,15 @@ import (
 	"context"
 	"fmt"
 
+	usercli "github.com/NpoolPlatform/appuser-middleware/pkg/client/user"
+	"github.com/NpoolPlatform/go-service-framework/pkg/logger"
+	channelpb "github.com/NpoolPlatform/message/npool/notif/mgr/v1/channel"
+	notifmgrpb "github.com/NpoolPlatform/message/npool/notif/mgr/v1/notif"
+	thirdmgrpb "github.com/NpoolPlatform/message/npool/third/mgr/v1/template/notif"
+	notifcli "github.com/NpoolPlatform/notif-middleware/pkg/client/notif"
+	thirdcli "github.com/NpoolPlatform/third-middleware/pkg/client/template/notif"
+	thirdpkg "github.com/NpoolPlatform/third-middleware/pkg/template/notif"
+
 	kyccli "github.com/NpoolPlatform/appuser-manager/pkg/client/kyc"
 	kycpb "github.com/NpoolPlatform/message/npool/appuser/mgr/v2/kyc"
 
@@ -44,9 +53,12 @@ import (
 	review1 "github.com/NpoolPlatform/review-gateway/pkg/review"
 )
 
+const MessageApproved = "Approved"
+const MessageRejected = "Rejected"
+
 func UpdateWithdrawReview(
 	ctx context.Context,
-	id, appID, reviewerAppID, reviewerID string,
+	id, appID, langID, reviewerAppID, reviewerID string,
 	state reviewmgrpb.ReviewState,
 	message *string,
 ) (
@@ -90,11 +102,21 @@ func UpdateWithdrawReview(
 		return nil, fmt.Errorf("kyc review not approved")
 	}
 
+	userInfo, err := usercli.GetUser(ctx, w.AppID, w.UserID)
+	if err != nil {
+		return nil, err
+	}
+	if userInfo == nil {
+		return nil, fmt.Errorf("invalid user")
+	}
+
 	// TODO: make sure review state and withdraw state integrity
 
+	approved := true
 	switch state {
 	case reviewmgrpb.ReviewState_Rejected:
 		err = reject(ctx, w)
+		approved = false
 	case reviewmgrpb.ReviewState_Approved:
 		err = approve(ctx, w)
 	default:
@@ -104,6 +126,8 @@ func UpdateWithdrawReview(
 	if err != nil {
 		return nil, err
 	}
+
+	createNotif(ctx, appID, w.UserID, langID, userInfo.Username, approved)
 
 	if err := review1.UpdateReview(ctx, id, appID, reviewerAppID, reviewerID, state, message); err != nil {
 		return nil, err
@@ -338,4 +362,55 @@ func approve(ctx context.Context, withdraw *withdrawmgrpb.Withdraw) error {
 	}
 
 	return nil
+}
+
+func createNotif(
+	ctx context.Context,
+	appID, userID, langID, userName string, approved bool,
+) {
+	message := MessageRejected
+	if approved {
+		message = MessageApproved
+	}
+	eventType := notifmgrpb.EventType_WithdrawalCompleted
+	templateInfo, err := thirdcli.GetNotifTemplateOnly(ctx, &thirdmgrpb.Conds{
+		AppID: &commonpb.StringVal{
+			Op:    cruder.EQ,
+			Value: appID,
+		},
+		LangID: &commonpb.StringVal{
+			Op:    cruder.EQ,
+			Value: langID,
+		},
+		UsedFor: &commonpb.Uint32Val{
+			Op:    cruder.EQ,
+			Value: uint32(eventType.Number()),
+		},
+	})
+	if err != nil {
+		logger.Sugar().Errorw("sendNotif", "error", err.Error())
+		return
+	}
+	if templateInfo == nil {
+		logger.Sugar().Errorw("sendNotif", "error", "template not exist")
+		return
+	}
+
+	content := thirdpkg.ReplaceVariable(templateInfo.Content, &userName, &message)
+	useTemplate := true
+
+	_, err = notifcli.CreateNotif(ctx, &notifmgrpb.NotifReq{
+		AppID:       &appID,
+		UserID:      &userID,
+		LangID:      &langID,
+		EventType:   &eventType,
+		UseTemplate: &useTemplate,
+		Title:       &templateInfo.Title,
+		Content:     &content,
+		Channels:    []channelpb.NotifChannel{channelpb.NotifChannel_ChannelEmail},
+	})
+	if err != nil {
+		logger.Sugar().Errorw("sendNotif", "error", err.Error())
+		return
+	}
 }
