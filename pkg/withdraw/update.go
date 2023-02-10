@@ -9,8 +9,6 @@ import (
 	kyccli "github.com/NpoolPlatform/appuser-manager/pkg/client/kyc"
 	kycpb "github.com/NpoolPlatform/message/npool/appuser/mgr/v2/kyc"
 
-	notifmgrpb "github.com/NpoolPlatform/message/npool/notif/mgr/v1/notif"
-
 	usercli "github.com/NpoolPlatform/appuser-middleware/pkg/client/user"
 
 	"github.com/shopspring/decimal"
@@ -48,8 +46,6 @@ import (
 	sphinxproxycli "github.com/NpoolPlatform/sphinx-proxy/pkg/client"
 
 	review1 "github.com/NpoolPlatform/review-gateway/pkg/review"
-
-	notif1 "github.com/NpoolPlatform/review-gateway/pkg/notif"
 
 	txnotifmgrpb "github.com/NpoolPlatform/message/npool/notif/mgr/v1/notif/txnotifstate"
 	txnotifcli "github.com/NpoolPlatform/notif-middleware/pkg/client/notif/txnotifstate"
@@ -123,11 +119,9 @@ func UpdateWithdrawReview(
 
 	// TODO: make sure review state and withdraw state integrity
 
-	approved := true
 	switch state {
 	case reviewmgrpb.ReviewState_Rejected:
 		err = reject(ctx, w)
-		approved = false
 	case reviewmgrpb.ReviewState_Approved:
 		err = approve(ctx, w)
 	default:
@@ -140,19 +134,6 @@ func UpdateWithdrawReview(
 
 	if err := review1.UpdateReview(ctx, id, appID, reviewerAppID, reviewerID, state, message); err != nil {
 		return nil, err
-	}
-
-	if approved {
-		notif1.CreateNotif(
-			ctx,
-			appID,
-			w.UserID,
-			&userInfo.Username,
-			&w.Amount,
-			&coin.FeeCoinUnit,
-			&w.Address,
-			notifmgrpb.EventType_WithdrawalCompleted,
-		)
 	}
 
 	return GetWithdrawReview(ctx, id)
