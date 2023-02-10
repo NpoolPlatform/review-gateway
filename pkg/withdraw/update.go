@@ -4,8 +4,12 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/NpoolPlatform/go-service-framework/pkg/logger"
+
 	kyccli "github.com/NpoolPlatform/appuser-manager/pkg/client/kyc"
 	kycpb "github.com/NpoolPlatform/message/npool/appuser/mgr/v2/kyc"
+
+	usercli "github.com/NpoolPlatform/appuser-middleware/pkg/client/user"
 
 	"github.com/shopspring/decimal"
 
@@ -42,8 +46,12 @@ import (
 	sphinxproxycli "github.com/NpoolPlatform/sphinx-proxy/pkg/client"
 
 	review1 "github.com/NpoolPlatform/review-gateway/pkg/review"
+
+	txnotifmgrpb "github.com/NpoolPlatform/message/npool/notif/mgr/v1/notif/txnotifstate"
+	txnotifcli "github.com/NpoolPlatform/notif-middleware/pkg/client/notif/txnotifstate"
 )
 
+//nolint:gocyclo
 func UpdateWithdrawReview(
 	ctx context.Context,
 	id, appID, reviewerAppID, reviewerID string,
@@ -88,6 +96,25 @@ func UpdateWithdrawReview(
 
 	if kyc.State != kycpb.KycState_Approved {
 		return nil, fmt.Errorf("kyc review not approved")
+	}
+
+	userInfo, err := usercli.GetUser(ctx, w.AppID, w.UserID)
+	if err != nil {
+		return nil, err
+	}
+	if userInfo == nil {
+		return nil, fmt.Errorf("invalid user")
+	}
+
+	coin, err := coinmwcli.GetCoin(ctx, w.CoinTypeID)
+	if err != nil {
+		return nil, err
+	}
+	if coin == nil {
+		return nil, fmt.Errorf("invalid cointypeid")
+	}
+	if coin.Disabled {
+		return nil, fmt.Errorf("invalid cointypeid")
 	}
 
 	// TODO: make sure review state and withdraw state integrity
@@ -335,6 +362,17 @@ func approve(ctx context.Context, withdraw *withdrawmgrpb.Withdraw) error {
 		State:                 &state1,
 	}); err != nil {
 		return err
+	}
+
+	txNotifState := txnotifmgrpb.TxState_WaitTxSuccess
+	txNotifType := txnotifmgrpb.TxType_Withdraw
+	_, err = txnotifcli.CreateTxNotifState(ctx, &txnotifmgrpb.TxNotifStateReq{
+		TxID:       &tx.ID,
+		NotifState: &txNotifState,
+		NotifType:  &txNotifType,
+	})
+	if err != nil {
+		logger.Sugar().Errorw("CreateTxNotifState", "error", err.Error())
 	}
 
 	return nil

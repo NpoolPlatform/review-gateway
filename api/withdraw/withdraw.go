@@ -85,11 +85,6 @@ func (s *Server) UpdateWithdrawReview(
 		return &npool.UpdateWithdrawReviewResponse{}, status.Error(codes.InvalidArgument, "UserID is invalid")
 	}
 
-	if _, err := uuid.Parse(in.GetLangID()); err != nil {
-		logger.Sugar().Errorw("UpdateWithdrawReview", "LangID", in.GetLangID(), "error", err)
-		return &npool.UpdateWithdrawReviewResponse{}, status.Error(codes.InvalidArgument, "LangID is invalid")
-	}
-
 	switch in.GetState() {
 	case reviewmgrpb.ReviewState_Approved:
 	case reviewmgrpb.ReviewState_Rejected:
