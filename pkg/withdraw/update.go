@@ -4,6 +4,8 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/NpoolPlatform/go-service-framework/pkg/logger"
+
 	kyccli "github.com/NpoolPlatform/appuser-manager/pkg/client/kyc"
 	kycpb "github.com/NpoolPlatform/message/npool/appuser/mgr/v2/kyc"
 
@@ -48,6 +50,9 @@ import (
 	review1 "github.com/NpoolPlatform/review-gateway/pkg/review"
 
 	notif1 "github.com/NpoolPlatform/review-gateway/pkg/notif"
+
+	txnotifmgrpb "github.com/NpoolPlatform/message/npool/notif/mgr/v1/notif/txnotifstate"
+	txnotifcli "github.com/NpoolPlatform/notif-middleware/pkg/client/notif/txnotifstate"
 )
 
 //nolint:gocyclo
@@ -376,6 +381,17 @@ func approve(ctx context.Context, withdraw *withdrawmgrpb.Withdraw) error {
 		State:                 &state1,
 	}); err != nil {
 		return err
+	}
+
+	txNotifState := txnotifmgrpb.TxState_WaitTxSuccess
+	txNotifType := txnotifmgrpb.TxType_Withdraw
+	_, err = txnotifcli.CreateTxNotifState(ctx, &txnotifmgrpb.TxNotifStateReq{
+		TxID:       &tx.ID,
+		NotifState: &txNotifState,
+		NotifType:  &txNotifType,
+	})
+	if err != nil {
+		logger.Sugar().Errorw("CreateTxNotifState", "error", err.Error())
 	}
 
 	return nil
