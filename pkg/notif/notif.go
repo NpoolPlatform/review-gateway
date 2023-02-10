@@ -48,14 +48,13 @@ func CreateNotif(
 		}
 
 		notifReq := []*notifmgrpb.NotifReq{}
-		content := ""
 		useTemplate := true
 		date := time.Now().Format("2006-01-02")
 		time1 := time.Now().Format("15:04:05")
 
-		for _, val := range templateInfos {
-			content = thirdpkg.ReplaceVariable(
-				val.Content,
+		for key := range templateInfos {
+			content := thirdpkg.ReplaceVariable(
+				templateInfos[key].Content,
 				userName,
 				nil,
 				amount,
@@ -64,14 +63,13 @@ func CreateNotif(
 				&time1,
 				address,
 			)
-
 			notifReq = append(notifReq, &notifmgrpb.NotifReq{
 				AppID:       &appID,
 				UserID:      &userID,
-				LangID:      &val.LangID,
+				LangID:      &templateInfos[key].LangID,
 				EventType:   &eventType,
 				UseTemplate: &useTemplate,
-				Title:       &val.Title,
+				Title:       &templateInfos[key].Title,
 				Content:     &content,
 				Channels:    []channelpb.NotifChannel{channelpb.NotifChannel_ChannelEmail},
 			})
