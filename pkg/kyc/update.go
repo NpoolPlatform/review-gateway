@@ -4,6 +4,8 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/NpoolPlatform/message/npool/third/mgr/v1/usedfor"
+
 	notif1 "github.com/NpoolPlatform/review-gateway/pkg/notif"
 
 	kycmgrcli "github.com/NpoolPlatform/appuser-manager/pkg/client/kyc"
@@ -13,8 +15,6 @@ import (
 
 	npool "github.com/NpoolPlatform/message/npool/review/gw/v2/kyc"
 	reviewmgrpb "github.com/NpoolPlatform/message/npool/review/mgr/v2"
-
-	notifmgrpb "github.com/NpoolPlatform/message/npool/notif/mgr/v1/notif"
 )
 
 func UpdateKycReview(
@@ -50,11 +50,11 @@ func UpdateKycReview(
 		return nil, err
 	}
 
-	eventType := notifmgrpb.EventType_KYCApproved
+	eventType := usedfor.UsedFor_KYCApproved
 	kycState := kycmgrpb.KycState_Approved
 	if state == reviewmgrpb.ReviewState_Rejected {
 		kycState = kycmgrpb.KycState_Rejected
-		eventType = notifmgrpb.EventType_KYCRejected
+		eventType = usedfor.UsedFor_KYCRejected
 	}
 
 	_, err = kycmgrcli.UpdateKyc(ctx, &kycmgrpb.KycReq{
@@ -65,7 +65,7 @@ func UpdateKycReview(
 		return nil, err
 	}
 
-	notif1.CreateNotif(ctx, appID, kycInfo.UserID, &userInfo.Username, nil, nil, nil, eventType)
+	notif1.CreateNotif(ctx, appID, kycInfo.UserID, &userInfo.Username, nil, nil, eventType)
 
 	if err != nil {
 		return nil, err
