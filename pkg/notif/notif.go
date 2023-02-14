@@ -116,15 +116,13 @@ func createFrontendNotif(
 		useTemplate := true
 
 		for _, val := range templateInfos {
-			content := thirdpkg.ReplaceVariable(
+			content := thirdpkg.FillTemplate(
 				val.Content,
-				userName,
-				nil,
-				amount,
-				coinUnit,
-				nil,
-				nil,
-				nil,
+				&thirdpkg.TemplateVars{
+					Username: userName,
+					Amount:   amount,
+					CoinUnit: coinUnit,
+				},
 			)
 
 			notifReq = append(notifReq, &notifmgrpb.NotifReq{
@@ -206,15 +204,13 @@ func createEmailNotif(
 	}
 
 	useTemplate := true
-	content := thirdpkg.ReplaceVariable(
+	content := thirdpkg.FillTemplate(
 		templateInfo.Body,
-		userName,
-		nil,
-		amount,
-		coinUnit,
-		nil,
-		nil,
-		nil,
+		&thirdpkg.TemplateVars{
+			Username: userName,
+			Amount:   amount,
+			CoinUnit: coinUnit,
+		},
 	)
 
 	return &notifmgrpb.NotifReq{
@@ -292,15 +288,13 @@ func createSMSNotif(
 	}
 
 	useTemplate := true
-	content := thirdpkg.ReplaceVariable(
+	content := thirdpkg.FillTemplate(
 		templateInfo.Message,
-		userName,
-		nil,
-		amount,
-		coinUnit,
-		nil,
-		nil,
-		nil,
+		&thirdpkg.TemplateVars{
+			Username: userName,
+			Amount:   amount,
+			CoinUnit: coinUnit,
+		},
 	)
 
 	return &notifmgrpb.NotifReq{
