@@ -4,9 +4,12 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/NpoolPlatform/message/npool/third/mgr/v1/usedfor"
+	"github.com/NpoolPlatform/go-service-framework/pkg/logger"
+	basetypes "github.com/NpoolPlatform/message/npool/basetypes/v1"
 
-	notif1 "github.com/NpoolPlatform/review-gateway/pkg/notif"
+	notifmwpb "github.com/NpoolPlatform/message/npool/notif/mw/v1/notif"
+	tmplmwpb "github.com/NpoolPlatform/message/npool/notif/mw/v1/template"
+	notifmwcli "github.com/NpoolPlatform/notif-middleware/pkg/client/notif"
 
 	kycmgrcli "github.com/NpoolPlatform/appuser-manager/pkg/client/kyc"
 	usercli "github.com/NpoolPlatform/appuser-middleware/pkg/client/user"
@@ -50,11 +53,11 @@ func UpdateKycReview(
 		return nil, err
 	}
 
-	eventType := usedfor.UsedFor_KYCApproved
+	eventType := basetypes.UsedFor_KYCApproved
 	kycState := kycmgrpb.KycState_Approved
 	if state == reviewmgrpb.ReviewState_Rejected {
 		kycState = kycmgrpb.KycState_Rejected
-		eventType = usedfor.UsedFor_KYCRejected
+		eventType = basetypes.UsedFor_KYCRejected
 	}
 
 	_, err = kycmgrcli.UpdateKyc(ctx, &kycmgrpb.KycReq{
@@ -65,10 +68,17 @@ func UpdateKycReview(
 		return nil, err
 	}
 
-	notif1.CreateNotif(ctx, appID, kycInfo.UserID, &userInfo.Username, nil, nil, eventType)
-
+	_, err = notifmwcli.GenerateNotifs(ctx, &notifmwpb.GenerateNotifsRequest{
+		AppID:     appID,
+		UserID:    kycInfo.UserID,
+		EventType: eventType,
+		Vars: &tmplmwpb.TemplateVars{
+			Username: &userInfo.Username,
+		},
+	})
 	if err != nil {
-		return nil, err
+		logger.Sugar().Errorw("UpdateKycReview", "Error", err)
 	}
+
 	return GetKycReview(ctx, id)
 }

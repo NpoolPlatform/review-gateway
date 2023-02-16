@@ -12,7 +12,6 @@ import (
 	mysqlconst "github.com/NpoolPlatform/go-service-framework/pkg/mysql/const"
 	rabbitmqconst "github.com/NpoolPlatform/go-service-framework/pkg/rabbitmq/const"
 	redisconst "github.com/NpoolPlatform/go-service-framework/pkg/redis/const"
-	reviewconst "github.com/NpoolPlatform/review-service/pkg/message/const"
 
 	cli "github.com/urfave/cli/v2"
 )
@@ -35,7 +34,6 @@ func main() {
 		mysqlconst.MysqlServiceName,
 		rabbitmqconst.RabbitMQServiceName,
 		redisconst.RedisServiceName,
-		reviewconst.ServiceName,
 	)
 	if err != nil {
 		logger.Sugar().Errorf("fail to create %v: %v", servicename.ServiceName, err)
