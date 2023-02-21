@@ -3,25 +3,22 @@ module github.com/NpoolPlatform/review-gateway
 go 1.17
 
 require (
-	github.com/NpoolPlatform/account-middleware v0.0.0-20221216032556-c0953cebb9a4
+	github.com/NpoolPlatform/account-middleware v0.0.0-20230112023810-a1206cc8bb2e
 	github.com/NpoolPlatform/appuser-gateway v0.0.0-20230210194407-48a1f6199e74
-	github.com/NpoolPlatform/appuser-manager v0.0.0-20230111060622-e3a10cc791c1
-	github.com/NpoolPlatform/appuser-middleware v0.0.0-20230210194000-019f2641c2be
-	github.com/NpoolPlatform/basal-middleware v0.0.0-20221228013048-951da3e0461c
-	github.com/NpoolPlatform/chain-middleware v0.0.0-20221216021206-c73dbc7ea1ce
-	github.com/NpoolPlatform/g11n-middleware v0.0.0-20230210193058-7c376766d884
+	github.com/NpoolPlatform/appuser-manager v0.0.0-20230221094907-4452d99d9f56
+	github.com/NpoolPlatform/appuser-middleware v0.0.0-20230221095346-3f4e44fb0b41
+	github.com/NpoolPlatform/basal-middleware v0.0.0-20230221094657-688f81366495
+	github.com/NpoolPlatform/chain-middleware v0.0.0-20230221100129-05c4e67a81db
 	github.com/NpoolPlatform/go-service-framework v0.0.0-20230102062414-c71643aee0bd
 	github.com/NpoolPlatform/ledger-gateway v0.0.0-20220813124620-9cbc5e1a2318
-	github.com/NpoolPlatform/ledger-manager v0.0.0-20221222080228-e0b64d8fc4d2
-	github.com/NpoolPlatform/ledger-middleware v0.0.0-20221222080503-edf65d38e64b
+	github.com/NpoolPlatform/ledger-manager v0.0.0-20230111061350-4bddabacc212
+	github.com/NpoolPlatform/ledger-middleware v0.0.0-20230111062738-1054218618aa
 	github.com/NpoolPlatform/libent-cruder v0.0.0-20221109023947-366125b690fb
-	github.com/NpoolPlatform/message v0.0.0-20230216045739-9fa2dbecebdd
-	github.com/NpoolPlatform/notif-middleware v0.0.0-20230214095133-9aa476e925f8
+	github.com/NpoolPlatform/message v0.0.0-20230221074244-b2bf82fffce8
+	github.com/NpoolPlatform/notif-middleware v0.0.0-20230221093008-c752bddbb687
 	github.com/NpoolPlatform/review-manager v0.0.0-20230105071741-54c6aaed8d37
 	github.com/NpoolPlatform/review-middleware v0.0.0-20230105072527-025b5576faf7
-	github.com/NpoolPlatform/review-service v0.0.0-20220826135931-2f311aae9cbd
 	github.com/NpoolPlatform/sphinx-proxy v0.0.0-20230216075025-a90a86bfd19b
-	github.com/NpoolPlatform/third-middleware v0.0.0-20230214141526-6915910bb5f0
 	github.com/go-resty/resty/v2 v2.7.0
 	github.com/google/uuid v1.3.0
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.11.3
@@ -34,7 +31,7 @@ require (
 )
 
 require (
-	cloud.google.com/go/compute v1.14.0 // indirect
+	cloud.google.com/go/compute/metadata v0.2.3 // indirect
 	github.com/Shonminh/apollo-client v0.4.0 // indirect
 	github.com/andres-erbsen/clock v0.0.0-20160526145045-9e14626cd129 // indirect
 	github.com/armon/go-metrics v0.3.10 // indirect
@@ -87,6 +84,7 @@ require (
 	github.com/spf13/pflag v1.0.5 // indirect
 	github.com/spf13/viper v1.12.0 // indirect
 	github.com/subosito/gotenv v1.3.0 // indirect
+	github.com/ugorji/go/codec v1.2.9 // indirect
 	github.com/xrash/smetrics v0.0.0-20201216005158-039620a65673 // indirect
 	go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc v0.31.0 // indirect
 	go.opentelemetry.io/otel v1.10.0 // indirect

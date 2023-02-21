@@ -47,8 +47,10 @@ import (
 
 	review1 "github.com/NpoolPlatform/review-gateway/pkg/review"
 
-	txnotifmgrpb "github.com/NpoolPlatform/message/npool/notif/mgr/v1/notif/txnotifstate"
-	txnotifcli "github.com/NpoolPlatform/notif-middleware/pkg/client/notif/txnotifstate"
+	txnotifmgrpb "github.com/NpoolPlatform/message/npool/notif/mgr/v1/notif/tx"
+	txnotifcli "github.com/NpoolPlatform/notif-middleware/pkg/client/notif/tx"
+
+	basetypes "github.com/NpoolPlatform/message/npool/basetypes/v1"
 )
 
 //nolint:gocyclo
@@ -332,7 +334,7 @@ func approve(ctx context.Context, withdraw *withdrawmgrpb.Withdraw) error {
 
 	amountS := amount.String()
 	feeAmountS := feeAmount.String()
-	txType := txmgrpb.TxType_TxWithdraw
+	txType := basetypes.TxType_TxWithdraw
 	txExtra := fmt.Sprintf(
 		`{"AppID":"%v","UserID":"%v","Address":"%v","CoinName":"%v","WithdrawID":"%v"}`,
 		withdraw.AppID,
@@ -364,15 +366,15 @@ func approve(ctx context.Context, withdraw *withdrawmgrpb.Withdraw) error {
 		return err
 	}
 
-	txNotifState := txnotifmgrpb.TxState_WaitTxSuccess
-	txNotifType := txnotifmgrpb.TxType_Withdraw
-	_, err = txnotifcli.CreateTxNotifState(ctx, &txnotifmgrpb.TxNotifStateReq{
+	txNotifState := txnotifmgrpb.TxState_WaitSuccess
+	txNotifType := basetypes.TxType_TxWithdraw
+	_, err = txnotifcli.CreateTx(ctx, &txnotifmgrpb.TxReq{
 		TxID:       &tx.ID,
 		NotifState: &txNotifState,
-		NotifType:  &txNotifType,
+		TxType:     &txNotifType,
 	})
 	if err != nil {
-		logger.Sugar().Errorw("CreateTxNotifState", "error", err.Error())
+		logger.Sugar().Errorw("CreateTx", "error", err.Error())
 	}
 
 	return nil
