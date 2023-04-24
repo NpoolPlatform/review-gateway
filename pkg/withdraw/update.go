@@ -6,8 +6,8 @@ import (
 
 	"github.com/NpoolPlatform/go-service-framework/pkg/logger"
 
-	kyccli "github.com/NpoolPlatform/appuser-manager/pkg/client/kyc"
-	kycpb "github.com/NpoolPlatform/message/npool/appuser/mgr/v2/kyc"
+	kycmwcli "github.com/NpoolPlatform/appuser-middleware/pkg/client/kyc"
+	kycmwpb "github.com/NpoolPlatform/message/npool/appuser/mw/v1/kyc"
 
 	usercli "github.com/NpoolPlatform/appuser-middleware/pkg/client/user"
 
@@ -79,12 +79,12 @@ func UpdateWithdrawReview(
 		return nil, fmt.Errorf("not reviewing")
 	}
 
-	kyc, err := kyccli.GetKycOnly(ctx, &kycpb.Conds{
-		AppID: &commonpb.StringVal{
+	kyc, err := kycmwcli.GetKycOnly(ctx, &kycmwpb.Conds{
+		AppID: &basetypes.StringVal{
 			Op:    cruder.EQ,
 			Value: w.AppID,
 		},
-		UserID: &commonpb.StringVal{
+		UserID: &basetypes.StringVal{
 			Op:    cruder.EQ,
 			Value: w.UserID,
 		},
@@ -96,7 +96,7 @@ func UpdateWithdrawReview(
 		return nil, fmt.Errorf("kyc review not created")
 	}
 
-	if kyc.State != kycpb.KycState_Approved {
+	if kyc.State != basetypes.KycState_Approved {
 		return nil, fmt.Errorf("kyc review not approved")
 	}
 
