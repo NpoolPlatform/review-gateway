@@ -8,7 +8,7 @@ import (
 
 	npool "github.com/NpoolPlatform/message/npool/review/gw/v2/withdraw"
 
-	usercli "github.com/NpoolPlatform/appuser-middleware/pkg/client/user"
+	usermwcli "github.com/NpoolPlatform/appuser-middleware/pkg/client/user"
 	appcoininfocli "github.com/NpoolPlatform/chain-middleware/pkg/client/appcoin"
 	withdrawcli "github.com/NpoolPlatform/ledger-manager/pkg/client/withdraw"
 	reviewcli "github.com/NpoolPlatform/review-manager/pkg/client/review"
@@ -22,7 +22,8 @@ import (
 	ledgerconst "github.com/NpoolPlatform/ledger-gateway/pkg/message/const"
 
 	commonpb "github.com/NpoolPlatform/message/npool"
-	userpb "github.com/NpoolPlatform/message/npool/appuser/mw/v1/user"
+	usermwpb "github.com/NpoolPlatform/message/npool/appuser/mw/v1/user"
+	basetypes "github.com/NpoolPlatform/message/npool/basetypes/v1"
 	appcoinpb "github.com/NpoolPlatform/message/npool/chain/mw/v1/appcoin"
 	withdrawmgrpb "github.com/NpoolPlatform/message/npool/ledger/mgr/v1/ledger/withdraw"
 	reviewpb "github.com/NpoolPlatform/message/npool/review/mgr/v2"
@@ -96,12 +97,14 @@ func GetWithdrawReviews(ctx context.Context, appID string, offset, limit int32) 
 		uids = append(uids, w.UserID)
 	}
 
-	users, _, err := usercli.GetManyUsers(ctx, uids)
+	users, _, err := usermwcli.GetUsers(ctx, &usermwpb.Conds{
+		IDs: &basetypes.StringSliceVal{Op: cruder.IN, Value: uids},
+	}, 0, int32(len(uids)))
 	if err != nil {
 		return nil, 0, err
 	}
 
-	userMap := map[string]*userpb.User{}
+	userMap := map[string]*usermwpb.User{}
 	for _, user := range users {
 		userMap[user.ID] = user
 	}
@@ -222,7 +225,7 @@ func GetWithdrawReview(ctx context.Context, reviewID string) (*npool.WithdrawRev
 		return nil, fmt.Errorf("invalid withdraw")
 	}
 
-	user, err := usercli.GetUser(ctx, withdraw.AppID, withdraw.UserID)
+	user, err := usermwcli.GetUser(ctx, withdraw.AppID, withdraw.UserID)
 	if err != nil {
 		return nil, err
 	}

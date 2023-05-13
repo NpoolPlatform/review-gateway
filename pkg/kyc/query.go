@@ -9,12 +9,12 @@ import (
 	appusergateway "github.com/NpoolPlatform/appuser-gateway/pkg/message/const"
 	npool "github.com/NpoolPlatform/message/npool/review/gw/v2/kyc"
 
-	kyccli "github.com/NpoolPlatform/appuser-manager/pkg/client/kyc"
-	usercli "github.com/NpoolPlatform/appuser-middleware/pkg/client/user"
+	kycmwcli "github.com/NpoolPlatform/appuser-middleware/pkg/client/kyc"
+	usermwcli "github.com/NpoolPlatform/appuser-middleware/pkg/client/user"
 	cruder "github.com/NpoolPlatform/libent-cruder/pkg/cruder"
-	commonpb "github.com/NpoolPlatform/message/npool"
-	kycmgrpb "github.com/NpoolPlatform/message/npool/appuser/mgr/v2/kyc"
-	userpb "github.com/NpoolPlatform/message/npool/appuser/mw/v1/user"
+	kycmwpb "github.com/NpoolPlatform/message/npool/appuser/mw/v1/kyc"
+	usermwpb "github.com/NpoolPlatform/message/npool/appuser/mw/v1/user"
+	basetypes "github.com/NpoolPlatform/message/npool/basetypes/v1"
 	reviewpb "github.com/NpoolPlatform/message/npool/review/mgr/v2"
 	reviewcli "github.com/NpoolPlatform/review-manager/pkg/client/review"
 	reviewmwcli "github.com/NpoolPlatform/review-middleware/pkg/client/review"
@@ -22,13 +22,13 @@ import (
 
 // nolint
 func GetkycReviews(ctx context.Context, appID string, offset, limit int32) ([]*npool.KycReview, uint32, error) {
-	conds := &kycmgrpb.Conds{
-		AppID: &commonpb.StringVal{
+	conds := &kycmwpb.Conds{
+		AppID: &basetypes.StringVal{
 			Op:    cruder.EQ,
 			Value: appID,
 		},
 	}
-	kycs, total, err := kyccli.GetKycs(ctx, conds, offset, limit)
+	kycs, total, err := kycmwcli.GetKycs(ctx, conds, offset, limit)
 	if err != nil {
 		return nil, 0, err
 	}
@@ -62,12 +62,14 @@ func GetkycReviews(ctx context.Context, appID string, offset, limit int32) ([]*n
 		uids = append(uids, w.UserID)
 	}
 
-	users, _, err := usercli.GetManyUsers(ctx, uids)
+	users, _, err := usermwcli.GetUsers(ctx, &usermwpb.Conds{
+		IDs: &basetypes.StringSliceVal{Op: cruder.IN, Value: uids},
+	}, 0, int32(len(uids)))
 	if err != nil {
 		return nil, 0, err
 	}
 
-	userMap := map[string]*userpb.User{}
+	userMap := map[string]*usermwpb.User{}
 	for _, user := range users {
 		userMap[user.ID] = user
 	}
@@ -89,7 +91,7 @@ func GetkycReviews(ctx context.Context, appID string, offset, limit int32) ([]*n
 			}
 		}
 
-		user := &userpb.User{}
+		user := &usermwpb.User{}
 		userM, ok := userMap[kyc.UserID]
 		if ok {
 			user = userM
@@ -137,7 +139,7 @@ func GetKycReview(ctx context.Context, reviewID string) (*npool.KycReview, error
 		return nil, fmt.Errorf("invalid object type")
 	}
 
-	kyc, err := kyccli.GetKyc(ctx, rv.ObjectID)
+	kyc, err := kycmwcli.GetKyc(ctx, rv.ObjectID)
 	if err != nil {
 		return nil, err
 	}
@@ -145,7 +147,7 @@ func GetKycReview(ctx context.Context, reviewID string) (*npool.KycReview, error
 		return nil, fmt.Errorf("invalid kyc")
 	}
 
-	user, err := usercli.GetUser(ctx, kyc.AppID, kyc.UserID)
+	user, err := usermwcli.GetUser(ctx, kyc.AppID, kyc.UserID)
 	if err != nil {
 		return nil, err
 	}

@@ -11,9 +11,9 @@ import (
 	tmplmwpb "github.com/NpoolPlatform/message/npool/notif/mw/v1/template"
 	notifmwcli "github.com/NpoolPlatform/notif-middleware/pkg/client/notif"
 
-	kycmgrcli "github.com/NpoolPlatform/appuser-manager/pkg/client/kyc"
+	kycmwcli "github.com/NpoolPlatform/appuser-middleware/pkg/client/kyc"
 	usercli "github.com/NpoolPlatform/appuser-middleware/pkg/client/user"
-	kycmgrpb "github.com/NpoolPlatform/message/npool/appuser/mgr/v2/kyc"
+	kycmwpb "github.com/NpoolPlatform/message/npool/appuser/mw/v1/kyc"
 	review1 "github.com/NpoolPlatform/review-gateway/pkg/review"
 
 	npool "github.com/NpoolPlatform/message/npool/review/gw/v2/kyc"
@@ -33,7 +33,7 @@ func UpdateKycReview(
 		return nil, err
 	}
 
-	kycInfo, err := kycmgrcli.GetKyc(ctx, objID)
+	kycInfo, err := kycmwcli.GetKyc(ctx, objID)
 	if err != nil {
 		return nil, err
 	}
@@ -54,13 +54,13 @@ func UpdateKycReview(
 	}
 
 	eventType := basetypes.UsedFor_KYCApproved
-	kycState := kycmgrpb.KycState_Approved
+	kycState := basetypes.KycState_Approved
 	if state == reviewmgrpb.ReviewState_Rejected {
-		kycState = kycmgrpb.KycState_Rejected
+		kycState = basetypes.KycState_Rejected
 		eventType = basetypes.UsedFor_KYCRejected
 	}
 
-	_, err = kycmgrcli.UpdateKyc(ctx, &kycmgrpb.KycReq{
+	_, err = kycmwcli.UpdateKyc(ctx, &kycmwpb.KycReq{
 		ID:    &objID,
 		State: &kycState,
 	})
