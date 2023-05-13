@@ -5,7 +5,7 @@ go 1.17
 require (
 	github.com/NpoolPlatform/account-middleware v0.0.0-20230112023810-a1206cc8bb2e
 	github.com/NpoolPlatform/appuser-gateway v0.0.0-20230210194407-48a1f6199e74
-	github.com/NpoolPlatform/appuser-middleware v0.0.0-20230424050801-787a8feac17c
+	github.com/NpoolPlatform/appuser-middleware v0.0.0-20230513100509-b19f356ebd4b
 	github.com/NpoolPlatform/basal-middleware v0.0.0-20230421085555-165e4722a9ba
 	github.com/NpoolPlatform/chain-middleware v0.0.0-20230221100129-05c4e67a81db
 	github.com/NpoolPlatform/go-service-framework v0.0.0-20230412082654-0f8f9e7ae58d
@@ -13,7 +13,7 @@ require (
 	github.com/NpoolPlatform/ledger-manager v0.0.0-20230111061350-4bddabacc212
 	github.com/NpoolPlatform/ledger-middleware v0.0.0-20230111062738-1054218618aa
 	github.com/NpoolPlatform/libent-cruder v0.0.0-20221109023947-366125b690fb
-	github.com/NpoolPlatform/message v0.0.0-20230424085554-64fa8188328c
+	github.com/NpoolPlatform/message v0.0.0-20230513100359-465cbc33723b
 	github.com/NpoolPlatform/notif-middleware v0.0.0-20230221093008-c752bddbb687
 	github.com/NpoolPlatform/review-manager v0.0.0-20230105071741-54c6aaed8d37
 	github.com/NpoolPlatform/review-middleware v0.0.0-20230105072527-025b5576faf7
