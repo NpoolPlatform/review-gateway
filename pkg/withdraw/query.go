@@ -9,7 +9,7 @@ import (
 	npool "github.com/NpoolPlatform/message/npool/review/gw/v2/withdraw"
 
 	usermwcli "github.com/NpoolPlatform/appuser-middleware/pkg/client/user"
-	appcoininfocli "github.com/NpoolPlatform/chain-middleware/pkg/client/appcoin"
+	appcoinmwcli "github.com/NpoolPlatform/chain-middleware/pkg/client/app/coin"
 	withdrawcli "github.com/NpoolPlatform/ledger-manager/pkg/client/withdraw"
 	reviewcli "github.com/NpoolPlatform/review-manager/pkg/client/review"
 	reviewmwcli "github.com/NpoolPlatform/review-middleware/pkg/client/review"
@@ -24,7 +24,7 @@ import (
 	commonpb "github.com/NpoolPlatform/message/npool"
 	usermwpb "github.com/NpoolPlatform/message/npool/appuser/mw/v1/user"
 	basetypes "github.com/NpoolPlatform/message/npool/basetypes/v1"
-	appcoinpb "github.com/NpoolPlatform/message/npool/chain/mw/v1/appcoin"
+	appcoinmwpb "github.com/NpoolPlatform/message/npool/chain/mw/v1/app/coin"
 	withdrawmgrpb "github.com/NpoolPlatform/message/npool/ledger/mgr/v1/ledger/withdraw"
 	reviewpb "github.com/NpoolPlatform/message/npool/review/mgr/v2"
 
@@ -73,12 +73,12 @@ func GetWithdrawReviews(ctx context.Context, appID string, offset, limit int32) 
 		coinTypeIDs = append(coinTypeIDs, val.CoinTypeID)
 	}
 
-	coins, _, err := appcoininfocli.GetCoins(ctx, &appcoinpb.Conds{
-		AppID: &commonpb.StringVal{
+	coins, _, err := appcoinmwcli.GetCoins(ctx, &appcoinmwpb.Conds{
+		AppID: &basetypes.StringVal{
 			Op:    cruder.EQ,
 			Value: appID,
 		},
-		CoinTypeIDs: &commonpb.StringSliceVal{
+		CoinTypeIDs: &basetypes.StringSliceVal{
 			Op:    cruder.IN,
 			Value: coinTypeIDs,
 		},
@@ -87,7 +87,7 @@ func GetWithdrawReviews(ctx context.Context, appID string, offset, limit int32) 
 		return nil, 0, err
 	}
 
-	coinMap := map[string]*appcoinpb.Coin{}
+	coinMap := map[string]*appcoinmwpb.Coin{}
 	for _, coin := range coins {
 		coinMap[coin.CoinTypeID] = coin
 	}
