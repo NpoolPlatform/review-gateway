@@ -11,7 +11,7 @@ import (
 	usermwcli "github.com/NpoolPlatform/appuser-middleware/pkg/client/user"
 	appcoininfocli "github.com/NpoolPlatform/chain-middleware/pkg/client/appcoin"
 	withdrawcli "github.com/NpoolPlatform/ledger-manager/pkg/client/withdraw"
-	reviewcli "github.com/NpoolPlatform/review-manager/pkg/client/review"
+	reviewcli "github.com/NpoolPlatform/review-middleware/pkg/client/review"
 	reviewmwcli "github.com/NpoolPlatform/review-middleware/pkg/client/review"
 
 	useraccmwcli "github.com/NpoolPlatform/account-middleware/pkg/client/user"
@@ -26,7 +26,7 @@ import (
 	basetypes "github.com/NpoolPlatform/message/npool/basetypes/v1"
 	appcoinpb "github.com/NpoolPlatform/message/npool/chain/mw/v1/appcoin"
 	withdrawmgrpb "github.com/NpoolPlatform/message/npool/ledger/mgr/v1/ledger/withdraw"
-	reviewpb "github.com/NpoolPlatform/message/npool/review/mgr/v2"
+	reviewpb "github.com/NpoolPlatform/message/npool/review/mw/v2"
 
 	cruder "github.com/NpoolPlatform/libent-cruder/pkg/cruder"
 )

@@ -14,7 +14,7 @@ import (
 	"github.com/shopspring/decimal"
 
 	"github.com/NpoolPlatform/message/npool/review/gw/v2/withdraw"
-	reviewmgrpb "github.com/NpoolPlatform/message/npool/review/mgr/v2"
+	reviewmgrpb "github.com/NpoolPlatform/message/npool/review/mw/v2"
 
 	withdrawmgrcli "github.com/NpoolPlatform/ledger-manager/pkg/client/withdraw"
 	withdrawmgrpb "github.com/NpoolPlatform/message/npool/ledger/mgr/v1/ledger/withdraw"

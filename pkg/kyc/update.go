@@ -17,7 +17,7 @@ import (
 	review1 "github.com/NpoolPlatform/review-gateway/pkg/review"
 
 	npool "github.com/NpoolPlatform/message/npool/review/gw/v2/kyc"
-	reviewmgrpb "github.com/NpoolPlatform/message/npool/review/mgr/v2"
+	reviewmgrpb "github.com/NpoolPlatform/message/npool/review/mw/v2"
 )
 
 func UpdateKycReview(
