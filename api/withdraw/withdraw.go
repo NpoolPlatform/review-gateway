@@ -29,7 +29,7 @@ func (s *Server) GetWithdrawReviews(
 
 	limit := in.GetLimit()
 	if limit == 0 {
-		limit = constant.DefaultLimitRows
+		limit = constant.DefaultRowLimit
 	}
 
 	infos, total, err := withdraw1.GetWithdrawReviews(ctx, in.GetAppID(), in.GetOffset(), limit)
