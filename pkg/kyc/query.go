@@ -16,19 +16,17 @@ import (
 	usermwpb "github.com/NpoolPlatform/message/npool/appuser/mw/v1/user"
 	basetypes "github.com/NpoolPlatform/message/npool/basetypes/v1"
 	reviewpb "github.com/NpoolPlatform/message/npool/review/mw/v2"
-	reviewcli "github.com/NpoolPlatform/review-middleware/pkg/client/review"
 	reviewmwcli "github.com/NpoolPlatform/review-middleware/pkg/client/review"
 )
 
-// nolint
-func GetkycReviews(ctx context.Context, appID string, offset, limit int32) ([]*npool.KycReview, uint32, error) {
+func (h *Handler) GetKycReviews(ctx context.Context) ([]*npool.KycReview, uint32, error) {
 	conds := &kycmwpb.Conds{
 		AppID: &basetypes.StringVal{
 			Op:    cruder.EQ,
-			Value: appID,
+			Value: *h.AppID,
 		},
 	}
-	kycs, total, err := kycmwcli.GetKycs(ctx, conds, offset, limit)
+	kycs, total, err := kycmwcli.GetKycs(ctx, conds, h.Offset, h.Limit)
 	if err != nil {
 		return nil, 0, err
 	}
@@ -43,7 +41,7 @@ func GetkycReviews(ctx context.Context, appID string, offset, limit int32) ([]*n
 
 	rvs, err := reviewmwcli.GetObjectReviews(
 		ctx,
-		appID,
+		*h.AppID,
 		appusergateway.ServiceName,
 		ids,
 		reviewpb.ReviewObjectType_ObjectKyc,
@@ -128,7 +126,7 @@ func GetkycReviews(ctx context.Context, appID string, offset, limit int32) ([]*n
 
 // nolint
 func GetKycReview(ctx context.Context, reviewID string) (*npool.KycReview, error) {
-	rv, err := reviewcli.GetReview(ctx, reviewID)
+	rv, err := reviewmwcli.GetReview(ctx, reviewID)
 	if err != nil {
 		return nil, err
 	}
@@ -154,8 +152,6 @@ func GetKycReview(ctx context.Context, reviewID string) (*npool.KycReview, error
 	if user == nil {
 		return nil, fmt.Errorf("invalid user")
 	}
-
-	// TODO: we need fill reviewer name, but we miss appid in reviews table
 
 	switch rv.State {
 	case reviewpb.ReviewState_Approved:
