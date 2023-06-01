@@ -4,9 +4,9 @@ import (
 	"context"
 	"fmt"
 
-	reviewmgrpb "github.com/NpoolPlatform/message/npool/review/mgr/v2"
+	reviewmgrpb "github.com/NpoolPlatform/message/npool/review/mw/v2"
 
-	reviewcli "github.com/NpoolPlatform/review-manager/pkg/client/review"
+	reviewcli "github.com/NpoolPlatform/review-middleware/pkg/client/review"
 
 	usercli "github.com/NpoolPlatform/appuser-middleware/pkg/client/user"
 )

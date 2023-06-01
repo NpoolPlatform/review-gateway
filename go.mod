@@ -4,10 +4,10 @@ go 1.17
 
 require (
 	github.com/NpoolPlatform/account-middleware v0.0.0-20230112023810-a1206cc8bb2e
-	github.com/NpoolPlatform/appuser-gateway v0.0.0-20230210194407-48a1f6199e74
-	github.com/NpoolPlatform/appuser-middleware v0.0.0-20230513100509-b19f356ebd4b
+	github.com/NpoolPlatform/appuser-gateway v0.0.9
+	github.com/NpoolPlatform/appuser-middleware v0.0.0-20230531113139-875967739451
 	github.com/NpoolPlatform/basal-middleware v0.0.0-20230518061816-62bd589c0f63
-	github.com/NpoolPlatform/chain-middleware v0.0.0-20230605123408-7e083d1f9b54
+	github.com/NpoolPlatform/chain-middleware v0.0.0-20230605142107-82fd8f560b37
 	github.com/NpoolPlatform/go-service-framework v0.0.0-20230602083207-1c0e6203556b
 	github.com/NpoolPlatform/ledger-gateway v0.0.0-20220813124620-9cbc5e1a2318
 	github.com/NpoolPlatform/ledger-manager v0.0.0-20230111061350-4bddabacc212
@@ -15,8 +15,7 @@ require (
 	github.com/NpoolPlatform/libent-cruder v0.0.0-20221109023947-366125b690fb
 	github.com/NpoolPlatform/message v0.0.0-20230605075344-03a09d2c34b8
 	github.com/NpoolPlatform/notif-middleware v0.0.0-20230221093008-c752bddbb687
-	github.com/NpoolPlatform/review-manager v0.0.0-20230105071741-54c6aaed8d37
-	github.com/NpoolPlatform/review-middleware v0.0.0-20230105072527-025b5576faf7
+	github.com/NpoolPlatform/review-middleware v0.0.0-20230530102618-ca011f08a67d
 	github.com/NpoolPlatform/sphinx-proxy v0.0.0-20230216075025-a90a86bfd19b
 	github.com/go-resty/resty/v2 v2.7.0
 	github.com/google/uuid v1.3.0
@@ -73,7 +72,7 @@ require (
 	github.com/mitchellh/mapstructure v1.5.0 // indirect
 	github.com/oklog/ulid v1.3.1 // indirect
 	github.com/pelletier/go-toml v1.9.5 // indirect
-	github.com/pelletier/go-toml/v2 v2.0.1 // indirect
+	github.com/pelletier/go-toml/v2 v2.0.2 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/prometheus/client_golang v1.14.0 // indirect

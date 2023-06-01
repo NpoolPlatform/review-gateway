@@ -15,8 +15,8 @@ import (
 	kycmwpb "github.com/NpoolPlatform/message/npool/appuser/mw/v1/kyc"
 	usermwpb "github.com/NpoolPlatform/message/npool/appuser/mw/v1/user"
 	basetypes "github.com/NpoolPlatform/message/npool/basetypes/v1"
-	reviewpb "github.com/NpoolPlatform/message/npool/review/mgr/v2"
-	reviewcli "github.com/NpoolPlatform/review-manager/pkg/client/review"
+	reviewpb "github.com/NpoolPlatform/message/npool/review/mw/v2"
+	reviewcli "github.com/NpoolPlatform/review-middleware/pkg/client/review"
 	reviewmwcli "github.com/NpoolPlatform/review-middleware/pkg/client/review"
 )
 

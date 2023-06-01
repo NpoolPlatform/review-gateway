@@ -5,7 +5,7 @@ import (
 
 	"github.com/NpoolPlatform/go-service-framework/pkg/logger"
 
-	reviewmgrpb "github.com/NpoolPlatform/message/npool/review/mgr/v2"
+	reviewmgrpb "github.com/NpoolPlatform/message/npool/review/mw/v2"
 
 	npool "github.com/NpoolPlatform/message/npool/review/gw/v2/withdraw"
 	constant "github.com/NpoolPlatform/review-gateway/pkg/const"
