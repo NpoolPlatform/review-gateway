@@ -11,17 +11,12 @@ import (
 )
 
 type Handler struct {
-	ID          *uuid.UUID
 	AppID       *string
 	TargetAppID *string
-	UserID      *uuid.UUID
+	UserID      *string
 	ReviewID    *uuid.UUID
-	LangID      *uuid.UUID
+	LangID      *string
 	Domain      *string
-	ObjectID    *uuid.UUID
-	ObjectIDs   []*uuid.UUID
-	Trigger     *npool.ReviewTriggerType
-	ObjectType  *npool.ReviewObjectType
 	State       *npool.ReviewState
 	Message     *string
 	Offset      int32
@@ -38,22 +33,8 @@ func NewHandler(ctx context.Context, options ...func(context.Context, *Handler) 
 	return handler, nil
 }
 
-func WithID(id *string) func(context.Context, *Handler) error {
-	return func(ctx context.Context, h *Handler) error {
-		_id, err := uuid.Parse(*id)
-		if err != nil {
-			return err
-		}
-		h.ID = &_id
-		return nil
-	}
-}
-
 func WithAppID(appID *string) func(context.Context, *Handler) error {
 	return func(ctx context.Context, h *Handler) error {
-		if appID == nil {
-			return nil
-		}
 		_, err := uuid.Parse(*appID)
 		if err != nil {
 			return err
@@ -81,22 +62,21 @@ func WithTargetAppID(appID *string) func(context.Context, *Handler) error {
 		return nil
 	}
 }
+
 func WithUserID(id *string) func(context.Context, *Handler) error {
 	return func(ctx context.Context, h *Handler) error {
-		_id, err := uuid.Parse(*id)
+		_, err := uuid.Parse(*id)
 		if err != nil {
 			return err
 		}
-		h.UserID = &_id
+		// TODO: Check UserID
+		h.UserID = id
 		return nil
 	}
 }
 
 func WithReviewID(id *string) func(context.Context, *Handler) error {
 	return func(ctx context.Context, h *Handler) error {
-		if id == nil {
-			return nil
-		}
 		_id, err := uuid.Parse(*id)
 		if err != nil {
 			return err
@@ -108,60 +88,11 @@ func WithReviewID(id *string) func(context.Context, *Handler) error {
 
 func WithLangID(langID *string) func(context.Context, *Handler) error {
 	return func(ctx context.Context, h *Handler) error {
-		if langID == nil {
-			return nil
-		}
-		_id, err := uuid.Parse(*langID)
+		_, err := uuid.Parse(*langID)
 		if err != nil {
 			return err
 		}
-		h.LangID = &_id
-		return nil
-	}
-}
-
-func WithDomain(domain *string) func(context.Context, *Handler) error {
-	return func(ctx context.Context, h *Handler) error {
-		if domain == nil {
-			return fmt.Errorf("invalid domain")
-		}
-		h.Domain = domain
-		return nil
-	}
-}
-
-func WithTrigger(trigger *npool.ReviewTriggerType) func(context.Context, *Handler) error {
-	return func(ctx context.Context, h *Handler) error {
-		if trigger == nil {
-			return nil
-		}
-		switch *trigger {
-		case npool.ReviewTriggerType_InsufficientFunds:
-		case npool.ReviewTriggerType_InsufficientGas:
-		case npool.ReviewTriggerType_InsufficientFundsGas:
-		case npool.ReviewTriggerType_LargeAmount:
-		case npool.ReviewTriggerType_AutoReviewed:
-		default:
-			return fmt.Errorf("invalid trigger type")
-		}
-
-		h.Trigger = trigger
-		return nil
-	}
-}
-
-func WithObjectType(_type *npool.ReviewObjectType) func(context.Context, *Handler) error {
-	return func(ctx context.Context, h *Handler) error {
-		if _type == nil {
-			return nil
-		}
-		switch *_type {
-		case npool.ReviewObjectType_ObjectKyc:
-		case npool.ReviewObjectType_ObjectWithdrawal:
-		default:
-			return fmt.Errorf("invalid object type")
-		}
-		h.ObjectType = _type
+		h.LangID = langID
 		return nil
 	}
 }
