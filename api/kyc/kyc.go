@@ -114,8 +114,6 @@ func (s *Server) UpdateAppKycReview(ctx context.Context, in *npool.UpdateAppKycR
 		ctx,
 		kyc1.WithAppID(&in.AppID),
 		kyc1.WithUserID(&in.UserID),
-		kyc1.WithLangID(&in.LangID),
-		kyc1.WithTargetAppID(&in.TargetAppID),
 		kyc1.WithReviewID(&in.ReviewID),
 		kyc1.WithState(&in.State, in.Message),
 		kyc1.WithMessage(in.Message),

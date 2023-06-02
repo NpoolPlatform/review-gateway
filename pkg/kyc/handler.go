@@ -86,17 +86,6 @@ func WithReviewID(id *string) func(context.Context, *Handler) error {
 	}
 }
 
-func WithLangID(langID *string) func(context.Context, *Handler) error {
-	return func(ctx context.Context, h *Handler) error {
-		_, err := uuid.Parse(*langID)
-		if err != nil {
-			return err
-		}
-		h.LangID = langID
-		return nil
-	}
-}
-
 func WithState(state *npool.ReviewState, message *string) func(context.Context, *Handler) error {
 	return func(ctx context.Context, h *Handler) error {
 		if state == nil {

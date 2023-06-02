@@ -69,13 +69,6 @@ func WithReviewID(id *string) func(context.Context, *Handler) error {
 	}
 }
 
-func WithLangID(langID *string) func(context.Context, *Handler) error {
-	return func(ctx context.Context, h *Handler) error {
-		h.LangID = langID
-		return nil
-	}
-}
-
 func WithState(state *npool.ReviewState, message *string) func(context.Context, *Handler) error {
 	return func(ctx context.Context, h *Handler) error {
 		h.State = state
