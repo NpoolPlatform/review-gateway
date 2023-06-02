@@ -12,7 +12,6 @@ import (
 	appcoininfocli "github.com/NpoolPlatform/chain-middleware/pkg/client/appcoin"
 	withdrawcli "github.com/NpoolPlatform/ledger-manager/pkg/client/withdraw"
 	reviewcli "github.com/NpoolPlatform/review-middleware/pkg/client/review"
-	reviewmwcli "github.com/NpoolPlatform/review-middleware/pkg/client/review"
 
 	useraccmwcli "github.com/NpoolPlatform/account-middleware/pkg/client/user"
 	useraccmwpb "github.com/NpoolPlatform/message/npool/account/mw/v1/user"
@@ -21,14 +20,13 @@ import (
 
 	ledgerconst "github.com/NpoolPlatform/ledger-gateway/pkg/message/const"
 
+	cruder "github.com/NpoolPlatform/libent-cruder/pkg/cruder"
 	commonpb "github.com/NpoolPlatform/message/npool"
 	usermwpb "github.com/NpoolPlatform/message/npool/appuser/mw/v1/user"
 	basetypes "github.com/NpoolPlatform/message/npool/basetypes/v1"
 	appcoinpb "github.com/NpoolPlatform/message/npool/chain/mw/v1/appcoin"
 	withdrawmgrpb "github.com/NpoolPlatform/message/npool/ledger/mgr/v1/ledger/withdraw"
 	reviewpb "github.com/NpoolPlatform/message/npool/review/mw/v2"
-
-	cruder "github.com/NpoolPlatform/libent-cruder/pkg/cruder"
 )
 
 // nolint
@@ -52,7 +50,7 @@ func (h *Handler) GetWithdrawReviews(ctx context.Context) ([]*npool.WithdrawRevi
 		wids = append(wids, w.ID)
 	}
 
-	rvs, err := reviewmwcli.GetObjectReviews(
+	rvs, err := reviewcli.GetObjectReviews(
 		ctx,
 		*h.AppID,
 		ledgerconst.ServiceName,
