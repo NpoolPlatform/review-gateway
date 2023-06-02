@@ -83,7 +83,7 @@ func (h *Handler) UpdateKycReview(ctx context.Context) (*npool.KycReview, error)
 		},
 	})
 	if err != nil {
-		logger.Sugar().Errorw("UpdateKycReview", "Error", err)
+		logger.Sugar().Errorw("UpdateKycReview", "Generate Notif Failed", "Error", err)
 	}
 
 	return h.GetKycReview(ctx)
