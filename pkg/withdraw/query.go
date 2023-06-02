@@ -32,14 +32,14 @@ import (
 )
 
 // nolint
-func GetWithdrawReviews(ctx context.Context, appID string, offset, limit int32) ([]*npool.WithdrawReview, uint32, error) {
+func (h *Handler) GetWithdrawReviews(ctx context.Context) ([]*npool.WithdrawReview, uint32, error) {
 	conds := &withdrawmgrpb.Conds{
 		AppID: &commonpb.StringVal{
 			Op:    cruder.EQ,
-			Value: appID,
+			Value: *h.AppID,
 		},
 	}
-	withdraws, total, err := withdrawcli.GetWithdraws(ctx, conds, offset, limit)
+	withdraws, total, err := withdrawcli.GetWithdraws(ctx, conds, h.Offset, h.Limit)
 	if err != nil {
 		return nil, 0, err
 	}
@@ -54,7 +54,7 @@ func GetWithdrawReviews(ctx context.Context, appID string, offset, limit int32) 
 
 	rvs, err := reviewmwcli.GetObjectReviews(
 		ctx,
-		appID,
+		*h.AppID,
 		ledgerconst.ServiceName,
 		wids,
 		reviewpb.ReviewObjectType_ObjectWithdrawal,
@@ -76,7 +76,7 @@ func GetWithdrawReviews(ctx context.Context, appID string, offset, limit int32) 
 	coins, _, err := appcoininfocli.GetCoins(ctx, &appcoinpb.Conds{
 		AppID: &commonpb.StringVal{
 			Op:    cruder.EQ,
-			Value: appID,
+			Value: *h.AppID,
 		},
 		CoinTypeIDs: &commonpb.StringSliceVal{
 			Op:    cruder.IN,
@@ -153,8 +153,6 @@ func GetWithdrawReviews(ctx context.Context, appID string, offset, limit int32) 
 			address = acc.Address
 		}
 
-		// TODO: we need fill reviewer name, but we miss appid in reviews table
-
 		switch rv.State {
 		case reviewpb.ReviewState_Approved:
 		case reviewpb.ReviewState_Rejected:
@@ -205,8 +203,8 @@ func GetWithdrawReviews(ctx context.Context, appID string, offset, limit int32) 
 }
 
 // nolint
-func GetWithdrawReview(ctx context.Context, reviewID string) (*npool.WithdrawReview, error) {
-	rv, err := reviewcli.GetReview(ctx, reviewID)
+func (h *Handler) GetWithdrawReview(ctx context.Context) (*npool.WithdrawReview, error) {
+	rv, err := reviewcli.GetReview(ctx, h.ReviewID.String())
 	if err != nil {
 		return nil, err
 	}

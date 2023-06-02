@@ -5,34 +5,30 @@ import (
 
 	"github.com/NpoolPlatform/go-service-framework/pkg/logger"
 
-	reviewmgrpb "github.com/NpoolPlatform/message/npool/review/mw/v2"
-
 	npool "github.com/NpoolPlatform/message/npool/review/gw/v2/withdraw"
-	constant "github.com/NpoolPlatform/review-gateway/pkg/const"
 	withdraw1 "github.com/NpoolPlatform/review-gateway/pkg/withdraw"
 
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
-
-	"github.com/google/uuid"
 )
 
-func (s *Server) GetWithdrawReviews(
-	ctx context.Context, in *npool.GetWithdrawReviewsRequest,
-) (
-	*npool.GetWithdrawReviewsResponse, error,
-) {
-	if _, err := uuid.Parse(in.GetAppID()); err != nil {
-		logger.Sugar().Errorw("GetWithdrawReviews", "AppID", in.GetAppID(), "error", err)
-		return &npool.GetWithdrawReviewsResponse{}, status.Error(codes.InvalidArgument, "AppID is invalid")
+func (s *Server) GetWithdrawReviews(ctx context.Context, in *npool.GetWithdrawReviewsRequest) (*npool.GetWithdrawReviewsResponse, error) {
+	handler, err := withdraw1.NewHandler(
+		ctx,
+		withdraw1.WithAppID(&in.AppID),
+		withdraw1.WithOffset(in.Offset),
+		withdraw1.WithLimit(in.Limit),
+	)
+	if err != nil {
+		logger.Sugar().Errorw(
+			"GetWithdrawReviews",
+			"Req", in,
+			"Error", err,
+		)
+		return &npool.GetWithdrawReviewsResponse{}, status.Error(codes.InvalidArgument, err.Error())
 	}
 
-	limit := in.GetLimit()
-	if limit == 0 {
-		limit = constant.DefaultRowLimit
-	}
-
-	infos, total, err := withdraw1.GetWithdrawReviews(ctx, in.GetAppID(), in.GetOffset(), limit)
+	infos, total, err := handler.GetWithdrawReviews(ctx)
 	if err != nil {
 		logger.Sugar().Errorw("GetWithdrawReviews", "AppID", in.GetAppID(), "error", err)
 		return &npool.GetWithdrawReviewsResponse{}, status.Error(codes.InvalidArgument, "fail get withdraw reviews")
@@ -44,66 +40,63 @@ func (s *Server) GetWithdrawReviews(
 	}, nil
 }
 
-func (s *Server) GetAppWithdrawReviews(
-	ctx context.Context, in *npool.GetAppWithdrawReviewsRequest,
-) (
-	*npool.GetAppWithdrawReviewsResponse, error,
-) {
-	resp, err := s.GetWithdrawReviews(ctx, &npool.GetWithdrawReviewsRequest{
-		AppID:  in.TargetAppID,
-		Offset: in.Offset,
-		Limit:  in.Limit,
-	})
+func (s *Server) GetAppWithdrawReviews(ctx context.Context, in *npool.GetAppWithdrawReviewsRequest) (*npool.GetAppWithdrawReviewsResponse, error) {
+	handler, err := withdraw1.NewHandler(
+		ctx,
+		withdraw1.WithAppID(&in.TargetAppID),
+		withdraw1.WithOffset(in.Offset),
+		withdraw1.WithLimit(in.Limit),
+	)
 	if err != nil {
-		logger.Sugar().Errorw("GetWithdrawReviews", "AppID", in.GetTargetAppID(), "error", err)
-		return &npool.GetAppWithdrawReviewsResponse{}, err
+		logger.Sugar().Errorw(
+			"GetAppWithdrawReviews",
+			"Req", in,
+			"Error", err,
+		)
+		return &npool.GetAppWithdrawReviewsResponse{}, status.Error(codes.InvalidArgument, err.Error())
+	}
+
+	infos, total, err := handler.GetWithdrawReviews(ctx)
+	if err != nil {
+		logger.Sugar().Errorw(
+			"GetAppWithdrawReviews",
+			"Req", in,
+			"Error", err,
+		)
+		return &npool.GetAppWithdrawReviewsResponse{}, status.Error(codes.InvalidArgument, "fail get withdraw reviews")
 	}
 
 	return &npool.GetAppWithdrawReviewsResponse{
-		Infos: resp.Infos,
-		Total: resp.Total,
+		Infos: infos,
+		Total: total,
 	}, nil
 }
 
-func (s *Server) UpdateWithdrawReview(
-	ctx context.Context, in *npool.UpdateWithdrawReviewRequest,
-) (
-	*npool.UpdateWithdrawReviewResponse, error,
-) {
-	if _, err := uuid.Parse(in.GetReviewID()); err != nil {
-		logger.Sugar().Errorw("UpdateWithdrawReview", "ID", in.GetReviewID(), "error", err)
-		return &npool.UpdateWithdrawReviewResponse{}, status.Error(codes.InvalidArgument, "ReviewID is invalid")
-	}
-
-	if _, err := uuid.Parse(in.GetAppID()); err != nil {
-		logger.Sugar().Errorw("UpdateWithdrawReview", "AppID", in.GetAppID(), "error", err)
-		return &npool.UpdateWithdrawReviewResponse{}, status.Error(codes.InvalidArgument, "AppID is invalid")
-	}
-
-	if _, err := uuid.Parse(in.GetUserID()); err != nil {
-		logger.Sugar().Errorw("UpdateWithdrawReview", "UserID", in.GetUserID(), "error", err)
-		return &npool.UpdateWithdrawReviewResponse{}, status.Error(codes.InvalidArgument, "UserID is invalid")
-	}
-
-	switch in.GetState() {
-	case reviewmgrpb.ReviewState_Approved:
-	case reviewmgrpb.ReviewState_Rejected:
-		if in.GetMessage() == "" {
-			logger.Sugar().Errorw("UpdateWithdrawReview", "State", in.GetState(), "error", "miss rejected reason")
-			return &npool.UpdateWithdrawReviewResponse{}, status.Error(codes.InvalidArgument, "miss rejected reason")
-		}
-	default:
-		logger.Sugar().Errorw("UpdateWithdrawReview", "State", in.GetState())
-		return &npool.UpdateWithdrawReviewResponse{}, status.Error(codes.InvalidArgument, "State is invalid")
-	}
-
-	info, err := withdraw1.UpdateWithdrawReview(
+func (s *Server) UpdateWithdrawReview(ctx context.Context, in *npool.UpdateWithdrawReviewRequest) (*npool.UpdateWithdrawReviewResponse, error) {
+	handler, err := withdraw1.NewHandler(
 		ctx,
-		in.GetReviewID(), in.GetAppID(), in.GetAppID(), in.GetUserID(),
-		in.GetState(), in.Message,
+		withdraw1.WithAppID(&in.AppID),
+		withdraw1.WithUserID(&in.UserID),
+		withdraw1.WithReviewID(&in.ReviewID),
+		withdraw1.WithState(&in.State, in.Message),
+		withdraw1.WithMessage(in.Message),
 	)
 	if err != nil {
-		logger.Sugar().Errorw("UpdateWithdrawReview", "error", err)
+		logger.Sugar().Errorw(
+			"UpdateKycReview",
+			"Req", in,
+			"Error", err,
+		)
+		return &npool.UpdateWithdrawReviewResponse{}, status.Error(codes.InvalidArgument, err.Error())
+	}
+
+	info, err := handler.UpdateWithdrawReview(ctx)
+	if err != nil {
+		logger.Sugar().Errorw(
+			"UpdateKycReview",
+			"Req", in,
+			"Error", err,
+		)
 		return &npool.UpdateWithdrawReviewResponse{}, status.Error(codes.Internal, "fail update review")
 	}
 
@@ -112,55 +105,32 @@ func (s *Server) UpdateWithdrawReview(
 	}, nil
 }
 
-func (s *Server) UpdateAppWithdrawReview(
-	ctx context.Context, in *npool.UpdateAppWithdrawReviewRequest,
-) (
-	*npool.UpdateAppWithdrawReviewResponse, error,
-) {
-	if _, err := uuid.Parse(in.GetReviewID()); err != nil {
-		logger.Sugar().Errorw("UpdateAppWithdrawReview", "ReviewID", in.GetReviewID(), "error", err)
-		return &npool.UpdateAppWithdrawReviewResponse{}, status.Error(codes.InvalidArgument, "ReviewID is invalid")
-	}
-
-	if _, err := uuid.Parse(in.GetAppID()); err != nil {
-		logger.Sugar().Errorw("UpdateAppWithdrawReview", "AppID", in.GetAppID(), "error", err)
-		return &npool.UpdateAppWithdrawReviewResponse{}, status.Error(codes.InvalidArgument, "AppID is invalid")
-	}
-
-	if _, err := uuid.Parse(in.GetTargetAppID()); err != nil {
-		logger.Sugar().Errorw("UpdateAppWithdrawReview", "TargetAppID", in.GetTargetAppID(), "error", err)
-		return &npool.UpdateAppWithdrawReviewResponse{}, status.Error(codes.InvalidArgument, "TargetAppID is invalid")
-	}
-
-	if _, err := uuid.Parse(in.GetUserID()); err != nil {
-		logger.Sugar().Errorw("UpdateAppWithdrawReview", "UserID", in.GetUserID(), "error", err)
-		return &npool.UpdateAppWithdrawReviewResponse{}, status.Error(codes.InvalidArgument, "UserID is invalid")
-	}
-
-	if _, err := uuid.Parse(in.GetLangID()); err != nil {
-		logger.Sugar().Errorw("UpdateWithdrawReview", "LangID", in.GetLangID(), "error", err)
-		return &npool.UpdateAppWithdrawReviewResponse{}, status.Error(codes.InvalidArgument, "LangID is invalid")
-	}
-
-	switch in.GetState() {
-	case reviewmgrpb.ReviewState_Approved:
-	case reviewmgrpb.ReviewState_Rejected:
-		if in.GetMessage() == "" {
-			logger.Sugar().Errorw("UpdateAppWithdrawReview", "State", in.GetState(), "error", "miss rejected reason")
-			return &npool.UpdateAppWithdrawReviewResponse{}, status.Error(codes.InvalidArgument, "miss rejected reason")
-		}
-	default:
-		logger.Sugar().Errorw("UpdateAppWithdrawReview", "State", in.GetState())
-		return &npool.UpdateAppWithdrawReviewResponse{}, status.Error(codes.InvalidArgument, "State is invalid")
-	}
-
-	info, err := withdraw1.UpdateWithdrawReview(
+func (s *Server) UpdateAppWithdrawReview(ctx context.Context, in *npool.UpdateAppWithdrawReviewRequest) (*npool.UpdateAppWithdrawReviewResponse, error) {
+	handler, err := withdraw1.NewHandler(
 		ctx,
-		in.GetReviewID(), in.GetTargetAppID(), in.GetAppID(), in.GetUserID(),
-		in.GetState(), in.Message,
+		withdraw1.WithAppID(&in.AppID),
+		withdraw1.WithUserID(&in.UserID),
+		withdraw1.WithTargetAppID(&in.TargetAppID),
+		withdraw1.WithReviewID(&in.ReviewID),
+		withdraw1.WithState(&in.State, in.Message),
+		withdraw1.WithMessage(in.Message),
 	)
 	if err != nil {
-		logger.Sugar().Errorw("UpdateAppWithdrawReview", "error", err)
+		logger.Sugar().Errorw(
+			"UpdateAppKycReview",
+			"Req", in,
+			"Error", err,
+		)
+		return &npool.UpdateAppWithdrawReviewResponse{}, status.Error(codes.InvalidArgument, err.Error())
+	}
+
+	info, err := handler.UpdateWithdrawReview(ctx)
+	if err != nil {
+		logger.Sugar().Errorw(
+			"UpdateAppKycReview",
+			"Req", in,
+			"Error", err,
+		)
 		return &npool.UpdateAppWithdrawReviewResponse{}, status.Error(codes.Internal, "fail update review")
 	}
 
