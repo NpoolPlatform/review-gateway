@@ -25,9 +25,9 @@ func (h *Handler) UpdateKycReview(ctx context.Context) (*npool.KycReview, error)
 	handler, err := review1.NewHandler(
 		ctx,
 		review1.WithAppID(h.AppID),
-		review1.WithUserID(h.UserID),
+		review1.WithUserID(h.AppID, h.UserID),
 		review1.WithReviewID(&reviewID),
-		review1.WithState(h.State, nil),
+		review1.WithState(h.State, h.Message),
 		review1.WithMessage(h.Message),
 	)
 	if err != nil {
