@@ -86,5 +86,5 @@ func (h *Handler) UpdateKycReview(ctx context.Context) (*npool.KycReview, error)
 		logger.Sugar().Errorw("UpdateKycReview", "Error", err)
 	}
 
-	return GetKycReview(ctx, reviewID)
+	return h.GetKycReview(ctx)
 }
