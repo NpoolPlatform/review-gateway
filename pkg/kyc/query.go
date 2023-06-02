@@ -125,8 +125,8 @@ func (h *Handler) GetKycReviews(ctx context.Context) ([]*npool.KycReview, uint32
 }
 
 // nolint
-func GetKycReview(ctx context.Context, reviewID string) (*npool.KycReview, error) {
-	rv, err := reviewmwcli.GetReview(ctx, reviewID)
+func (h *Handler) GetKycReview(ctx context.Context) (*npool.KycReview, error) {
+	rv, err := reviewmwcli.GetReview(ctx, h.ReviewID.String())
 	if err != nil {
 		return nil, err
 	}
