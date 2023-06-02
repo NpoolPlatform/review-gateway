@@ -2,8 +2,11 @@ package review
 
 import (
 	"context"
+	"fmt"
 
+	usercli "github.com/NpoolPlatform/appuser-middleware/pkg/client/user"
 	npool "github.com/NpoolPlatform/message/npool/review/mw/v2"
+	"github.com/google/uuid"
 )
 
 type Handler struct {
@@ -40,9 +43,21 @@ func WithTargetAppID(appID *string) func(context.Context, *Handler) error {
 	}
 }
 
-func WithUserID(id *string) func(context.Context, *Handler) error {
+func WithUserID(appID, userID *string) func(context.Context, *Handler) error {
 	return func(ctx context.Context, h *Handler) error {
-		h.UserID = id
+		user, err := usercli.GetUser(ctx, *h.AppID, *h.UserID)
+		if err != nil {
+			return err
+		}
+		if user == nil {
+			return fmt.Errorf("invalid user")
+		}
+		_, err = uuid.Parse(*userID)
+		if err != nil {
+			return err
+		}
+
+		h.UserID = userID
 		return nil
 	}
 }

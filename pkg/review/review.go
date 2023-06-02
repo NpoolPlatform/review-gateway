@@ -7,53 +7,36 @@ import (
 	npool "github.com/NpoolPlatform/message/npool/review/mw/v2"
 
 	cli "github.com/NpoolPlatform/review-middleware/pkg/client/review"
-
-	usercli "github.com/NpoolPlatform/appuser-middleware/pkg/client/user"
 )
 
-func (h *Handler) ValidateReview(ctx context.Context) (string, error) {
-	reviewer, err := usercli.GetUser(ctx, *h.AppID, *h.UserID)
-	if err != nil {
-		return "", err
-	}
-	if reviewer == nil {
-		return "", fmt.Errorf("invalid reviewer")
-	}
-
+func (h *Handler) GetReview(ctx context.Context) (*npool.Review, error) {
 	rv, err := cli.GetReview(ctx, *h.ReviewID)
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 	if rv == nil {
-		return "", fmt.Errorf("invalid review id")
+		return nil, fmt.Errorf("invalid review id")
 	}
 
 	if rv.State != npool.ReviewState_Wait {
-		return "", fmt.Errorf("invalid review state")
+		return nil, fmt.Errorf("invalid review state")
 	}
 
+	return rv, nil
+}
+
+func (h *Handler) ValidateReview(ctx context.Context) (string, error) {
+	rv, err := h.GetReview(ctx)
+	if err != nil {
+		return "", err
+	}
 	return rv.ObjectID, nil
 }
 
 func (h *Handler) UpdateReview(ctx context.Context) error {
-	reviewer, err := usercli.GetUser(ctx, *h.AppID, *h.UserID)
+	rv, err := h.GetReview(ctx)
 	if err != nil {
 		return err
-	}
-	if reviewer == nil {
-		return fmt.Errorf("invalid reviewer")
-	}
-
-	rv, err := cli.GetReview(ctx, *h.ReviewID)
-	if err != nil {
-		return err
-	}
-	if rv == nil {
-		return fmt.Errorf("invalid review id")
-	}
-
-	if rv.State != npool.ReviewState_Wait {
-		return fmt.Errorf("invalid review state")
 	}
 
 	_, err = cli.UpdateReview(ctx, &npool.ReviewReq{
