@@ -54,15 +54,21 @@ import (
 )
 
 //nolint:gocyclo
-func UpdateWithdrawReview(
-	ctx context.Context,
-	id, appID, reviewerAppID, reviewerID string,
-	state reviewmgrpb.ReviewState,
-	message *string,
-) (
-	*withdraw.WithdrawReview, error,
-) {
-	objID, err := review1.ValidateReview(ctx, id, appID, reviewerAppID, reviewerID, state)
+func (h *Handler) UpdateWithdrawReview(ctx context.Context) (*withdraw.WithdrawReview, error) {
+	reviewID := h.ReviewID.String()
+	handler, err := review1.NewHandler(
+		ctx,
+		review1.WithAppID(h.AppID),
+		review1.WithUserID(h.UserID),
+		review1.WithReviewID(&reviewID),
+		review1.WithState(h.State, nil),
+		review1.WithMessage(h.Message),
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	objID, err := handler.ValidateReview(ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -121,7 +127,7 @@ func UpdateWithdrawReview(
 
 	// TODO: make sure review state and withdraw state integrity
 
-	switch state {
+	switch *h.State {
 	case reviewmgrpb.ReviewState_Rejected:
 		err = reject(ctx, w)
 	case reviewmgrpb.ReviewState_Approved:
@@ -134,11 +140,11 @@ func UpdateWithdrawReview(
 		return nil, err
 	}
 
-	if err := review1.UpdateReview(ctx, id, appID, reviewerAppID, reviewerID, state, message); err != nil {
+	if err := handler.UpdateReview(ctx); err != nil {
 		return nil, err
 	}
 
-	return GetWithdrawReview(ctx, id)
+	return h.GetWithdrawReview(ctx)
 }
 
 func reject(ctx context.Context, withdrawInfo *withdrawmgrpb.Withdraw) error {
