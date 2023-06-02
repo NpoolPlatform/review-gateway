@@ -122,11 +122,10 @@ func (h *Handler) UpdateWithdrawReview(ctx context.Context) (*withdraw.WithdrawR
 		return nil, fmt.Errorf("invalid cointypeid")
 	}
 	if coin.Disabled {
-		return nil, fmt.Errorf("invalid cointypeid")
+		return nil, fmt.Errorf("coin disabled")
 	}
 
 	// TODO: make sure review state and withdraw state integrity
-
 	switch *h.State {
 	case reviewmgrpb.ReviewState_Rejected:
 		err = reject(ctx, w)

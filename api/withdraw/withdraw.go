@@ -30,8 +30,12 @@ func (s *Server) GetWithdrawReviews(ctx context.Context, in *npool.GetWithdrawRe
 
 	infos, total, err := handler.GetWithdrawReviews(ctx)
 	if err != nil {
-		logger.Sugar().Errorw("GetWithdrawReviews", "AppID", in.GetAppID(), "error", err)
-		return &npool.GetWithdrawReviewsResponse{}, status.Error(codes.InvalidArgument, "fail get withdraw reviews")
+		logger.Sugar().Errorw(
+			"GetWithdrawReviews",
+			"Req", in,
+			"Error", err,
+		)
+		return &npool.GetWithdrawReviewsResponse{}, status.Error(codes.Internal, err.Error())
 	}
 
 	return &npool.GetWithdrawReviewsResponse{
@@ -63,7 +67,7 @@ func (s *Server) GetAppWithdrawReviews(ctx context.Context, in *npool.GetAppWith
 			"Req", in,
 			"Error", err,
 		)
-		return &npool.GetAppWithdrawReviewsResponse{}, status.Error(codes.InvalidArgument, "fail get withdraw reviews")
+		return &npool.GetAppWithdrawReviewsResponse{}, status.Error(codes.Internal, err.Error())
 	}
 
 	return &npool.GetAppWithdrawReviewsResponse{
@@ -83,7 +87,7 @@ func (s *Server) UpdateWithdrawReview(ctx context.Context, in *npool.UpdateWithd
 	)
 	if err != nil {
 		logger.Sugar().Errorw(
-			"UpdateKycReview",
+			"UpdateWithdrawReview",
 			"Req", in,
 			"Error", err,
 		)
@@ -93,7 +97,7 @@ func (s *Server) UpdateWithdrawReview(ctx context.Context, in *npool.UpdateWithd
 	info, err := handler.UpdateWithdrawReview(ctx)
 	if err != nil {
 		logger.Sugar().Errorw(
-			"UpdateKycReview",
+			"UpdateWithdrawReview",
 			"Req", in,
 			"Error", err,
 		)
@@ -117,7 +121,7 @@ func (s *Server) UpdateAppWithdrawReview(ctx context.Context, in *npool.UpdateAp
 	)
 	if err != nil {
 		logger.Sugar().Errorw(
-			"UpdateAppKycReview",
+			"UpdateAppWithdrawReview",
 			"Req", in,
 			"Error", err,
 		)
@@ -127,11 +131,11 @@ func (s *Server) UpdateAppWithdrawReview(ctx context.Context, in *npool.UpdateAp
 	info, err := handler.UpdateWithdrawReview(ctx)
 	if err != nil {
 		logger.Sugar().Errorw(
-			"UpdateAppKycReview",
+			"UpdateAppWithdrawReview",
 			"Req", in,
 			"Error", err,
 		)
-		return &npool.UpdateAppWithdrawReviewResponse{}, status.Error(codes.Internal, "fail update review")
+		return &npool.UpdateAppWithdrawReviewResponse{}, status.Error(codes.Internal, err.Error())
 	}
 
 	return &npool.UpdateAppWithdrawReviewResponse{
