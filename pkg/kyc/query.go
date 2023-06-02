@@ -20,13 +20,12 @@ import (
 )
 
 func (h *Handler) GetKycReviews(ctx context.Context) ([]*npool.KycReview, uint32, error) {
-	conds := &kycmwpb.Conds{
+	kycs, total, err := kycmwcli.GetKycs(ctx, &kycmwpb.Conds{
 		AppID: &basetypes.StringVal{
 			Op:    cruder.EQ,
 			Value: *h.AppID,
 		},
-	}
-	kycs, total, err := kycmwcli.GetKycs(ctx, conds, h.Offset, h.Limit)
+	}, h.Offset, h.Limit)
 	if err != nil {
 		return nil, 0, err
 	}
