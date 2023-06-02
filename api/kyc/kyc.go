@@ -81,7 +81,6 @@ func (s *Server) UpdateKycReview(ctx context.Context, in *npool.UpdateKycReviewR
 		ctx,
 		kyc1.WithAppID(&in.AppID),
 		kyc1.WithUserID(&in.UserID),
-		kyc1.WithLangID(&in.LangID),
 		kyc1.WithReviewID(&in.ReviewID),
 		kyc1.WithState(&in.State, in.Message),
 		kyc1.WithMessage(in.Message),
@@ -97,8 +96,12 @@ func (s *Server) UpdateKycReview(ctx context.Context, in *npool.UpdateKycReviewR
 
 	info, err := handler.UpdateKycReview(ctx)
 	if err != nil {
-		logger.Sugar().Errorw("UpdateKycReview", "error", err)
-		return &npool.UpdateKycReviewResponse{}, status.Error(codes.Internal, "fail update review")
+		logger.Sugar().Errorw(
+			"UpdateKycReview",
+			"Req", in,
+			"Error", err,
+		)
+		return &npool.UpdateKycReviewResponse{}, status.Error(codes.Internal, err.Error())
 	}
 
 	return &npool.UpdateKycReviewResponse{

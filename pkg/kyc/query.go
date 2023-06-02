@@ -125,6 +125,10 @@ func (h *Handler) GetKycReviews(ctx context.Context) ([]*npool.KycReview, uint32
 
 // nolint
 func (h *Handler) GetKycReview(ctx context.Context) (*npool.KycReview, error) {
+	if h.ReviewID == nil {
+		return nil, fmt.Errorf("invalid review id")
+	}
+
 	rv, err := reviewmwcli.GetReview(ctx, h.ReviewID.String())
 	if err != nil {
 		return nil, err
