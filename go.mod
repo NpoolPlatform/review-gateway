@@ -8,7 +8,7 @@ require (
 	github.com/NpoolPlatform/appuser-middleware v0.0.0-20230513100509-b19f356ebd4b
 	github.com/NpoolPlatform/basal-middleware v0.0.0-20230518061816-62bd589c0f63
 	github.com/NpoolPlatform/chain-middleware v0.0.0-20230530034619-1c5e75258b60
-	github.com/NpoolPlatform/go-service-framework v0.0.0-20230509081417-267df92cab6d
+	github.com/NpoolPlatform/go-service-framework v0.0.0-20230602083207-1c0e6203556b
 	github.com/NpoolPlatform/ledger-gateway v0.0.0-20220813124620-9cbc5e1a2318
 	github.com/NpoolPlatform/ledger-manager v0.0.0-20230111061350-4bddabacc212
 	github.com/NpoolPlatform/ledger-middleware v0.0.0-20230111062738-1054218618aa
