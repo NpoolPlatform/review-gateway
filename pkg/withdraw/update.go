@@ -25,9 +25,9 @@ import (
 	useraccmwcli "github.com/NpoolPlatform/account-middleware/pkg/client/user"
 	useraccmwpb "github.com/NpoolPlatform/message/npool/account/mw/v1/user"
 
-	appcoinmwcli "github.com/NpoolPlatform/chain-middleware/pkg/client/appcoin"
+	appcoinmwcli "github.com/NpoolPlatform/chain-middleware/pkg/client/app/coin"
 	coinmwcli "github.com/NpoolPlatform/chain-middleware/pkg/client/coin"
-	appcoinmwpb "github.com/NpoolPlatform/message/npool/chain/mw/v1/appcoin"
+	appcoinmwpb "github.com/NpoolPlatform/message/npool/chain/mw/v1/app/coin"
 
 	pltfaccmwcli "github.com/NpoolPlatform/account-middleware/pkg/client/platform"
 	pltfaccmwpb "github.com/NpoolPlatform/message/npool/account/mw/v1/platform"
@@ -35,12 +35,13 @@ import (
 	accountmgrpb "github.com/NpoolPlatform/message/npool/account/mgr/v1/account"
 
 	txmwcli "github.com/NpoolPlatform/chain-middleware/pkg/client/tx"
-	txmgrpb "github.com/NpoolPlatform/message/npool/chain/mgr/v1/tx"
+	txmwpb "github.com/NpoolPlatform/message/npool/chain/mw/v1/tx"
 
 	"github.com/NpoolPlatform/libent-cruder/pkg/cruder"
 	commonpb "github.com/NpoolPlatform/message/npool"
 
 	currvalmwcli "github.com/NpoolPlatform/chain-middleware/pkg/client/coin/currency"
+	currvalmwpb "github.com/NpoolPlatform/message/npool/chain/mw/v1/coin/currency"
 
 	sphinxproxypb "github.com/NpoolPlatform/message/npool/sphinxproxy"
 	sphinxproxycli "github.com/NpoolPlatform/sphinx-proxy/pkg/client"
@@ -213,11 +214,11 @@ func approve(ctx context.Context, withdraw *withdrawmgrpb.Withdraw) error {
 	}
 
 	coin, err := appcoinmwcli.GetCoinOnly(ctx, &appcoinmwpb.Conds{
-		AppID: &commonpb.StringVal{
+		AppID: &basetypes.StringVal{
 			Op:    cruder.EQ,
 			Value: withdraw.AppID,
 		},
-		CoinTypeID: &commonpb.StringVal{
+		CoinTypeID: &basetypes.StringVal{
 			Op:    cruder.EQ,
 			Value: withdraw.CoinTypeID,
 		},
@@ -313,7 +314,9 @@ func approve(ctx context.Context, withdraw *withdrawmgrpb.Withdraw) error {
 	}
 
 	if coin.WithdrawFeeByStableUSD {
-		curr, err := currvalmwcli.GetCoinCurrency(ctx, withdraw.CoinTypeID)
+		curr, err := currvalmwcli.GetCurrencyOnly(ctx, &currvalmwpb.Conds{
+			CoinTypeID: &basetypes.StringVal{Op: cruder.EQ, Value: withdraw.CoinTypeID},
+		})
 		if err != nil {
 			return err
 		}
@@ -344,7 +347,7 @@ func approve(ctx context.Context, withdraw *withdrawmgrpb.Withdraw) error {
 		withdraw.ID,
 	)
 
-	tx, err := txmwcli.CreateTx(ctx, &txmgrpb.TxReq{
+	tx, err := txmwcli.CreateTx(ctx, &txmwpb.TxReq{
 		CoinTypeID:    &withdraw.CoinTypeID,
 		FromAccountID: &hotacc.AccountID,
 		ToAccountID:   &withdraw.AccountID,
