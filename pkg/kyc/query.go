@@ -19,6 +19,7 @@ import (
 	reviewmwcli "github.com/NpoolPlatform/review-middleware/pkg/client/review"
 )
 
+//nolint
 func (h *Handler) GetKycReviews(ctx context.Context) ([]*npool.KycReview, uint32, error) { //nolint
 	kycs, total, err := kycmwcli.GetKycs(ctx, &kycmwpb.Conds{
 		AppID: &basetypes.StringVal{

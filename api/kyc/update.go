@@ -12,6 +12,7 @@ import (
 	"google.golang.org/grpc/status"
 )
 
+// nolint
 func (s *Server) UpdateKycReview(ctx context.Context, in *npool.UpdateKycReviewRequest) (*npool.UpdateKycReviewResponse, error) {
 	handler, err := kyc1.NewHandler(
 		ctx,
@@ -46,6 +47,7 @@ func (s *Server) UpdateKycReview(ctx context.Context, in *npool.UpdateKycReviewR
 	}, nil
 }
 
+// nolint
 func (s *Server) UpdateAppKycReview(ctx context.Context, in *npool.UpdateAppKycReviewRequest) (*npool.UpdateAppKycReviewResponse, error) {
 	handler, err := kyc1.NewHandler(
 		ctx,
