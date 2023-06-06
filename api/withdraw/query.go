@@ -45,12 +45,11 @@ func (s *Server) GetWithdrawReviews(ctx context.Context, in *npool.GetWithdrawRe
 }
 
 func (s *Server) GetAppWithdrawReviews(ctx context.Context, in *npool.GetAppWithdrawReviewsRequest) (*npool.GetAppWithdrawReviewsResponse, error) {
-	handler, err := withdraw1.NewHandler(
-		ctx,
-		withdraw1.WithAppID(&in.TargetAppID),
-		withdraw1.WithOffset(in.Offset),
-		withdraw1.WithLimit(in.Limit),
-	)
+	resp, err := s.GetWithdrawReviews(ctx, &npool.GetWithdrawReviewsRequest{
+		AppID:  in.TargetAppID,
+		Offset: in.Offset,
+		Limit:  in.Limit,
+	})
 	if err != nil {
 		logger.Sugar().Errorw(
 			"GetAppWithdrawReviews",
@@ -60,18 +59,8 @@ func (s *Server) GetAppWithdrawReviews(ctx context.Context, in *npool.GetAppWith
 		return &npool.GetAppWithdrawReviewsResponse{}, status.Error(codes.InvalidArgument, err.Error())
 	}
 
-	infos, total, err := handler.GetWithdrawReviews(ctx)
-	if err != nil {
-		logger.Sugar().Errorw(
-			"GetAppWithdrawReviews",
-			"Req", in,
-			"Error", err,
-		)
-		return &npool.GetAppWithdrawReviewsResponse{}, status.Error(codes.Internal, err.Error())
-	}
-
 	return &npool.GetAppWithdrawReviewsResponse{
-		Infos: infos,
-		Total: total,
+		Infos: resp.Infos,
+		Total: resp.Total,
 	}, nil
 }
