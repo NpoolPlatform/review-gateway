@@ -5,7 +5,7 @@ go 1.17
 require (
 	github.com/NpoolPlatform/account-middleware v0.0.0-20230112023810-a1206cc8bb2e
 	github.com/NpoolPlatform/appuser-gateway v0.0.9
-	github.com/NpoolPlatform/appuser-middleware v0.0.0-20230531113139-875967739451
+	github.com/NpoolPlatform/appuser-middleware v0.0.0-20230605064642-08a1fb60d6b0
 	github.com/NpoolPlatform/basal-middleware v0.0.0-20230518061816-62bd589c0f63
 	github.com/NpoolPlatform/chain-middleware v0.0.0-20230605142107-82fd8f560b37
 	github.com/NpoolPlatform/go-service-framework v0.0.0-20230602083207-1c0e6203556b
@@ -15,7 +15,7 @@ require (
 	github.com/NpoolPlatform/libent-cruder v0.0.0-20221109023947-366125b690fb
 	github.com/NpoolPlatform/message v0.0.0-20230606033353-c216c541e63d
 	github.com/NpoolPlatform/notif-middleware v0.0.0-20230221093008-c752bddbb687
-	github.com/NpoolPlatform/review-middleware v0.0.0-20230606031952-e36e32a9e1b6
+	github.com/NpoolPlatform/review-middleware v0.0.0-20230606065721-99dc85d32ed0
 	github.com/NpoolPlatform/sphinx-proxy v0.0.0-20230216075025-a90a86bfd19b
 	github.com/go-resty/resty/v2 v2.7.0
 	github.com/google/uuid v1.3.0
@@ -103,7 +103,7 @@ require (
 	golang.org/x/text v0.8.0 // indirect
 	golang.org/x/xerrors v0.0.0-20220609144429-65e65417b02f // indirect
 	google.golang.org/genproto v0.0.0-20230306155012-7f2fa6fef1f4 // indirect
-	gopkg.in/ini.v1 v1.66.4 // indirect
+	gopkg.in/ini.v1 v1.66.6 // indirect
 	gopkg.in/natefinch/lumberjack.v2 v2.0.0 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
