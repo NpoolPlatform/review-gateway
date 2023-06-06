@@ -74,9 +74,11 @@ func (h *Handler) GetKycReviews(ctx context.Context) ([]*npool.KycReview, uint32
 
 	infos := []*npool.KycReview{}
 	for _, kyc := range kycs {
-		rv, ok := rvMap[kyc.ReviewID]
-		if ok {
+		rv := &reviewpb.Review{}
 
+		rvM, ok := rvMap[kyc.ReviewID]
+		if ok {
+			rv = rvM
 			switch rv.State {
 			case reviewpb.ReviewState_Approved:
 			case reviewpb.ReviewState_Rejected:
