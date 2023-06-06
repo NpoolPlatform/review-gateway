@@ -9,9 +9,9 @@ require (
 	github.com/NpoolPlatform/basal-middleware v0.0.0-20230518061816-62bd589c0f63
 	github.com/NpoolPlatform/chain-middleware v0.0.0-20230605142107-82fd8f560b37
 	github.com/NpoolPlatform/go-service-framework v0.0.0-20230602083207-1c0e6203556b
-	github.com/NpoolPlatform/ledger-gateway v0.0.0-20220813124620-9cbc5e1a2318
-	github.com/NpoolPlatform/ledger-manager v0.0.0-20230111061350-4bddabacc212
-	github.com/NpoolPlatform/ledger-middleware v0.0.0-20230111062738-1054218618aa
+	github.com/NpoolPlatform/ledger-gateway v0.0.0-20230606095818-431f605882d6
+	github.com/NpoolPlatform/ledger-manager v0.0.0-20230301112903-ee77b010c928
+	github.com/NpoolPlatform/ledger-middleware v0.0.0-20230424032410-c96444b02ed2
 	github.com/NpoolPlatform/libent-cruder v0.0.0-20221109023947-366125b690fb
 	github.com/NpoolPlatform/message v0.0.0-20230606033353-c216c541e63d
 	github.com/NpoolPlatform/notif-middleware v0.0.0-20230221093008-c752bddbb687
@@ -87,7 +87,6 @@ require (
 	github.com/spf13/pflag v1.0.5 // indirect
 	github.com/spf13/viper v1.12.0 // indirect
 	github.com/subosito/gotenv v1.3.0 // indirect
-	github.com/ugorji/go/codec v1.2.9 // indirect
 	github.com/xrash/smetrics v0.0.0-20201216005158-039620a65673 // indirect
 	go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc v0.31.0 // indirect
 	go.opentelemetry.io/otel v1.10.0 // indirect
