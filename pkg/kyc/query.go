@@ -112,7 +112,7 @@ func (h *Handler) GetKycReviews(ctx context.Context) ([]*npool.KycReview, uint32
 			ReviewID:     rv.ID,
 			ObjectType:   rv.ObjectType,
 			Domain:       rv.Domain,
-			Reviewer:     rvM.ReviewerID,
+			Reviewer:     rv.ReviewerID,
 			ReviewState:  rv.State,
 			KycState:     kyc.State,
 			Message:      rv.Message,
