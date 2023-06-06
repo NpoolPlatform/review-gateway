@@ -26,7 +26,7 @@ import (
 	basetypes "github.com/NpoolPlatform/message/npool/basetypes/v1"
 	appcoinmwpb "github.com/NpoolPlatform/message/npool/chain/mw/v1/app/coin"
 	withdrawmgrpb "github.com/NpoolPlatform/message/npool/ledger/mgr/v1/ledger/withdraw"
-	reviewpb "github.com/NpoolPlatform/message/npool/review/mw/v2"
+	reviewpb "github.com/NpoolPlatform/message/npool/review/mw/v2/review"
 )
 
 // nolint
