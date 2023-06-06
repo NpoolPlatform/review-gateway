@@ -16,8 +16,9 @@ func (s *Server) UpdateKycReview(ctx context.Context, in *npool.UpdateKycReviewR
 	handler, err := kyc1.NewHandler(
 		ctx,
 		kyc1.WithAppID(&in.AppID),
-		kyc1.WithUserID(&in.UserID),
+		kyc1.WithUserID(&in.AppID, &in.UserID),
 		kyc1.WithReviewID(&in.ReviewID),
+		kyc1.WithTargetAppID(&in.AppID),
 		kyc1.WithState(&in.State, in.Message),
 		kyc1.WithMessage(in.Message),
 	)
@@ -49,8 +50,8 @@ func (s *Server) UpdateAppKycReview(ctx context.Context, in *npool.UpdateAppKycR
 	handler, err := kyc1.NewHandler(
 		ctx,
 		kyc1.WithAppID(&in.AppID),
+		kyc1.WithUserID(&in.AppID, &in.UserID),
 		kyc1.WithTargetAppID(&in.TargetAppID),
-		kyc1.WithUserID(&in.UserID),
 		kyc1.WithReviewID(&in.ReviewID),
 		kyc1.WithState(&in.State, in.Message),
 		kyc1.WithMessage(in.Message),

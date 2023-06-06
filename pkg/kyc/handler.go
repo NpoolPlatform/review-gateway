@@ -5,6 +5,10 @@ import (
 	"fmt"
 
 	appcli "github.com/NpoolPlatform/appuser-middleware/pkg/client/app"
+	appusercli "github.com/NpoolPlatform/appuser-middleware/pkg/client/user"
+	"github.com/NpoolPlatform/libent-cruder/pkg/cruder"
+	"github.com/NpoolPlatform/message/npool/appuser/mw/v1/user"
+	basetyeps "github.com/NpoolPlatform/message/npool/basetypes/v1"
 	npool "github.com/NpoolPlatform/message/npool/review/mw/v2/review"
 	constant "github.com/NpoolPlatform/review-gateway/pkg/const"
 	"github.com/google/uuid"
@@ -52,25 +56,48 @@ func WithAppID(appID *string) func(context.Context, *Handler) error {
 	}
 }
 
-func WithTargetAppID(appID *string) func(context.Context, *Handler) error {
+func WithTargetAppID(targetAppID *string) func(context.Context, *Handler) error {
 	return func(ctx context.Context, h *Handler) error {
-		err := WithAppID(appID)
+		_, err := uuid.Parse(*targetAppID)
 		if err != nil {
-			return fmt.Errorf("invalid target app id")
+			return err
 		}
-		h.TargetAppID = appID
+		exist, err := appcli.ExistApp(ctx, *targetAppID)
+		if err != nil {
+			return err
+		}
+		if !exist {
+			return fmt.Errorf("invalid target app")
+		}
+		h.TargetAppID = targetAppID
 		return nil
 	}
 }
 
-func WithUserID(id *string) func(context.Context, *Handler) error {
+func WithUserID(appID, userID *string) func(context.Context, *Handler) error {
 	return func(ctx context.Context, h *Handler) error {
-		_, err := uuid.Parse(*id)
+		_, err := uuid.Parse(*userID)
 		if err != nil {
 			return err
 		}
-		// TODO: Check UserID
-		h.UserID = id
+		exist, err := appusercli.ExistUserConds(ctx, &user.Conds{
+			AppID: &basetyeps.StringVal{
+				Op:    cruder.EQ,
+				Value: *appID,
+			},
+			ID: &basetyeps.StringVal{
+				Op:    cruder.EQ,
+				Value: *userID,
+			},
+		})
+		if err != nil {
+			return err
+		}
+
+		if !exist {
+			return fmt.Errorf("invalid user id")
+		}
+		h.UserID = userID
 		return nil
 	}
 }
