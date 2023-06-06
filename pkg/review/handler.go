@@ -5,7 +5,7 @@ import (
 	"fmt"
 
 	usercli "github.com/NpoolPlatform/appuser-middleware/pkg/client/user"
-	npool "github.com/NpoolPlatform/message/npool/review/mw/v2"
+	npool "github.com/NpoolPlatform/message/npool/review/mw/v2/review"
 	"github.com/google/uuid"
 )
 

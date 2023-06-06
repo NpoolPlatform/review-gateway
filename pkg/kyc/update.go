@@ -17,7 +17,7 @@ import (
 	review1 "github.com/NpoolPlatform/review-gateway/pkg/review"
 
 	npool "github.com/NpoolPlatform/message/npool/review/gw/v2/kyc"
-	reviewmgrpb "github.com/NpoolPlatform/message/npool/review/mw/v2"
+	reviewmgrpb "github.com/NpoolPlatform/message/npool/review/mw/v2/review"
 )
 
 func (h *Handler) UpdateKycReview(ctx context.Context) (*npool.KycReview, error) {
@@ -26,7 +26,6 @@ func (h *Handler) UpdateKycReview(ctx context.Context) (*npool.KycReview, error)
 		ctx,
 		review1.WithAppID(h.AppID),
 		review1.WithUserID(h.AppID, h.UserID),
-		review1.WithTargetAppID(h.TargetAppID),
 		review1.WithReviewID(&reviewID),
 		review1.WithState(h.State, h.Message),
 		review1.WithMessage(h.Message),

@@ -5,7 +5,7 @@ import (
 	"fmt"
 
 	appcli "github.com/NpoolPlatform/appuser-middleware/pkg/client/app"
-	npool "github.com/NpoolPlatform/message/npool/review/mw/v2"
+	npool "github.com/NpoolPlatform/message/npool/review/mw/v2/review"
 	constant "github.com/NpoolPlatform/review-gateway/pkg/const"
 	"github.com/google/uuid"
 )
