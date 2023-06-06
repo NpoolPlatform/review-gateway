@@ -45,12 +45,11 @@ func (s *Server) GetKycReviews(ctx context.Context, in *npool.GetKycReviewsReque
 }
 
 func (s *Server) GetAppKycReviews(ctx context.Context, in *npool.GetAppKycReviewsRequest) (*npool.GetAppKycReviewsResponse, error) {
-	handler, err := kyc1.NewHandler(
-		ctx,
-		kyc1.WithAppID(&in.TargetAppID),
-		kyc1.WithOffset(in.Offset),
-		kyc1.WithLimit(in.Limit),
-	)
+	resp, err := s.GetKycReviews(ctx, &npool.GetKycReviewsRequest{
+		AppID:  in.TargetAppID,
+		Offset: in.Offset,
+		Limit:  in.Limit,
+	})
 	if err != nil {
 		logger.Sugar().Errorw(
 			"GetAppKycReviews",
@@ -60,18 +59,8 @@ func (s *Server) GetAppKycReviews(ctx context.Context, in *npool.GetAppKycReview
 		return &npool.GetAppKycReviewsResponse{}, status.Error(codes.InvalidArgument, err.Error())
 	}
 
-	infos, total, err := handler.GetKycReviews(ctx)
-	if err != nil {
-		logger.Sugar().Errorw(
-			"GetAppKycReviews",
-			"Req", in,
-			"Error", err,
-		)
-		return &npool.GetAppKycReviewsResponse{}, status.Error(codes.Internal, err.Error())
-	}
-
 	return &npool.GetAppKycReviewsResponse{
-		Infos: infos,
-		Total: total,
+		Infos: resp.Infos,
+		Total: resp.Total,
 	}, nil
 }

@@ -46,13 +46,15 @@ func (s *Server) UpdateKycReview(ctx context.Context, in *npool.UpdateKycReviewR
 }
 
 func (s *Server) UpdateAppKycReview(ctx context.Context, in *npool.UpdateAppKycReviewRequest) (*npool.UpdateAppKycReviewResponse, error) {
-	resp, err := s.UpdateKycReview(ctx, &npool.UpdateKycReview{
-		AppID:    in.TargetAppID,
-		UserID:   in.UserID,
-		ReviewID: in.ReviewID,
-		State:    in.State,
-		Message:  in.Message,
-	})
+	handler, err := kyc1.NewHandler(
+		ctx,
+		kyc1.WithAppID(&in.AppID),
+		kyc1.WithTargetAppID(&in.TargetAppID),
+		kyc1.WithUserID(&in.UserID),
+		kyc1.WithReviewID(&in.ReviewID),
+		kyc1.WithState(&in.State, in.Message),
+		kyc1.WithMessage(in.Message),
+	)
 	if err != nil {
 		logger.Sugar().Errorw(
 			"UpdateAppKycReview",
@@ -62,7 +64,17 @@ func (s *Server) UpdateAppKycReview(ctx context.Context, in *npool.UpdateAppKycR
 		return &npool.UpdateAppKycReviewResponse{}, status.Error(codes.InvalidArgument, err.Error())
 	}
 
+	info, err := handler.UpdateKycReview(ctx)
+	if err != nil {
+		logger.Sugar().Errorw(
+			"UpdateAppKycReview",
+			"Req", in,
+			"Error", err,
+		)
+		return &npool.UpdateAppKycReviewResponse{}, status.Error(codes.Internal, err.Error())
+	}
+
 	return &npool.UpdateAppKycReviewResponse{
-		Info: resp.Info,
+		Info: info,
 	}, nil
 }

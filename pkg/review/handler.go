@@ -12,7 +12,6 @@ import (
 type Handler struct {
 	AppID       *string
 	UserID      *string
-	LangID      *string
 	TargetAppID *string
 	ReviewID    *string
 	State       *npool.ReviewState
