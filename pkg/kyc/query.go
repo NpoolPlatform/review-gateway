@@ -19,7 +19,7 @@ import (
 	reviewmwcli "github.com/NpoolPlatform/review-middleware/pkg/client/review"
 )
 
-func (h *Handler) GetKycReviews(ctx context.Context) ([]*npool.KycReview, uint32, error) {
+func (h *Handler) GetKycReviews(ctx context.Context) ([]*npool.KycReview, uint32, error) { //nolint
 	kycs, total, err := kycmwcli.GetKycs(ctx, &kycmwpb.Conds{
 		AppID: &basetypes.StringVal{
 			Op:    cruder.EQ,
@@ -124,7 +124,7 @@ func (h *Handler) GetKycReviews(ctx context.Context) ([]*npool.KycReview, uint32
 }
 
 // nolint
-func (h *Handler) GetKycReview(ctx context.Context) (*npool.KycReview, error) {
+func (h *Handler) GetKycReview(ctx context.Context) (*npool.KycReview, error) { //nolint
 	if h.ReviewID == nil {
 		return nil, fmt.Errorf("invalid review id")
 	}
