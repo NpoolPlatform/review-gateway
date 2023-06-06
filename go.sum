@@ -48,6 +48,8 @@ github.com/DataDog/datadog-go v3.2.0+incompatible/go.mod h1:LButxg5PwREeZtORoXG3
 github.com/NpoolPlatform/account-manager v0.0.0-20221217095007-bbe990c46b8b h1:s+E4M8NXItPZ+YUOE0Z5+EQJGuJi0zNHIr7KiiHtqE4=
 github.com/NpoolPlatform/account-middleware v0.0.0-20230112023810-a1206cc8bb2e h1:CtliqBjQdyY+wbx9n/FHfxJEahokG+4TJI6QzFOSk74=
 github.com/NpoolPlatform/account-middleware v0.0.0-20230112023810-a1206cc8bb2e/go.mod h1:qrBKAGK6cjoPkLQ10LPYRiFCfaS+S1wyPvV4SMDzL4w=
+github.com/NpoolPlatform/appuser-gateway v0.0.0-20230603071500-25ff37d42c20 h1:0cVxGN56oclRNJ2Jo5HgTGrwrpQ0gFARIpewcJi+V1w=
+github.com/NpoolPlatform/appuser-gateway v0.0.0-20230603071500-25ff37d42c20/go.mod h1:hNYkmhwpeIHM7YezYyPs/L4G0wtLdMQC7rtB7MROdBE=
 github.com/NpoolPlatform/appuser-gateway v0.0.9 h1:LY+1knY6RxBLpAQCVYnPoYZgRTgKgO7F2bNGpziipPA=
 github.com/NpoolPlatform/appuser-gateway v0.0.9/go.mod h1:GXUEOvyFJHsDedXA9q+xfyrSz05FgUx4/HBSHdycpmw=
 github.com/NpoolPlatform/appuser-middleware v0.0.0-20230605064642-08a1fb60d6b0 h1:9flU67PTv1yMueLcMcIEipmQLgsaIFuMHHWR/KwveK8=

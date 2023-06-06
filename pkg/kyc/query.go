@@ -6,7 +6,7 @@ import (
 
 	"github.com/NpoolPlatform/go-service-framework/pkg/logger"
 
-	appusergateway "github.com/NpoolPlatform/appuser-gateway/pkg/message/const"
+	appusergateway "github.com/NpoolPlatform/appuser-gateway/pkg/servicename"
 	npool "github.com/NpoolPlatform/message/npool/review/gw/v2/kyc"
 
 	kycmwcli "github.com/NpoolPlatform/appuser-middleware/pkg/client/kyc"
@@ -42,7 +42,7 @@ func (h *Handler) GetKycReviews(ctx context.Context) ([]*npool.KycReview, uint32
 	rvs, err := reviewmwcli.GetObjectReviews(
 		ctx,
 		*h.AppID,
-		appusergateway.ServiceName,
+		appusergateway.ServiceDomain,
 		ids,
 		reviewpb.ReviewObjectType_ObjectKyc,
 	)
