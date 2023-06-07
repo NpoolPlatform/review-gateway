@@ -48,7 +48,7 @@ func WithUserID(appID, userID *string) func(context.Context, *Handler) error {
 		if err != nil {
 			return err
 		}
-		user, err := usercli.GetUser(ctx, *h.AppID, *h.UserID)
+		user, err := usercli.GetUser(ctx, *appID, *userID)
 		if err != nil {
 			return err
 		}
