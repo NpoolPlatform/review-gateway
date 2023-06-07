@@ -32,8 +32,6 @@ import (
 	pltfaccmwcli "github.com/NpoolPlatform/account-middleware/pkg/client/platform"
 	pltfaccmwpb "github.com/NpoolPlatform/message/npool/account/mw/v1/platform"
 
-	accountmgrpb "github.com/NpoolPlatform/message/npool/account/mgr/v1/account"
-
 	txmwcli "github.com/NpoolPlatform/chain-middleware/pkg/client/tx"
 	txmwpb "github.com/NpoolPlatform/message/npool/chain/mw/v1/tx"
 
@@ -51,6 +49,7 @@ import (
 	txnotifmgrpb "github.com/NpoolPlatform/message/npool/notif/mgr/v1/notif/tx"
 	txnotifcli "github.com/NpoolPlatform/notif-middleware/pkg/client/notif/tx"
 
+	accountmgrpb "github.com/NpoolPlatform/message/npool/account/mgr/v1/account"
 	basetypes "github.com/NpoolPlatform/message/npool/basetypes/v1"
 )
 
