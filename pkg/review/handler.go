@@ -44,16 +44,16 @@ func WithTargetAppID(appID *string) func(context.Context, *Handler) error {
 
 func WithUserID(appID, userID *string) func(context.Context, *Handler) error {
 	return func(ctx context.Context, h *Handler) error {
+		_, err := uuid.Parse(*userID)
+		if err != nil {
+			return err
+		}
 		user, err := usercli.GetUser(ctx, *h.AppID, *h.UserID)
 		if err != nil {
 			return err
 		}
 		if user == nil {
 			return fmt.Errorf("invalid user")
-		}
-		_, err = uuid.Parse(*userID)
-		if err != nil {
-			return err
 		}
 
 		h.UserID = userID
