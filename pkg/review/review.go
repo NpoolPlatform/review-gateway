@@ -19,7 +19,7 @@ func (h *Handler) GetReview(ctx context.Context) (*npool.Review, error) {
 	}
 
 	if rv.State != npool.ReviewState_Wait {
-		return nil, fmt.Errorf("invalid review state")
+		return nil, fmt.Errorf("current review state can not be update")
 	}
 
 	return rv, nil
