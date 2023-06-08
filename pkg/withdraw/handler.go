@@ -54,9 +54,16 @@ func WithAppID(appID *string) func(context.Context, *Handler) error {
 
 func WithTargetAppID(appID *string) func(context.Context, *Handler) error {
 	return func(ctx context.Context, h *Handler) error {
-		err := WithAppID(appID)
+		_, err := uuid.Parse(*appID)
 		if err != nil {
-			return fmt.Errorf("invalid target app id")
+			return err
+		}
+		exist, err := appcli.ExistApp(ctx, *appID)
+		if err != nil {
+			return err
+		}
+		if !exist {
+			return fmt.Errorf("invalid app")
 		}
 		h.TargetAppID = appID
 		return nil
