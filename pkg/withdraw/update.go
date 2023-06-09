@@ -14,7 +14,7 @@ import (
 	"github.com/shopspring/decimal"
 
 	"github.com/NpoolPlatform/message/npool/review/gw/v2/withdraw"
-	reviewmgrpb "github.com/NpoolPlatform/message/npool/review/mgr/v2"
+	reviewmgrpb "github.com/NpoolPlatform/message/npool/review/mw/v2/review"
 
 	withdrawmgrcli "github.com/NpoolPlatform/ledger-manager/pkg/client/withdraw"
 	withdrawmgrpb "github.com/NpoolPlatform/message/npool/ledger/mgr/v1/ledger/withdraw"
@@ -31,8 +31,6 @@ import (
 
 	pltfaccmwcli "github.com/NpoolPlatform/account-middleware/pkg/client/platform"
 	pltfaccmwpb "github.com/NpoolPlatform/message/npool/account/mw/v1/platform"
-
-	accountmgrpb "github.com/NpoolPlatform/message/npool/account/mgr/v1/account"
 
 	txmwcli "github.com/NpoolPlatform/chain-middleware/pkg/client/tx"
 	txmwpb "github.com/NpoolPlatform/message/npool/chain/mw/v1/tx"
@@ -51,19 +49,26 @@ import (
 	txnotifmgrpb "github.com/NpoolPlatform/message/npool/notif/mgr/v1/notif/tx"
 	txnotifcli "github.com/NpoolPlatform/notif-middleware/pkg/client/notif/tx"
 
+	accountmgrpb "github.com/NpoolPlatform/message/npool/account/mgr/v1/account"
 	basetypes "github.com/NpoolPlatform/message/npool/basetypes/v1"
 )
 
 //nolint:gocyclo
-func UpdateWithdrawReview(
-	ctx context.Context,
-	id, appID, reviewerAppID, reviewerID string,
-	state reviewmgrpb.ReviewState,
-	message *string,
-) (
-	*withdraw.WithdrawReview, error,
-) {
-	objID, err := review1.ValidateReview(ctx, id, appID, reviewerAppID, reviewerID, state)
+func (h *Handler) UpdateWithdrawReview(ctx context.Context) (*withdraw.WithdrawReview, error) {
+	reviewID := h.ReviewID.String()
+	handler, err := review1.NewHandler(
+		ctx,
+		review1.WithAppID(h.AppID),
+		review1.WithUserID(h.AppID, h.UserID),
+		review1.WithReviewID(&reviewID),
+		review1.WithState(h.State, h.Message),
+		review1.WithMessage(h.Message),
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	objID, err := handler.ValidateReview(ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -117,12 +122,11 @@ func UpdateWithdrawReview(
 		return nil, fmt.Errorf("invalid cointypeid")
 	}
 	if coin.Disabled {
-		return nil, fmt.Errorf("invalid cointypeid")
+		return nil, fmt.Errorf("coin disabled")
 	}
 
 	// TODO: make sure review state and withdraw state integrity
-
-	switch state {
+	switch *h.State {
 	case reviewmgrpb.ReviewState_Rejected:
 		err = reject(ctx, w)
 	case reviewmgrpb.ReviewState_Approved:
@@ -135,11 +139,11 @@ func UpdateWithdrawReview(
 		return nil, err
 	}
 
-	if err := review1.UpdateReview(ctx, id, appID, reviewerAppID, reviewerID, state, message); err != nil {
+	if err := handler.UpdateReview(ctx); err != nil {
 		return nil, err
 	}
 
-	return GetWithdrawReview(ctx, id)
+	return h.GetWithdrawReview(ctx)
 }
 
 func reject(ctx context.Context, withdrawInfo *withdrawmgrpb.Withdraw) error {

@@ -11,7 +11,8 @@
 
 -----------
 ### 功能
-- [x] 审核网关
+- kyc review update(Rejected/Approved)
+- withdraw review update(Rejected/Approved)
 
 ### 命令
 * make init ```初始化仓库，创建go.mod```

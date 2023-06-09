@@ -11,8 +11,7 @@ import (
 	usermwcli "github.com/NpoolPlatform/appuser-middleware/pkg/client/user"
 	appcoinmwcli "github.com/NpoolPlatform/chain-middleware/pkg/client/app/coin"
 	withdrawcli "github.com/NpoolPlatform/ledger-manager/pkg/client/withdraw"
-	reviewcli "github.com/NpoolPlatform/review-manager/pkg/client/review"
-	reviewmwcli "github.com/NpoolPlatform/review-middleware/pkg/client/review"
+	reviewcli "github.com/NpoolPlatform/review-middleware/pkg/client/review"
 
 	useraccmwcli "github.com/NpoolPlatform/account-middleware/pkg/client/user"
 	useraccmwpb "github.com/NpoolPlatform/message/npool/account/mw/v1/user"
@@ -21,25 +20,24 @@ import (
 
 	ledgerconst "github.com/NpoolPlatform/ledger-gateway/pkg/message/const"
 
+	cruder "github.com/NpoolPlatform/libent-cruder/pkg/cruder"
 	commonpb "github.com/NpoolPlatform/message/npool"
 	usermwpb "github.com/NpoolPlatform/message/npool/appuser/mw/v1/user"
 	basetypes "github.com/NpoolPlatform/message/npool/basetypes/v1"
 	appcoinmwpb "github.com/NpoolPlatform/message/npool/chain/mw/v1/app/coin"
 	withdrawmgrpb "github.com/NpoolPlatform/message/npool/ledger/mgr/v1/ledger/withdraw"
-	reviewpb "github.com/NpoolPlatform/message/npool/review/mgr/v2"
-
-	cruder "github.com/NpoolPlatform/libent-cruder/pkg/cruder"
+	reviewpb "github.com/NpoolPlatform/message/npool/review/mw/v2/review"
 )
 
 // nolint
-func GetWithdrawReviews(ctx context.Context, appID string, offset, limit int32) ([]*npool.WithdrawReview, uint32, error) {
+func (h *Handler) GetWithdrawReviews(ctx context.Context) ([]*npool.WithdrawReview, uint32, error) {
 	conds := &withdrawmgrpb.Conds{
 		AppID: &commonpb.StringVal{
 			Op:    cruder.EQ,
-			Value: appID,
+			Value: *h.AppID,
 		},
 	}
-	withdraws, total, err := withdrawcli.GetWithdraws(ctx, conds, offset, limit)
+	withdraws, total, err := withdrawcli.GetWithdraws(ctx, conds, h.Offset, h.Limit)
 	if err != nil {
 		return nil, 0, err
 	}
@@ -52,9 +50,9 @@ func GetWithdrawReviews(ctx context.Context, appID string, offset, limit int32) 
 		wids = append(wids, w.ID)
 	}
 
-	rvs, err := reviewmwcli.GetObjectReviews(
+	rvs, err := reviewcli.GetObjectReviews(
 		ctx,
-		appID,
+		*h.AppID,
 		ledgerconst.ServiceName,
 		wids,
 		reviewpb.ReviewObjectType_ObjectWithdrawal,
@@ -76,7 +74,7 @@ func GetWithdrawReviews(ctx context.Context, appID string, offset, limit int32) 
 	coins, _, err := appcoinmwcli.GetCoins(ctx, &appcoinmwpb.Conds{
 		AppID: &basetypes.StringVal{
 			Op:    cruder.EQ,
-			Value: appID,
+			Value: *h.AppID,
 		},
 		CoinTypeIDs: &basetypes.StringSliceVal{
 			Op:    cruder.IN,
@@ -153,8 +151,6 @@ func GetWithdrawReviews(ctx context.Context, appID string, offset, limit int32) 
 			address = acc.Address
 		}
 
-		// TODO: we need fill reviewer name, but we miss appid in reviews table
-
 		switch rv.State {
 		case reviewpb.ReviewState_Approved:
 		case reviewpb.ReviewState_Rejected:
@@ -178,7 +174,7 @@ func GetWithdrawReviews(ctx context.Context, appID string, offset, limit int32) 
 			WithdrawState:         withdraw.State,
 			ReviewID:              rv.ID,
 			UserID:                user.ID,
-			KycState:              reviewpb.ReviewState_DefaultReviewState,
+			KycState:              user.State,
 			EmailAddress:          user.EmailAddress,
 			PhoneNO:               user.PhoneNO,
 			Reviewer:              "TODO: to be filled",
@@ -205,8 +201,8 @@ func GetWithdrawReviews(ctx context.Context, appID string, offset, limit int32) 
 }
 
 // nolint
-func GetWithdrawReview(ctx context.Context, reviewID string) (*npool.WithdrawReview, error) {
-	rv, err := reviewcli.GetReview(ctx, reviewID)
+func (h *Handler) GetWithdrawReview(ctx context.Context) (*npool.WithdrawReview, error) {
+	rv, err := reviewcli.GetReview(ctx, h.ReviewID.String())
 	if err != nil {
 		return nil, err
 	}
@@ -286,7 +282,7 @@ func GetWithdrawReview(ctx context.Context, reviewID string) (*npool.WithdrawRev
 		WithdrawState:         withdraw.State,
 		ReviewID:              rv.ID,
 		UserID:                user.ID,
-		KycState:              reviewpb.ReviewState_DefaultReviewState,
+		KycState:              user.State,
 		EmailAddress:          user.EmailAddress,
 		PhoneNO:               user.PhoneNO,
 		Reviewer:              "TODO: to be filled",

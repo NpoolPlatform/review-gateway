@@ -1,5 +1,5 @@
 package constant
 
 const (
-	DefaultLimitRows = 1000
+	DefaultRowLimit = 100
 )
