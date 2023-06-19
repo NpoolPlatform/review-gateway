@@ -46,7 +46,7 @@ import (
 
 	review1 "github.com/NpoolPlatform/review-gateway/pkg/review"
 
-	txnotifmgrpb "github.com/NpoolPlatform/message/npool/notif/mgr/v1/notif/tx"
+	txnotifmgrpb "github.com/NpoolPlatform/message/npool/notif/mw/v1/notif/tx"
 	txnotifcli "github.com/NpoolPlatform/notif-middleware/pkg/client/notif/tx"
 
 	accountmgrpb "github.com/NpoolPlatform/message/npool/account/mgr/v1/account"
