@@ -13,8 +13,8 @@ require (
 	github.com/NpoolPlatform/ledger-manager v0.0.0-20230301112903-ee77b010c928
 	github.com/NpoolPlatform/ledger-middleware v0.0.0-20230424032410-c96444b02ed2
 	github.com/NpoolPlatform/libent-cruder v0.0.0-20221109023947-366125b690fb
-	github.com/NpoolPlatform/message v0.0.0-20230619030119-1bc2dfc09da7
-	github.com/NpoolPlatform/notif-middleware v0.0.0-20230619074932-1262f3a04547
+	github.com/NpoolPlatform/message v0.0.0-20230621063514-6b5d44986d8a
+	github.com/NpoolPlatform/notif-middleware v0.0.0-20230625011735-a262999b5582
 	github.com/NpoolPlatform/review-middleware v0.0.0-20230609030924-eca1f51482e9
 	github.com/NpoolPlatform/sphinx-proxy v0.0.0-20230216075025-a90a86bfd19b
 	github.com/go-resty/resty/v2 v2.7.0
@@ -22,7 +22,7 @@ require (
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.11.3
 	github.com/shopspring/decimal v1.3.1
 	github.com/streadway/amqp v1.0.0
-	github.com/stretchr/testify v1.8.1
+	github.com/stretchr/testify v1.8.3
 	github.com/urfave/cli/v2 v2.16.3
 	google.golang.org/grpc v1.55.0
 	google.golang.org/protobuf v1.30.0
