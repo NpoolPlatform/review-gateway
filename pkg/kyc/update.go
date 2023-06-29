@@ -98,6 +98,7 @@ func (h *Handler) UpdateKycReview(ctx context.Context) (*npool.KycReview, error)
 		AppID:     *h.AppID,
 		UserID:    kycInfo.UserID,
 		EventType: eventType,
+		NotifType: basetypes.NotifType_NotifUnicast,
 		Vars: &tmplmwpb.TemplateVars{
 			Username: &userInfo.Username,
 		},
