@@ -16,8 +16,6 @@ import (
 	useraccmwcli "github.com/NpoolPlatform/account-middleware/pkg/client/user"
 	useraccmwpb "github.com/NpoolPlatform/message/npool/account/mw/v1/user"
 
-	accountmgrpb "github.com/NpoolPlatform/message/npool/account/mgr/v1/account"
-
 	ledgerconst "github.com/NpoolPlatform/ledger-gateway/pkg/message/const"
 
 	cruder "github.com/NpoolPlatform/libent-cruder/pkg/cruder"
@@ -113,7 +111,7 @@ func (h *Handler) GetWithdrawReviews(ctx context.Context) ([]*npool.WithdrawRevi
 	}
 
 	accounts, _, err := useraccmwcli.GetAccounts(ctx, &useraccmwpb.Conds{
-		AccountIDs: &commonpb.StringSliceVal{
+		AccountIDs: &basetypes.StringSliceVal{
 			Op:    cruder.IN,
 			Value: ids,
 		},
@@ -260,17 +258,17 @@ func (h *Handler) GetWithdrawReview(ctx context.Context) (*npool.WithdrawReview,
 	address := withdraw.Address
 
 	account, _ := useraccmwcli.GetAccountOnly(ctx, &useraccmwpb.Conds{
-		AppID: &commonpb.StringVal{
+		AppID: &basetypes.StringVal{
 			Op:    cruder.EQ,
 			Value: withdraw.AppID,
 		},
-		AccountID: &commonpb.StringVal{
+		AccountID: &basetypes.StringVal{
 			Op:    cruder.EQ,
 			Value: withdraw.AccountID,
 		},
-		UsedFor: &commonpb.Int32Val{
+		UsedFor: &basetypes.Uint32Val{
 			Op:    cruder.EQ,
-			Value: int32(accountmgrpb.AccountUsedFor_UserWithdraw),
+			Value: uint32(basetypes.AccountUsedFor_UserWithdraw),
 		},
 	})
 	if account != nil {
