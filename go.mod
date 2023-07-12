@@ -3,7 +3,7 @@ module github.com/NpoolPlatform/review-gateway
 go 1.17
 
 require (
-	github.com/NpoolPlatform/account-middleware v0.0.0-20230712040346-fddbe1135e1d
+	github.com/NpoolPlatform/account-middleware v0.0.0-20230712102944-2538dcb39d50
 	github.com/NpoolPlatform/appuser-gateway v0.0.0-20230609025052-1614c2336223
 	github.com/NpoolPlatform/appuser-middleware v0.0.0-20230609030803-0b26c1f95713
 	github.com/NpoolPlatform/basal-middleware v0.0.0-20230518061816-62bd589c0f63
