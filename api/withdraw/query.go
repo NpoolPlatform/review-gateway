@@ -12,7 +12,7 @@ import (
 	"google.golang.org/grpc/status"
 )
 
-func (s *Server) GetWithdrawReviews(ctx context.Context, in *npool.GetWithdrawReviewsRequest) (*npool.GetWithdrawReviewsResponse, error) { //nolint
+func (s *Server) GetWithdrawReviews(ctx context.Context, in *npool.GetWithdrawReviewsRequest) (*npool.GetWithdrawReviewsResponse, error) {
 	handler, err := withdraw1.NewHandler(
 		ctx,
 		withdraw1.WithAppID(&in.AppID),
@@ -44,7 +44,7 @@ func (s *Server) GetWithdrawReviews(ctx context.Context, in *npool.GetWithdrawRe
 	}, nil
 }
 
-func (s *Server) GetAppWithdrawReviews(ctx context.Context, in *npool.GetAppWithdrawReviewsRequest) (*npool.GetAppWithdrawReviewsResponse, error) { //nolint
+func (s *Server) GetAppWithdrawReviews(ctx context.Context, in *npool.GetAppWithdrawReviewsRequest) (*npool.GetAppWithdrawReviewsResponse, error) {
 	resp, err := s.GetWithdrawReviews(ctx, &npool.GetWithdrawReviewsRequest{
 		AppID:  in.TargetAppID,
 		Offset: in.Offset,

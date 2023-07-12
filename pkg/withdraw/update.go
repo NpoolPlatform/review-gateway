@@ -36,7 +36,6 @@ import (
 	txmwpb "github.com/NpoolPlatform/message/npool/chain/mw/v1/tx"
 
 	"github.com/NpoolPlatform/libent-cruder/pkg/cruder"
-	commonpb "github.com/NpoolPlatform/message/npool"
 
 	currvalmwcli "github.com/NpoolPlatform/chain-middleware/pkg/client/coin/currency"
 	currvalmwpb "github.com/NpoolPlatform/message/npool/chain/mw/v1/coin/currency"
@@ -49,7 +48,6 @@ import (
 	txnotifmgrpb "github.com/NpoolPlatform/message/npool/notif/mw/v1/notif/tx"
 	txnotifcli "github.com/NpoolPlatform/notif-middleware/pkg/client/notif/tx"
 
-	accountmgrpb "github.com/NpoolPlatform/message/npool/account/mgr/v1/account"
 	basetypes "github.com/NpoolPlatform/message/npool/basetypes/v1"
 )
 
@@ -181,31 +179,31 @@ func reject(ctx context.Context, withdrawInfo *withdrawmgrpb.Withdraw) error {
 // nolint
 func approve(ctx context.Context, withdraw *withdrawmgrpb.Withdraw) error {
 	wa, err := useraccmwcli.GetAccountOnly(ctx, &useraccmwpb.Conds{
-		AppID: &commonpb.StringVal{
+		AppID: &basetypes.StringVal{
 			Op:    cruder.EQ,
 			Value: withdraw.AppID,
 		},
-		UserID: &commonpb.StringVal{
+		UserID: &basetypes.StringVal{
 			Op:    cruder.EQ,
 			Value: withdraw.UserID,
 		},
-		CoinTypeID: &commonpb.StringVal{
+		CoinTypeID: &basetypes.StringVal{
 			Op:    cruder.EQ,
 			Value: withdraw.CoinTypeID,
 		},
-		AccountID: &commonpb.StringVal{
+		AccountID: &basetypes.StringVal{
 			Op:    cruder.EQ,
 			Value: withdraw.AccountID,
 		},
-		UsedFor: &commonpb.Int32Val{
+		UsedFor: &basetypes.Uint32Val{
 			Op:    cruder.EQ,
-			Value: int32(accountmgrpb.AccountUsedFor_UserWithdraw),
+			Value: uint32(basetypes.AccountUsedFor_UserWithdraw),
 		},
-		Active: &commonpb.BoolVal{
+		Active: &basetypes.BoolVal{
 			Op:    cruder.EQ,
 			Value: true,
 		},
-		Blocked: &commonpb.BoolVal{
+		Blocked: &basetypes.BoolVal{
 			Op:    cruder.EQ,
 			Value: false,
 		},
@@ -235,23 +233,23 @@ func approve(ctx context.Context, withdraw *withdrawmgrpb.Withdraw) error {
 	}
 
 	hotacc, err := pltfaccmwcli.GetAccountOnly(ctx, &pltfaccmwpb.Conds{
-		CoinTypeID: &commonpb.StringVal{
+		CoinTypeID: &basetypes.StringVal{
 			Op:    cruder.EQ,
 			Value: withdraw.CoinTypeID,
 		},
-		UsedFor: &commonpb.Int32Val{
+		UsedFor: &basetypes.Uint32Val{
 			Op:    cruder.EQ,
-			Value: int32(accountmgrpb.AccountUsedFor_UserBenefitHot),
+			Value: uint32(basetypes.AccountUsedFor_UserBenefitHot),
 		},
-		Backup: &commonpb.BoolVal{
+		Backup: &basetypes.BoolVal{
 			Op:    cruder.EQ,
 			Value: false,
 		},
-		Active: &commonpb.BoolVal{
+		Active: &basetypes.BoolVal{
 			Op:    cruder.EQ,
 			Value: true,
 		},
-		Blocked: &commonpb.BoolVal{
+		Blocked: &basetypes.BoolVal{
 			Op:    cruder.EQ,
 			Value: false,
 		},
