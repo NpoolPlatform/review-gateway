@@ -55,8 +55,8 @@ github.com/NpoolPlatform/basal-middleware v0.0.0-20230518061816-62bd589c0f63 h1:
 github.com/NpoolPlatform/basal-middleware v0.0.0-20230518061816-62bd589c0f63/go.mod h1:3sHDVUUQHRkZsCiBFI6CdCL2HWf3cO7/E2DZU3nHMfE=
 github.com/NpoolPlatform/chain-middleware v0.0.0-20230712041523-2e1d215244e0 h1:xD+68nDsw/P0rXd1fzr/wip24bkpYzwrXGBFwSvXkbs=
 github.com/NpoolPlatform/chain-middleware v0.0.0-20230712041523-2e1d215244e0/go.mod h1:ExILdqBVnhspnOZFslJl0vTOc4Qyk78Lni1Kx2F8HGM=
-github.com/NpoolPlatform/go-service-framework v0.0.0-20230602083207-1c0e6203556b h1:iAJ9vS2uG8OU2VhKOnfeP3Q77PQaLQlxmxj2Pdyn8zw=
-github.com/NpoolPlatform/go-service-framework v0.0.0-20230602083207-1c0e6203556b/go.mod h1:Kh7DMkWnYOMHxEKq7QfJqbxm1HaUPkhTNN74lfHQxyE=
+github.com/NpoolPlatform/go-service-framework v0.0.0-20230812113554-9fa7285b9d16 h1:yu5UgLyxvxQYTVlEmv47t90jE1NAqkFaEIbYBmyjMos=
+github.com/NpoolPlatform/go-service-framework v0.0.0-20230812113554-9fa7285b9d16/go.mod h1:Kh7DMkWnYOMHxEKq7QfJqbxm1HaUPkhTNN74lfHQxyE=
 github.com/NpoolPlatform/ledger-gateway v0.0.0-20230609031324-8018408950e1 h1:ylS82HyPtnRWbt8IH6fMzJhbwKJlaD/oRpKNkxvNkUc=
 github.com/NpoolPlatform/ledger-gateway v0.0.0-20230609031324-8018408950e1/go.mod h1:7iPuVcfgBk1kuhCyuraQQE/k5ed9kLWfHhBRhoFNKww=
 github.com/NpoolPlatform/ledger-manager v0.0.0-20230301112903-ee77b010c928 h1:5iPksUQqw0ZuWOlR5IF48NFSPG2Uik7739AZ2+cQO54=
