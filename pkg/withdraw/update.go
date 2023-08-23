@@ -145,33 +145,28 @@ func (h *Handler) UpdateWithdrawReview(ctx context.Context) (*withdraw.WithdrawR
 	return h.GetWithdrawReview(ctx)
 }
 
-func reject(ctx context.Context, withdrawInfo *withdrawmgrpb.Withdraw) error {
-	unlocked, err := decimal.NewFromString(withdrawInfo.Amount)
+func reject(ctx context.Context, withdraw *withdrawmgrpb.Withdraw) error {
+	unlocked, err := decimal.NewFromString(withdraw.Amount)
 	if err != nil {
 		return err
 	}
 
 	state := ledgerpb.WithdrawState_Rejected
 	// TODO: move to TX
-
-	// withdrawInfo.AppID, withdrawInfo.UserID, withdrawInfo.CoinTypeID,
-	// 	ledgerpb.IOSubType_Withdrawal,
-	// 	unlocked, decimal.NewFromInt(0),
-
 	ioSubType := ledgerpb.IOSubType_Withdrawal
 	locked := unlocked.String()
 	ioExtra := fmt.Sprintf(
 		`{"WithdrawID":"%v","AccountID":"%v"}`,
-		withdrawInfo.ID,
-		withdrawInfo.AccountID,
+		withdraw.ID,
+		withdraw.AccountID,
 	)
 
-	if _, err := ledgermwcli.SubBalance(
+	if _, err := ledgermwcli.AddBalance(
 		ctx,
 		&ledger.LedgerReq{
-			AppID:      &withdrawInfo.AppID,
-			UserID:     &withdrawInfo.UserID,
-			CoinTypeID: &withdrawInfo.CoinTypeID,
+			AppID:      &withdraw.AppID,
+			UserID:     &withdraw.UserID,
+			CoinTypeID: &withdraw.CoinTypeID,
 			IOSubType:  &ioSubType,
 			Spendable:  &locked,
 			IOExtra:    &ioExtra,
@@ -182,7 +177,7 @@ func reject(ctx context.Context, withdrawInfo *withdrawmgrpb.Withdraw) error {
 
 	// Update withdraw state
 	u := &withdrawmgrpb.WithdrawReq{
-		ID:    &withdrawInfo.ID,
+		ID:    &withdraw.ID,
 		State: &state,
 	}
 	_, err = withdrawmgrcli.UpdateWithdraw(ctx, u)
