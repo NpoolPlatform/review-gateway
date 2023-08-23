@@ -16,11 +16,12 @@ import (
 	"github.com/NpoolPlatform/message/npool/review/gw/v2/withdraw"
 	reviewmgrpb "github.com/NpoolPlatform/message/npool/review/mw/v2/review"
 
-	withdrawmgrcli "github.com/NpoolPlatform/ledger-manager/pkg/client/withdraw"
-	withdrawmgrpb "github.com/NpoolPlatform/message/npool/ledger/mgr/v1/ledger/withdraw"
+	withdrawmgrcli "github.com/NpoolPlatform/ledger-middleware/pkg/client/withdraw"
+	ledgerpb "github.com/NpoolPlatform/message/npool/basetypes/ledger/v1"
+	"github.com/NpoolPlatform/message/npool/ledger/mw/v2/ledger"
+	withdrawmgrpb "github.com/NpoolPlatform/message/npool/ledger/mw/v2/withdraw"
 
 	ledgermwcli "github.com/NpoolPlatform/ledger-middleware/pkg/client/ledger"
-	ledgerdetailmgrpb "github.com/NpoolPlatform/message/npool/ledger/mgr/v1/ledger/detail"
 
 	useraccmwcli "github.com/NpoolPlatform/account-middleware/pkg/client/user"
 	useraccmwpb "github.com/NpoolPlatform/message/npool/account/mw/v1/user"
@@ -79,7 +80,7 @@ func (h *Handler) UpdateWithdrawReview(ctx context.Context) (*withdraw.WithdrawR
 		return nil, fmt.Errorf("invalid withdraw")
 	}
 
-	if w.State != withdrawmgrpb.WithdrawState_Reviewing {
+	if w.State != ledgerpb.WithdrawState_Reviewing {
 		return nil, fmt.Errorf("not reviewing")
 	}
 
@@ -150,19 +151,31 @@ func reject(ctx context.Context, withdrawInfo *withdrawmgrpb.Withdraw) error {
 		return err
 	}
 
-	state := withdrawmgrpb.WithdrawState_Rejected
+	state := ledgerpb.WithdrawState_Rejected
 	// TODO: move to TX
 
-	if err := ledgermwcli.UnlockBalance(
+	// withdrawInfo.AppID, withdrawInfo.UserID, withdrawInfo.CoinTypeID,
+	// 	ledgerpb.IOSubType_Withdrawal,
+	// 	unlocked, decimal.NewFromInt(0),
+
+	ioSubType := ledgerpb.IOSubType_Withdrawal
+	locked := unlocked.String()
+	ioExtra := fmt.Sprintf(
+		`{"WithdrawID":"%v","AccountID":"%v"}`,
+		withdrawInfo.ID,
+		withdrawInfo.AccountID,
+	)
+
+	if _, err := ledgermwcli.SubBalance(
 		ctx,
-		withdrawInfo.AppID, withdrawInfo.UserID, withdrawInfo.CoinTypeID,
-		ledgerdetailmgrpb.IOSubType_Withdrawal,
-		unlocked, decimal.NewFromInt(0),
-		fmt.Sprintf(
-			`{"WithdrawID":"%v","AccountID":"%v"}`,
-			withdrawInfo.ID,
-			withdrawInfo.AccountID,
-		),
+		&ledger.LedgerReq{
+			AppID:      &withdrawInfo.AppID,
+			UserID:     &withdrawInfo.UserID,
+			CoinTypeID: &withdrawInfo.CoinTypeID,
+			IOSubType:  &ioSubType,
+			Spendable:  &locked,
+			IOExtra:    &ioExtra,
+		},
 	); err != nil {
 		return err
 	}
@@ -362,7 +375,7 @@ func approve(ctx context.Context, withdraw *withdrawmgrpb.Withdraw) error {
 		return err
 	}
 
-	state1 := withdrawmgrpb.WithdrawState_Transferring
+	state1 := ledgerpb.WithdrawState_Transferring
 	if _, err := withdrawmgrcli.UpdateWithdraw(ctx, &withdrawmgrpb.WithdrawReq{
 		ID:                    &withdraw.ID,
 		PlatformTransactionID: &tx.ID,

@@ -10,7 +10,7 @@ import (
 
 	usermwcli "github.com/NpoolPlatform/appuser-middleware/pkg/client/user"
 	appcoinmwcli "github.com/NpoolPlatform/chain-middleware/pkg/client/app/coin"
-	withdrawcli "github.com/NpoolPlatform/ledger-manager/pkg/client/withdraw"
+	withdrawcli "github.com/NpoolPlatform/ledger-middleware/pkg/client/withdraw"
 	reviewcli "github.com/NpoolPlatform/review-middleware/pkg/client/review"
 
 	useraccmwcli "github.com/NpoolPlatform/account-middleware/pkg/client/user"
@@ -19,18 +19,17 @@ import (
 	ledgerconst "github.com/NpoolPlatform/ledger-gateway/pkg/message/const"
 
 	cruder "github.com/NpoolPlatform/libent-cruder/pkg/cruder"
-	commonpb "github.com/NpoolPlatform/message/npool"
 	usermwpb "github.com/NpoolPlatform/message/npool/appuser/mw/v1/user"
 	basetypes "github.com/NpoolPlatform/message/npool/basetypes/v1"
 	appcoinmwpb "github.com/NpoolPlatform/message/npool/chain/mw/v1/app/coin"
-	withdrawmgrpb "github.com/NpoolPlatform/message/npool/ledger/mgr/v1/ledger/withdraw"
+	withdrawmgrpb "github.com/NpoolPlatform/message/npool/ledger/mw/v2/withdraw"
 	reviewpb "github.com/NpoolPlatform/message/npool/review/mw/v2/review"
 )
 
 // nolint
 func (h *Handler) GetWithdrawReviews(ctx context.Context) ([]*npool.WithdrawReview, uint32, error) {
 	conds := &withdrawmgrpb.Conds{
-		AppID: &commonpb.StringVal{
+		AppID: &basetypes.StringVal{
 			Op:    cruder.EQ,
 			Value: *h.AppID,
 		},
