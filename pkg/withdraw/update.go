@@ -13,7 +13,7 @@ import (
 
 	"github.com/shopspring/decimal"
 
-	"github.com/NpoolPlatform/message/npool/review/gw/v2/withdraw"
+	withdraw1 "github.com/NpoolPlatform/message/npool/review/gw/v2/withdraw"
 	reviewmgrpb "github.com/NpoolPlatform/message/npool/review/mw/v2/review"
 
 	withdrawmgrcli "github.com/NpoolPlatform/ledger-middleware/pkg/client/withdraw"
@@ -53,7 +53,7 @@ import (
 )
 
 //nolint:gocyclo
-func (h *Handler) UpdateWithdrawReview(ctx context.Context) (*withdraw.WithdrawReview, error) {
+func (h *Handler) UpdateWithdrawReview(ctx context.Context) (*withdraw1.WithdrawReview, error) {
 	reviewID := h.ReviewID.String()
 	handler, err := review1.NewHandler(
 		ctx,

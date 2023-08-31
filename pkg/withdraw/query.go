@@ -16,7 +16,7 @@ import (
 	useraccmwcli "github.com/NpoolPlatform/account-middleware/pkg/client/user"
 	useraccmwpb "github.com/NpoolPlatform/message/npool/account/mw/v1/user"
 
-	ledgerconst "github.com/NpoolPlatform/ledger-gateway/pkg/message/const"
+	ledgerconst "github.com/NpoolPlatform/ledger-gateway/pkg/servicename"
 
 	cruder "github.com/NpoolPlatform/libent-cruder/pkg/cruder"
 	usermwpb "github.com/NpoolPlatform/message/npool/appuser/mw/v1/user"
@@ -50,7 +50,7 @@ func (h *Handler) GetWithdrawReviews(ctx context.Context) ([]*npool.WithdrawRevi
 	rvs, err := reviewcli.GetObjectReviews(
 		ctx,
 		*h.AppID,
-		ledgerconst.ServiceName,
+		ledgerconst.ServiceDomain,
 		wids,
 		reviewpb.ReviewObjectType_ObjectWithdrawal,
 	)
