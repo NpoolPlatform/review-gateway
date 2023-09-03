@@ -5,7 +5,7 @@ import (
 	"fmt"
 
 	usercli "github.com/NpoolPlatform/appuser-middleware/pkg/client/user"
-	npool "github.com/NpoolPlatform/message/npool/review/mw/v2/review"
+	reviewtypes "github.com/NpoolPlatform/message/npool/basetypes/review/v1"
 	"github.com/google/uuid"
 )
 
@@ -14,7 +14,7 @@ type Handler struct {
 	UserID      *string
 	TargetAppID *string
 	ReviewID    *string
-	State       *npool.ReviewState
+	State       *reviewtypes.ReviewState
 	Message     *string
 }
 
@@ -68,7 +68,7 @@ func WithReviewID(id *string) func(context.Context, *Handler) error {
 	}
 }
 
-func WithState(state *npool.ReviewState, message *string) func(context.Context, *Handler) error {
+func WithState(state *reviewtypes.ReviewState, message *string) func(context.Context, *Handler) error {
 	return func(ctx context.Context, h *Handler) error {
 		h.State = state
 		return nil

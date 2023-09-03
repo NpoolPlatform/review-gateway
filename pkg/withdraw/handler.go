@@ -6,7 +6,7 @@ import (
 
 	appcli "github.com/NpoolPlatform/appuser-middleware/pkg/client/app"
 	usermwcli "github.com/NpoolPlatform/appuser-middleware/pkg/client/user"
-	npool "github.com/NpoolPlatform/message/npool/review/mw/v2/review"
+	reviewtypes "github.com/NpoolPlatform/message/npool/basetypes/review/v1"
 	constant "github.com/NpoolPlatform/review-gateway/pkg/const"
 	"github.com/google/uuid"
 )
@@ -18,7 +18,7 @@ type Handler struct {
 	ReviewID    *uuid.UUID
 	LangID      *string
 	Domain      *string
-	State       *npool.ReviewState
+	State       *reviewtypes.ReviewState
 	Message     *string
 	Offset      int32
 	Limit       int32
@@ -100,18 +100,18 @@ func WithReviewID(id *string) func(context.Context, *Handler) error {
 	}
 }
 
-func WithState(state *npool.ReviewState, message *string) func(context.Context, *Handler) error {
+func WithState(state *reviewtypes.ReviewState, message *string) func(context.Context, *Handler) error {
 	return func(ctx context.Context, h *Handler) error {
 		if state == nil {
 			return nil
 		}
 		switch *state {
-		case npool.ReviewState_Rejected:
-		case npool.ReviewState_Approved:
+		case reviewtypes.ReviewState_Rejected:
+		case reviewtypes.ReviewState_Approved:
 		default:
 			return fmt.Errorf("invalid review state")
 		}
-		if *state == npool.ReviewState_Rejected && message == nil {
+		if *state == reviewtypes.ReviewState_Rejected && message == nil {
 			return fmt.Errorf("message is empty")
 		}
 		h.State = state

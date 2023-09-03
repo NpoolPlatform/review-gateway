@@ -10,16 +10,14 @@ require (
 	github.com/NpoolPlatform/chain-middleware v0.0.0-20230712041523-2e1d215244e0
 	github.com/NpoolPlatform/go-service-framework v0.0.0-20230814035104-e1466b5c157e
 	github.com/NpoolPlatform/ledger-gateway v0.0.0-20230831083533-ea7be10388bd
-	github.com/NpoolPlatform/ledger-middleware v0.0.0-20230831083435-48d53f830ef9
-	github.com/NpoolPlatform/libent-cruder v0.0.0-20230822060122-512da6e5c8bf
-	github.com/NpoolPlatform/message v0.0.0-20230831083303-c3719f0e42b5
+	github.com/NpoolPlatform/ledger-middleware v0.0.0-20230903040659-951194c207c5
+	github.com/NpoolPlatform/libent-cruder v0.0.0-20230825073905-d23e4d838f99
+	github.com/NpoolPlatform/message v0.0.0-20230903031306-5d08c2cffc32
 	github.com/NpoolPlatform/notif-middleware v0.0.0-20230712041535-89b4cc04d32d
-	github.com/NpoolPlatform/review-middleware v0.0.0-20230609030924-eca1f51482e9
-	github.com/NpoolPlatform/sphinx-proxy v0.0.0-20230216075025-a90a86bfd19b
+	github.com/NpoolPlatform/review-middleware v0.0.0-20230902114106-543c8645c85b
 	github.com/go-resty/resty/v2 v2.7.0
 	github.com/google/uuid v1.3.0
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.11.3
-	github.com/shopspring/decimal v1.3.1
 	github.com/streadway/amqp v1.0.0
 	github.com/stretchr/testify v1.8.3
 	github.com/urfave/cli/v2 v2.16.3
@@ -48,6 +46,7 @@ require (
 	github.com/go-logr/logr v1.2.3 // indirect
 	github.com/go-logr/stdr v1.2.2 // indirect
 	github.com/golang/protobuf v1.5.3 // indirect
+	github.com/gorilla/websocket v1.5.0 // indirect
 	github.com/grpc-ecosystem/go-grpc-middleware v1.3.0 // indirect
 	github.com/grpc-ecosystem/go-grpc-prometheus v1.2.0 // indirect
 	github.com/hashicorp/consul/api v1.12.0 // indirect
@@ -65,7 +64,9 @@ require (
 	github.com/mattn/go-colorable v0.1.12 // indirect
 	github.com/mattn/go-isatty v0.0.14 // indirect
 	github.com/matttproud/golang_protobuf_extensions v1.0.4 // indirect
+	github.com/miekg/dns v1.1.48 // indirect
 	github.com/mitchellh/go-homedir v1.1.0 // indirect
+	github.com/mitchellh/go-testing-interface v1.14.1 // indirect
 	github.com/mitchellh/mapstructure v1.5.0 // indirect
 	github.com/oklog/ulid v1.3.1 // indirect
 	github.com/pelletier/go-toml v1.9.5 // indirect
