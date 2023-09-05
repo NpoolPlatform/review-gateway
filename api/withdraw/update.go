@@ -37,7 +37,7 @@ func (s *Server) UpdateWithdrawReview(ctx context.Context, in *npool.UpdateWithd
 			"Req", in,
 			"Error", err,
 		)
-		return &npool.UpdateWithdrawReviewResponse{}, status.Error(codes.Internal, "fail update review")
+		return &npool.UpdateWithdrawReviewResponse{}, status.Error(codes.Internal, err.Error())
 	}
 
 	return &npool.UpdateWithdrawReviewResponse{

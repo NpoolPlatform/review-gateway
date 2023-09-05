@@ -112,7 +112,7 @@ func (h *Handler) GetWithdrawReviews(ctx context.Context) ([]*npool.WithdrawRevi
 	for _, withdraw := range withdraws {
 		rv, ok := rvMap[withdraw.ID]
 		if !ok {
-			return nil, 0, fmt.Errorf("invalid withdraw review: %v", withdraw)
+			continue
 		}
 
 		coin, ok := coinMap[withdraw.CoinTypeID]

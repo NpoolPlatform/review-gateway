@@ -6,15 +6,15 @@ require (
 	github.com/NpoolPlatform/account-middleware v0.0.0-20230712122024-60dc0bb4c0c0
 	github.com/NpoolPlatform/appuser-gateway v0.0.0-20230609025052-1614c2336223
 	github.com/NpoolPlatform/appuser-middleware v0.0.0-20230609030803-0b26c1f95713
-	github.com/NpoolPlatform/basal-middleware v0.0.0-20230518061816-62bd589c0f63
+	github.com/NpoolPlatform/basal-middleware v0.0.0-20230815094824-5e9572b10997
 	github.com/NpoolPlatform/chain-middleware v0.0.0-20230712041523-2e1d215244e0
 	github.com/NpoolPlatform/go-service-framework v0.0.0-20230814035104-e1466b5c157e
 	github.com/NpoolPlatform/ledger-gateway v0.0.0-20230831083533-ea7be10388bd
 	github.com/NpoolPlatform/ledger-middleware v0.0.0-20230903040659-951194c207c5
 	github.com/NpoolPlatform/libent-cruder v0.0.0-20230825073905-d23e4d838f99
-	github.com/NpoolPlatform/message v0.0.0-20230903031306-5d08c2cffc32
-	github.com/NpoolPlatform/notif-middleware v0.0.0-20230712041535-89b4cc04d32d
-	github.com/NpoolPlatform/review-middleware v0.0.0-20230902114106-543c8645c85b
+	github.com/NpoolPlatform/message v0.0.0-20230905034017-63d09a9cd18a
+	github.com/NpoolPlatform/notif-middleware v0.0.0-20230903102306-85614daf4d89
+	github.com/NpoolPlatform/review-middleware v0.0.0-20230905034717-ef173e7bed5c
 	github.com/go-resty/resty/v2 v2.7.0
 	github.com/google/uuid v1.3.0
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.11.3
