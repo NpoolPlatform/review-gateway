@@ -18,7 +18,7 @@ type Handler struct {
 	AppID       *string
 	TargetAppID *string
 	UserID      *string
-	ReviewID    *uuid.UUID
+	ReviewID    *string
 	LangID      *string
 	Domain      *string
 	State       *reviewtypes.ReviewState
@@ -81,14 +81,8 @@ func WithUserID(appID, userID *string) func(context.Context, *Handler) error {
 			return err
 		}
 		exist, err := appusercli.ExistUserConds(ctx, &user.Conds{
-			AppID: &basetyeps.StringVal{
-				Op:    cruder.EQ,
-				Value: *appID,
-			},
-			ID: &basetyeps.StringVal{
-				Op:    cruder.EQ,
-				Value: *userID,
-			},
+			AppID: &basetyeps.StringVal{Op: cruder.EQ, Value: *appID},
+			ID:    &basetyeps.StringVal{Op: cruder.EQ, Value: *userID},
 		})
 		if err != nil {
 			return err
@@ -104,11 +98,10 @@ func WithUserID(appID, userID *string) func(context.Context, *Handler) error {
 
 func WithReviewID(id *string) func(context.Context, *Handler) error {
 	return func(ctx context.Context, h *Handler) error {
-		_id, err := uuid.Parse(*id)
-		if err != nil {
+		if _, err := uuid.Parse(*id); err != nil {
 			return err
 		}
-		h.ReviewID = &_id
+		h.ReviewID = id
 		return nil
 	}
 }

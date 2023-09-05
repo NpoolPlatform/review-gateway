@@ -23,14 +23,8 @@ import (
 func (h *Handler) UpdateKycReview(ctx context.Context) (*npool.KycReview, error) {
 	exist, err := reviewcli.ExistReviewConds(ctx, &reviewmwpb.ExistReviewCondsRequest{
 		Conds: &reviewmwpb.Conds{
-			AppID: &basetypes.StringVal{
-				Op:    cruder.EQ,
-				Value: *h.TargetAppID,
-			},
-			ID: &basetypes.StringVal{
-				Op:    cruder.EQ,
-				Value: h.ReviewID.String(),
-			},
+			AppID: &basetypes.StringVal{Op: cruder.EQ, Value: *h.TargetAppID},
+			ID:    &basetypes.StringVal{Op: cruder.EQ, Value: *h.ReviewID},
 		},
 	})
 	if err != nil {
@@ -40,12 +34,11 @@ func (h *Handler) UpdateKycReview(ctx context.Context) (*npool.KycReview, error)
 		return nil, fmt.Errorf("can not find review")
 	}
 
-	reviewID := h.ReviewID.String()
 	handler, err := review1.NewHandler(
 		ctx,
 		review1.WithAppID(h.AppID),
 		review1.WithUserID(h.AppID, h.UserID),
-		review1.WithReviewID(&reviewID),
+		review1.WithReviewID(h.ReviewID),
 		review1.WithState(h.State, h.Message),
 		review1.WithMessage(h.Message),
 	)
@@ -64,6 +57,9 @@ func (h *Handler) UpdateKycReview(ctx context.Context) (*npool.KycReview, error)
 	}
 	if kycInfo == nil {
 		return nil, fmt.Errorf("invalid kyc")
+	}
+	if kycInfo.ReviewID != *h.ReviewID {
+		return nil, fmt.Errorf("invalid review")
 	}
 
 	userInfo, err := usercli.GetUser(ctx, kycInfo.AppID, kycInfo.UserID)

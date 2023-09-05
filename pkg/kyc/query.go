@@ -129,7 +129,7 @@ func (h *Handler) GetKycReview(ctx context.Context) (*npool.KycReview, error) { 
 		return nil, fmt.Errorf("invalid review id")
 	}
 
-	rv, err := reviewmwcli.GetReview(ctx, h.ReviewID.String())
+	rv, err := reviewmwcli.GetReview(ctx, *h.ReviewID)
 	if err != nil {
 		return nil, err
 	}
