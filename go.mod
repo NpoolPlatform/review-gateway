@@ -3,29 +3,30 @@ module github.com/NpoolPlatform/review-gateway
 go 1.17
 
 require (
-	github.com/NpoolPlatform/account-middleware v0.0.0-20230712122024-60dc0bb4c0c0
+	github.com/NpoolPlatform/account-middleware v0.0.0-20230913133754-4faeebde91e8
 	github.com/NpoolPlatform/appuser-gateway v0.0.0-20230609025052-1614c2336223
-	github.com/NpoolPlatform/appuser-middleware v0.0.0-20230609030803-0b26c1f95713
-	github.com/NpoolPlatform/basal-middleware v0.0.0-20230815094824-5e9572b10997
-	github.com/NpoolPlatform/chain-middleware v0.0.0-20230712041523-2e1d215244e0
-	github.com/NpoolPlatform/go-service-framework v0.0.0-20230814035104-e1466b5c157e
+	github.com/NpoolPlatform/appuser-middleware v0.0.0-20230913142320-746bdc6ca127
+	github.com/NpoolPlatform/basal-middleware v0.0.0-20230913134752-d45f93a3a60c
+	github.com/NpoolPlatform/chain-middleware v0.0.0-20230913142438-2e5786e6ca7e
+	github.com/NpoolPlatform/go-service-framework v0.0.0-20230913101807-3934219c0456
 	github.com/NpoolPlatform/ledger-gateway v0.0.0-20230831083533-ea7be10388bd
-	github.com/NpoolPlatform/ledger-middleware v0.0.0-20230903040659-951194c207c5
+	github.com/NpoolPlatform/ledger-middleware v0.0.0-20230913131713-3f2e2a885752
 	github.com/NpoolPlatform/libent-cruder v0.0.0-20230825073905-d23e4d838f99
-	github.com/NpoolPlatform/message v0.0.0-20230905034017-63d09a9cd18a
-	github.com/NpoolPlatform/notif-middleware v0.0.0-20230903102306-85614daf4d89
-	github.com/NpoolPlatform/review-middleware v0.0.0-20230905034717-ef173e7bed5c
+	github.com/NpoolPlatform/message v0.0.0-20230914023737-ac5d6d2a3a03
+	github.com/NpoolPlatform/notif-middleware v0.0.0-20230913142635-fe1be9a7165b
+	github.com/NpoolPlatform/review-middleware v0.0.0-20230913132355-adf7397154a7
 	github.com/go-resty/resty/v2 v2.7.0
 	github.com/google/uuid v1.3.0
-	github.com/grpc-ecosystem/grpc-gateway/v2 v2.11.3
+	github.com/grpc-ecosystem/grpc-gateway/v2 v2.15.2
 	github.com/streadway/amqp v1.0.0
 	github.com/stretchr/testify v1.8.3
-	github.com/urfave/cli/v2 v2.16.3
+	github.com/urfave/cli/v2 v2.17.2-0.20221006022127-8f469abc00aa
 	google.golang.org/grpc v1.55.0
 	google.golang.org/protobuf v1.30.0
 )
 
 require (
+	entgo.io/ent v0.12.0 // indirect
 	github.com/Shonminh/apollo-client v0.4.0 // indirect
 	github.com/ThreeDotsLabs/watermill v1.2.0 // indirect
 	github.com/ThreeDotsLabs/watermill-amqp/v2 v2.0.7 // indirect
@@ -40,11 +41,12 @@ require (
 	github.com/cpuguy83/go-md2man/v2 v2.0.2 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/fatih/color v1.13.0 // indirect
-	github.com/fsnotify/fsnotify v1.5.4 // indirect
+	github.com/fsnotify/fsnotify v1.6.0 // indirect
 	github.com/go-chassis/go-archaius v1.5.3 // indirect
 	github.com/go-chassis/openlog v1.1.3 // indirect
 	github.com/go-logr/logr v1.2.3 // indirect
 	github.com/go-logr/stdr v1.2.2 // indirect
+	github.com/go-sql-driver/mysql v1.7.0 // indirect
 	github.com/golang/protobuf v1.5.3 // indirect
 	github.com/gorilla/websocket v1.5.0 // indirect
 	github.com/grpc-ecosystem/go-grpc-middleware v1.3.0 // indirect
@@ -61,8 +63,8 @@ require (
 	github.com/hashicorp/serf v0.9.7 // indirect
 	github.com/lithammer/shortuuid/v3 v3.0.7 // indirect
 	github.com/magiconair/properties v1.8.6 // indirect
-	github.com/mattn/go-colorable v0.1.12 // indirect
-	github.com/mattn/go-isatty v0.0.14 // indirect
+	github.com/mattn/go-colorable v0.1.13 // indirect
+	github.com/mattn/go-isatty v0.0.16 // indirect
 	github.com/matttproud/golang_protobuf_extensions v1.0.4 // indirect
 	github.com/miekg/dns v1.1.48 // indirect
 	github.com/mitchellh/go-homedir v1.1.0 // indirect
@@ -75,11 +77,11 @@ require (
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/prometheus/client_golang v1.14.0 // indirect
 	github.com/prometheus/client_model v0.3.0 // indirect
-	github.com/prometheus/common v0.39.0 // indirect
+	github.com/prometheus/common v0.42.0 // indirect
 	github.com/prometheus/procfs v0.9.0 // indirect
 	github.com/rabbitmq/amqp091-go v1.2.0 // indirect
 	github.com/russross/blackfriday/v2 v2.1.0 // indirect
-	github.com/spf13/afero v1.8.2 // indirect
+	github.com/spf13/afero v1.9.2 // indirect
 	github.com/spf13/cast v1.5.0 // indirect
 	github.com/spf13/jwalterweatherman v1.1.0 // indirect
 	github.com/spf13/pflag v1.0.5 // indirect
@@ -92,13 +94,15 @@ require (
 	go.opentelemetry.io/otel/exporters/jaeger v1.6.3 // indirect
 	go.opentelemetry.io/otel/sdk v1.6.3 // indirect
 	go.opentelemetry.io/otel/trace v1.10.0 // indirect
-	go.uber.org/atomic v1.9.0 // indirect
+	go.uber.org/atomic v1.10.0 // indirect
 	go.uber.org/multierr v1.8.0 // indirect
 	go.uber.org/ratelimit v0.2.0 // indirect
-	go.uber.org/zap v1.21.0 // indirect
+	go.uber.org/zap v1.24.0 // indirect
+	golang.org/x/crypto v0.4.0 // indirect
 	golang.org/x/net v0.8.0 // indirect
 	golang.org/x/sys v0.6.0 // indirect
 	golang.org/x/text v0.8.0 // indirect
+	golang.org/x/tools v0.7.0 // indirect
 	golang.org/x/xerrors v0.0.0-20220907171357-04be3eba64a2 // indirect
 	google.golang.org/genproto v0.0.0-20230306155012-7f2fa6fef1f4 // indirect
 	gopkg.in/ini.v1 v1.66.6 // indirect
