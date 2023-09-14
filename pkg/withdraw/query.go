@@ -4,36 +4,28 @@ import (
 	"context"
 	"fmt"
 
-	coininfocli "github.com/NpoolPlatform/chain-middleware/pkg/client/coin"
-
-	npool "github.com/NpoolPlatform/message/npool/review/gw/v2/withdraw"
-
+	useraccmwcli "github.com/NpoolPlatform/account-middleware/pkg/client/user"
 	usermwcli "github.com/NpoolPlatform/appuser-middleware/pkg/client/user"
 	appcoinmwcli "github.com/NpoolPlatform/chain-middleware/pkg/client/app/coin"
-	withdrawcli "github.com/NpoolPlatform/ledger-manager/pkg/client/withdraw"
-	reviewcli "github.com/NpoolPlatform/review-middleware/pkg/client/review"
-
-	useraccmwcli "github.com/NpoolPlatform/account-middleware/pkg/client/user"
-	useraccmwpb "github.com/NpoolPlatform/message/npool/account/mw/v1/user"
-
-	ledgerconst "github.com/NpoolPlatform/ledger-gateway/pkg/message/const"
-
+	coinmwcli "github.com/NpoolPlatform/chain-middleware/pkg/client/coin"
+	ledgerconst "github.com/NpoolPlatform/ledger-gateway/pkg/servicename"
+	withdrawcli "github.com/NpoolPlatform/ledger-middleware/pkg/client/withdraw"
 	cruder "github.com/NpoolPlatform/libent-cruder/pkg/cruder"
-	commonpb "github.com/NpoolPlatform/message/npool"
+	useraccmwpb "github.com/NpoolPlatform/message/npool/account/mw/v1/user"
 	usermwpb "github.com/NpoolPlatform/message/npool/appuser/mw/v1/user"
+	reviewtypes "github.com/NpoolPlatform/message/npool/basetypes/review/v1"
 	basetypes "github.com/NpoolPlatform/message/npool/basetypes/v1"
 	appcoinmwpb "github.com/NpoolPlatform/message/npool/chain/mw/v1/app/coin"
-	withdrawmgrpb "github.com/NpoolPlatform/message/npool/ledger/mgr/v1/ledger/withdraw"
-	reviewpb "github.com/NpoolPlatform/message/npool/review/mw/v2/review"
+	withdrawmwpb "github.com/NpoolPlatform/message/npool/ledger/mw/v2/withdraw"
+	npool "github.com/NpoolPlatform/message/npool/review/gw/v2/withdraw"
+	reviewmwpb "github.com/NpoolPlatform/message/npool/review/mw/v2/review"
+	reviewmwcli "github.com/NpoolPlatform/review-middleware/pkg/client/review"
 )
 
 // nolint
 func (h *Handler) GetWithdrawReviews(ctx context.Context) ([]*npool.WithdrawReview, uint32, error) {
-	conds := &withdrawmgrpb.Conds{
-		AppID: &commonpb.StringVal{
-			Op:    cruder.EQ,
-			Value: *h.AppID,
-		},
+	conds := &withdrawmwpb.Conds{
+		AppID: &basetypes.StringVal{Op: cruder.EQ, Value: *h.AppID},
 	}
 	withdraws, total, err := withdrawcli.GetWithdraws(ctx, conds, h.Offset, h.Limit)
 	if err != nil {
@@ -48,18 +40,18 @@ func (h *Handler) GetWithdrawReviews(ctx context.Context) ([]*npool.WithdrawRevi
 		wids = append(wids, w.ID)
 	}
 
-	rvs, err := reviewcli.GetObjectReviews(
+	rvs, err := reviewmwcli.GetObjectReviews(
 		ctx,
 		*h.AppID,
-		ledgerconst.ServiceName,
+		ledgerconst.ServiceDomain,
 		wids,
-		reviewpb.ReviewObjectType_ObjectWithdrawal,
+		reviewtypes.ReviewObjectType_ObjectWithdrawal,
 	)
 	if err != nil {
 		return nil, 0, err
 	}
 
-	rvMap := map[string]*reviewpb.Review{}
+	rvMap := map[string]*reviewmwpb.Review{}
 	for _, rv := range rvs {
 		rvMap[rv.ObjectID] = rv
 	}
@@ -70,14 +62,8 @@ func (h *Handler) GetWithdrawReviews(ctx context.Context) ([]*npool.WithdrawRevi
 	}
 
 	coins, _, err := appcoinmwcli.GetCoins(ctx, &appcoinmwpb.Conds{
-		AppID: &basetypes.StringVal{
-			Op:    cruder.EQ,
-			Value: *h.AppID,
-		},
-		CoinTypeIDs: &basetypes.StringSliceVal{
-			Op:    cruder.IN,
-			Value: coinTypeIDs,
-		},
+		AppID:       &basetypes.StringVal{Op: cruder.EQ, Value: *h.AppID},
+		CoinTypeIDs: &basetypes.StringSliceVal{Op: cruder.IN, Value: coinTypeIDs},
 	}, 0, int32(len(coinTypeIDs)))
 	if err != nil {
 		return nil, 0, err
@@ -111,10 +97,7 @@ func (h *Handler) GetWithdrawReviews(ctx context.Context) ([]*npool.WithdrawRevi
 	}
 
 	accounts, _, err := useraccmwcli.GetAccounts(ctx, &useraccmwpb.Conds{
-		AccountIDs: &basetypes.StringSliceVal{
-			Op:    cruder.IN,
-			Value: ids,
-		},
+		AccountIDs: &basetypes.StringSliceVal{Op: cruder.IN, Value: ids},
 	}, 0, int32(len(ids)))
 	if err != nil {
 		return nil, 0, err
@@ -129,7 +112,7 @@ func (h *Handler) GetWithdrawReviews(ctx context.Context) ([]*npool.WithdrawRevi
 	for _, withdraw := range withdraws {
 		rv, ok := rvMap[withdraw.ID]
 		if !ok {
-			return nil, 0, fmt.Errorf("invalid withdraw review: %v", withdraw)
+			continue
 		}
 
 		coin, ok := coinMap[withdraw.CoinTypeID]
@@ -150,19 +133,19 @@ func (h *Handler) GetWithdrawReviews(ctx context.Context) ([]*npool.WithdrawRevi
 		}
 
 		switch rv.State {
-		case reviewpb.ReviewState_Approved:
-		case reviewpb.ReviewState_Rejected:
-		case reviewpb.ReviewState_Wait:
+		case reviewtypes.ReviewState_Approved:
+		case reviewtypes.ReviewState_Rejected:
+		case reviewtypes.ReviewState_Wait:
 		default:
 			return nil, 0, fmt.Errorf("invalid state")
 		}
 
 		switch rv.Trigger {
-		case reviewpb.ReviewTriggerType_LargeAmount:
-		case reviewpb.ReviewTriggerType_InsufficientFunds:
-		case reviewpb.ReviewTriggerType_AutoReviewed:
-		case reviewpb.ReviewTriggerType_InsufficientGas:
-		case reviewpb.ReviewTriggerType_InsufficientFundsGas:
+		case reviewtypes.ReviewTriggerType_LargeAmount:
+		case reviewtypes.ReviewTriggerType_InsufficientFunds:
+		case reviewtypes.ReviewTriggerType_AutoReviewed:
+		case reviewtypes.ReviewTriggerType_InsufficientGas:
+		case reviewtypes.ReviewTriggerType_InsufficientFundsGas:
 		default:
 			return nil, 0, fmt.Errorf("invalid trigger: %v", rv.Trigger)
 		}
@@ -200,13 +183,13 @@ func (h *Handler) GetWithdrawReviews(ctx context.Context) ([]*npool.WithdrawRevi
 
 // nolint
 func (h *Handler) GetWithdrawReview(ctx context.Context) (*npool.WithdrawReview, error) {
-	rv, err := reviewcli.GetReview(ctx, h.ReviewID.String())
+	rv, err := reviewmwcli.GetReview(ctx, h.ReviewID.String())
 	if err != nil {
 		return nil, err
 	}
 
 	switch rv.ObjectType {
-	case reviewpb.ReviewObjectType_ObjectWithdrawal:
+	case reviewtypes.ReviewObjectType_ObjectWithdrawal:
 	default:
 		return nil, fmt.Errorf("invalid object type")
 	}
@@ -230,24 +213,24 @@ func (h *Handler) GetWithdrawReview(ctx context.Context) (*npool.WithdrawReview,
 	// TODO: we need fill reviewer name, but we miss appid in reviews table
 
 	switch rv.State {
-	case reviewpb.ReviewState_Approved:
-	case reviewpb.ReviewState_Rejected:
-	case reviewpb.ReviewState_Wait:
+	case reviewtypes.ReviewState_Approved:
+	case reviewtypes.ReviewState_Rejected:
+	case reviewtypes.ReviewState_Wait:
 	default:
 		return nil, fmt.Errorf("invalid state")
 	}
 
 	switch rv.Trigger {
-	case reviewpb.ReviewTriggerType_LargeAmount:
-	case reviewpb.ReviewTriggerType_InsufficientFunds:
-	case reviewpb.ReviewTriggerType_AutoReviewed:
-	case reviewpb.ReviewTriggerType_InsufficientGas:
-	case reviewpb.ReviewTriggerType_InsufficientFundsGas:
+	case reviewtypes.ReviewTriggerType_LargeAmount:
+	case reviewtypes.ReviewTriggerType_InsufficientFunds:
+	case reviewtypes.ReviewTriggerType_AutoReviewed:
+	case reviewtypes.ReviewTriggerType_InsufficientGas:
+	case reviewtypes.ReviewTriggerType_InsufficientFundsGas:
 	default:
 		return nil, fmt.Errorf("invalid trigger: %v", rv.Trigger)
 	}
 
-	coin, err := coininfocli.GetCoin(ctx, withdraw.CoinTypeID)
+	coin, err := coinmwcli.GetCoin(ctx, withdraw.CoinTypeID)
 	if err != nil {
 		return nil, err
 	}
@@ -258,18 +241,9 @@ func (h *Handler) GetWithdrawReview(ctx context.Context) (*npool.WithdrawReview,
 	address := withdraw.Address
 
 	account, _ := useraccmwcli.GetAccountOnly(ctx, &useraccmwpb.Conds{
-		AppID: &basetypes.StringVal{
-			Op:    cruder.EQ,
-			Value: withdraw.AppID,
-		},
-		AccountID: &basetypes.StringVal{
-			Op:    cruder.EQ,
-			Value: withdraw.AccountID,
-		},
-		UsedFor: &basetypes.Uint32Val{
-			Op:    cruder.EQ,
-			Value: uint32(basetypes.AccountUsedFor_UserWithdraw),
-		},
+		AppID:     &basetypes.StringVal{Op: cruder.EQ, Value: withdraw.AppID},
+		AccountID: &basetypes.StringVal{Op: cruder.EQ, Value: withdraw.AccountID},
+		UsedFor:   &basetypes.Uint32Val{Op: cruder.EQ, Value: uint32(basetypes.AccountUsedFor_UserWithdraw)},
 	})
 	if account != nil {
 		address = account.Address

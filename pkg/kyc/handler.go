@@ -8,8 +8,8 @@ import (
 	appusercli "github.com/NpoolPlatform/appuser-middleware/pkg/client/user"
 	"github.com/NpoolPlatform/libent-cruder/pkg/cruder"
 	"github.com/NpoolPlatform/message/npool/appuser/mw/v1/user"
+	reviewtypes "github.com/NpoolPlatform/message/npool/basetypes/review/v1"
 	basetyeps "github.com/NpoolPlatform/message/npool/basetypes/v1"
-	npool "github.com/NpoolPlatform/message/npool/review/mw/v2/review"
 	constant "github.com/NpoolPlatform/review-gateway/pkg/const"
 	"github.com/google/uuid"
 )
@@ -18,10 +18,10 @@ type Handler struct {
 	AppID       *string
 	TargetAppID *string
 	UserID      *string
-	ReviewID    *uuid.UUID
+	ReviewID    *string
 	LangID      *string
 	Domain      *string
-	State       *npool.ReviewState
+	State       *reviewtypes.ReviewState
 	Message     *string
 	Offset      int32
 	Limit       int32
@@ -81,14 +81,8 @@ func WithUserID(appID, userID *string) func(context.Context, *Handler) error {
 			return err
 		}
 		exist, err := appusercli.ExistUserConds(ctx, &user.Conds{
-			AppID: &basetyeps.StringVal{
-				Op:    cruder.EQ,
-				Value: *appID,
-			},
-			ID: &basetyeps.StringVal{
-				Op:    cruder.EQ,
-				Value: *userID,
-			},
+			AppID: &basetyeps.StringVal{Op: cruder.EQ, Value: *appID},
+			ID:    &basetyeps.StringVal{Op: cruder.EQ, Value: *userID},
 		})
 		if err != nil {
 			return err
@@ -104,27 +98,26 @@ func WithUserID(appID, userID *string) func(context.Context, *Handler) error {
 
 func WithReviewID(id *string) func(context.Context, *Handler) error {
 	return func(ctx context.Context, h *Handler) error {
-		_id, err := uuid.Parse(*id)
-		if err != nil {
+		if _, err := uuid.Parse(*id); err != nil {
 			return err
 		}
-		h.ReviewID = &_id
+		h.ReviewID = id
 		return nil
 	}
 }
 
-func WithState(state *npool.ReviewState, message *string) func(context.Context, *Handler) error {
+func WithState(state *reviewtypes.ReviewState, message *string) func(context.Context, *Handler) error {
 	return func(ctx context.Context, h *Handler) error {
 		if state == nil {
 			return nil
 		}
 		switch *state {
-		case npool.ReviewState_Rejected:
-		case npool.ReviewState_Approved:
+		case reviewtypes.ReviewState_Rejected:
+		case reviewtypes.ReviewState_Approved:
 		default:
 			return fmt.Errorf("invalid review state")
 		}
-		if *state == npool.ReviewState_Rejected && message == nil {
+		if *state == reviewtypes.ReviewState_Rejected && message == nil {
 			return fmt.Errorf("message is empty")
 		}
 		h.State = state

@@ -4,8 +4,8 @@ import (
 	"context"
 	"fmt"
 
+	reviewtypes "github.com/NpoolPlatform/message/npool/basetypes/review/v1"
 	npool "github.com/NpoolPlatform/message/npool/review/mw/v2/review"
-
 	cli "github.com/NpoolPlatform/review-middleware/pkg/client/review"
 )
 
@@ -18,7 +18,7 @@ func (h *Handler) GetReview(ctx context.Context) (*npool.Review, error) {
 		return nil, fmt.Errorf("invalid review id")
 	}
 
-	if rv.State != npool.ReviewState_Wait {
+	if rv.State != reviewtypes.ReviewState_Wait {
 		return nil, fmt.Errorf("current review state can not be update")
 	}
 

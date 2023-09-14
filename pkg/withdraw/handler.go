@@ -5,7 +5,8 @@ import (
 	"fmt"
 
 	appcli "github.com/NpoolPlatform/appuser-middleware/pkg/client/app"
-	npool "github.com/NpoolPlatform/message/npool/review/mw/v2/review"
+	usermwcli "github.com/NpoolPlatform/appuser-middleware/pkg/client/user"
+	reviewtypes "github.com/NpoolPlatform/message/npool/basetypes/review/v1"
 	constant "github.com/NpoolPlatform/review-gateway/pkg/const"
 	"github.com/google/uuid"
 )
@@ -17,7 +18,7 @@ type Handler struct {
 	ReviewID    *uuid.UUID
 	LangID      *string
 	Domain      *string
-	State       *npool.ReviewState
+	State       *reviewtypes.ReviewState
 	Message     *string
 	Offset      int32
 	Limit       int32
@@ -70,14 +71,20 @@ func WithTargetAppID(appID *string) func(context.Context, *Handler) error {
 	}
 }
 
-func WithUserID(id *string) func(context.Context, *Handler) error {
+func WithUserID(appID, userID *string) func(context.Context, *Handler) error {
 	return func(ctx context.Context, h *Handler) error {
-		_, err := uuid.Parse(*id)
+		_, err := uuid.Parse(*userID)
 		if err != nil {
 			return err
 		}
-		// TODO: Check UserID
-		h.UserID = id
+		user, err := usermwcli.GetUser(ctx, *appID, *userID)
+		if err != nil {
+			return err
+		}
+		if user == nil {
+			return fmt.Errorf("user not found")
+		}
+		h.UserID = userID
 		return nil
 	}
 }
@@ -93,18 +100,18 @@ func WithReviewID(id *string) func(context.Context, *Handler) error {
 	}
 }
 
-func WithState(state *npool.ReviewState, message *string) func(context.Context, *Handler) error {
+func WithState(state *reviewtypes.ReviewState, message *string) func(context.Context, *Handler) error {
 	return func(ctx context.Context, h *Handler) error {
 		if state == nil {
 			return nil
 		}
 		switch *state {
-		case npool.ReviewState_Rejected:
-		case npool.ReviewState_Approved:
+		case reviewtypes.ReviewState_Rejected:
+		case reviewtypes.ReviewState_Approved:
 		default:
 			return fmt.Errorf("invalid review state")
 		}
-		if *state == npool.ReviewState_Rejected && message == nil {
+		if *state == reviewtypes.ReviewState_Rejected && message == nil {
 			return fmt.Errorf("message is empty")
 		}
 		h.State = state

@@ -7,15 +7,15 @@ import (
 	"github.com/NpoolPlatform/go-service-framework/pkg/logger"
 
 	appusergateway "github.com/NpoolPlatform/appuser-gateway/pkg/servicename"
-	npool "github.com/NpoolPlatform/message/npool/review/gw/v2/kyc"
-
 	kycmwcli "github.com/NpoolPlatform/appuser-middleware/pkg/client/kyc"
 	usermwcli "github.com/NpoolPlatform/appuser-middleware/pkg/client/user"
 	cruder "github.com/NpoolPlatform/libent-cruder/pkg/cruder"
 	kycmwpb "github.com/NpoolPlatform/message/npool/appuser/mw/v1/kyc"
 	usermwpb "github.com/NpoolPlatform/message/npool/appuser/mw/v1/user"
+	reviewtypes "github.com/NpoolPlatform/message/npool/basetypes/review/v1"
 	basetypes "github.com/NpoolPlatform/message/npool/basetypes/v1"
-	reviewpb "github.com/NpoolPlatform/message/npool/review/mw/v2/review"
+	npool "github.com/NpoolPlatform/message/npool/review/gw/v2/kyc"
+	reviewmwpb "github.com/NpoolPlatform/message/npool/review/mw/v2/review"
 	reviewmwcli "github.com/NpoolPlatform/review-middleware/pkg/client/review"
 )
 
@@ -44,13 +44,13 @@ func (h *Handler) GetKycReviews(ctx context.Context) ([]*npool.KycReview, uint32
 		*h.AppID,
 		appusergateway.ServiceDomain,
 		ids,
-		reviewpb.ReviewObjectType_ObjectKyc,
+		reviewtypes.ReviewObjectType_ObjectKyc,
 	)
 	if err != nil {
 		return nil, 0, err
 	}
 
-	rvMap := map[string]*reviewpb.Review{}
+	rvMap := map[string]*reviewmwpb.Review{}
 	for _, rv := range rvs {
 		rvMap[rv.ID] = rv
 	}
@@ -74,15 +74,15 @@ func (h *Handler) GetKycReviews(ctx context.Context) ([]*npool.KycReview, uint32
 
 	infos := []*npool.KycReview{}
 	for _, kyc := range kycs {
-		rv := &reviewpb.Review{}
+		rv := &reviewmwpb.Review{}
 
 		rvM, ok := rvMap[kyc.ReviewID]
 		if ok {
 			rv = rvM
 			switch rv.State {
-			case reviewpb.ReviewState_Approved:
-			case reviewpb.ReviewState_Rejected:
-			case reviewpb.ReviewState_Wait:
+			case reviewtypes.ReviewState_Approved:
+			case reviewtypes.ReviewState_Rejected:
+			case reviewtypes.ReviewState_Wait:
 			default:
 				logger.Sugar().Warnw("GetKycReviews", "State", rv.State)
 			}
@@ -129,13 +129,13 @@ func (h *Handler) GetKycReview(ctx context.Context) (*npool.KycReview, error) { 
 		return nil, fmt.Errorf("invalid review id")
 	}
 
-	rv, err := reviewmwcli.GetReview(ctx, h.ReviewID.String())
+	rv, err := reviewmwcli.GetReview(ctx, *h.ReviewID)
 	if err != nil {
 		return nil, err
 	}
 
 	switch rv.ObjectType {
-	case reviewpb.ReviewObjectType_ObjectKyc:
+	case reviewtypes.ReviewObjectType_ObjectKyc:
 	default:
 		return nil, fmt.Errorf("invalid object type")
 	}
@@ -157,9 +157,9 @@ func (h *Handler) GetKycReview(ctx context.Context) (*npool.KycReview, error) { 
 	}
 
 	switch rv.State {
-	case reviewpb.ReviewState_Approved:
-	case reviewpb.ReviewState_Rejected:
-	case reviewpb.ReviewState_Wait:
+	case reviewtypes.ReviewState_Approved:
+	case reviewtypes.ReviewState_Rejected:
+	case reviewtypes.ReviewState_Wait:
 	default:
 		return nil, fmt.Errorf("invalid state")
 	}
