@@ -13,7 +13,7 @@ require (
 	github.com/NpoolPlatform/ledger-middleware v0.0.0-20230917074922-787f70282dd3
 	github.com/NpoolPlatform/libent-cruder v0.0.0-20230825073905-d23e4d838f99
 	github.com/NpoolPlatform/message v0.0.0-20230917065134-468517781435
-	github.com/NpoolPlatform/notif-middleware v0.0.0-20230913142635-fe1be9a7165b
+	github.com/NpoolPlatform/notif-middleware v0.0.0-20230922154921-8a9b571d8229
 	github.com/NpoolPlatform/review-middleware v0.0.0-20230913132355-adf7397154a7
 	github.com/go-resty/resty/v2 v2.7.0
 	github.com/google/uuid v1.3.0
