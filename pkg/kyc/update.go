@@ -90,7 +90,7 @@ func (h *Handler) UpdateKycReview(ctx context.Context) (*npool.KycReview, error)
 	}
 
 	_, err = notifmwcli.GenerateNotifs(ctx, &notifmwpb.GenerateNotifsRequest{
-		AppID:     *h.AppID,
+		AppID:     kycInfo.AppID,
 		UserID:    kycInfo.UserID,
 		EventType: eventType,
 		NotifType: basetypes.NotifType_NotifUnicast,
