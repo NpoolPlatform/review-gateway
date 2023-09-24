@@ -3,18 +3,18 @@ module github.com/NpoolPlatform/review-gateway
 go 1.17
 
 require (
-	github.com/NpoolPlatform/account-middleware v0.0.0-20230913133754-4faeebde91e8
-	github.com/NpoolPlatform/appuser-gateway v0.0.0-20230609025052-1614c2336223
-	github.com/NpoolPlatform/appuser-middleware v0.0.0-20230917082029-230c1954e222
-	github.com/NpoolPlatform/basal-middleware v0.0.0-20230913134752-d45f93a3a60c
-	github.com/NpoolPlatform/chain-middleware v0.0.0-20230913142438-2e5786e6ca7e
-	github.com/NpoolPlatform/go-service-framework v0.0.0-20230913101807-3934219c0456
-	github.com/NpoolPlatform/ledger-gateway v0.0.0-20230831083533-ea7be10388bd
-	github.com/NpoolPlatform/ledger-middleware v0.0.0-20230917074922-787f70282dd3
+	github.com/NpoolPlatform/account-middleware v0.0.0-20230924051917-6beecc3def57
+	github.com/NpoolPlatform/appuser-gateway v0.0.0-20230924071500-d38412cf22fc
+	github.com/NpoolPlatform/appuser-middleware v0.0.0-20230924060533-3e21b24a2113
+	github.com/NpoolPlatform/basal-middleware v0.0.0-20230924051732-306a71d294ed
+	github.com/NpoolPlatform/chain-middleware v0.0.0-20230924052457-76b2482b116b
+	github.com/NpoolPlatform/go-service-framework v0.0.0-20230922114506-a65341cfbf48
+	github.com/NpoolPlatform/ledger-gateway v0.0.0-20230924074539-2869344ae764
+	github.com/NpoolPlatform/ledger-middleware v0.0.0-20230924053152-8c9b73fba39f
 	github.com/NpoolPlatform/libent-cruder v0.0.0-20230825073905-d23e4d838f99
-	github.com/NpoolPlatform/message v0.0.0-20230917065134-468517781435
-	github.com/NpoolPlatform/notif-middleware v0.0.0-20230922154921-8a9b571d8229
-	github.com/NpoolPlatform/review-middleware v0.0.0-20230913132355-adf7397154a7
+	github.com/NpoolPlatform/message v0.0.0-20230923053829-31c88d9a36c2
+	github.com/NpoolPlatform/notif-middleware v0.0.0-20230924053351-a70b78c0f129
+	github.com/NpoolPlatform/review-middleware v0.0.0-20230924061522-35f3deab0af2
 	github.com/go-resty/resty/v2 v2.7.0
 	github.com/google/uuid v1.3.0
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.15.2
@@ -26,7 +26,6 @@ require (
 )
 
 require (
-	entgo.io/ent v0.12.0 // indirect
 	github.com/Shonminh/apollo-client v0.4.0 // indirect
 	github.com/ThreeDotsLabs/watermill v1.2.0 // indirect
 	github.com/ThreeDotsLabs/watermill-amqp/v2 v2.0.7 // indirect
@@ -46,7 +45,7 @@ require (
 	github.com/go-chassis/openlog v1.1.3 // indirect
 	github.com/go-logr/logr v1.2.3 // indirect
 	github.com/go-logr/stdr v1.2.2 // indirect
-	github.com/go-sql-driver/mysql v1.7.0 // indirect
+	github.com/go-playground/universal-translator v0.18.1 // indirect
 	github.com/golang/protobuf v1.5.3 // indirect
 	github.com/gorilla/websocket v1.5.0 // indirect
 	github.com/grpc-ecosystem/go-grpc-middleware v1.3.0 // indirect
@@ -61,6 +60,7 @@ require (
 	github.com/hashicorp/golang-lru v0.5.5-0.20210104140557-80c98217689d // indirect
 	github.com/hashicorp/hcl v1.0.0 // indirect
 	github.com/hashicorp/serf v0.9.7 // indirect
+	github.com/leodido/go-urn v1.2.4 // indirect
 	github.com/lithammer/shortuuid/v3 v3.0.7 // indirect
 	github.com/magiconair/properties v1.8.6 // indirect
 	github.com/mattn/go-colorable v0.1.13 // indirect
@@ -68,7 +68,6 @@ require (
 	github.com/matttproud/golang_protobuf_extensions v1.0.4 // indirect
 	github.com/miekg/dns v1.1.48 // indirect
 	github.com/mitchellh/go-homedir v1.1.0 // indirect
-	github.com/mitchellh/go-testing-interface v1.14.1 // indirect
 	github.com/mitchellh/mapstructure v1.5.0 // indirect
 	github.com/oklog/ulid v1.3.1 // indirect
 	github.com/pelletier/go-toml v1.9.5 // indirect
