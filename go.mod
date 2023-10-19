@@ -7,12 +7,12 @@ require (
 	github.com/NpoolPlatform/appuser-gateway v0.0.0-20231011085315-d0b4ac017025
 	github.com/NpoolPlatform/appuser-middleware v0.0.0-20231011071633-e14f373f95cb
 	github.com/NpoolPlatform/basal-middleware v0.0.0-20231011062124-7ea6e9549a66
-	github.com/NpoolPlatform/chain-middleware v0.0.0-20231013082502-6adc454e314f
+	github.com/NpoolPlatform/chain-middleware v0.0.0-20231019101816-e48291d7705d
 	github.com/NpoolPlatform/go-service-framework v0.0.0-20230930023319-e48074d9472e
 	github.com/NpoolPlatform/ledger-gateway v0.0.0-20231013104651-9ba77758c4cd
 	github.com/NpoolPlatform/ledger-middleware v0.0.0-20231011072101-96b312d4e534
 	github.com/NpoolPlatform/libent-cruder v0.0.0-20231008051607-f64457cf6ab6
-	github.com/NpoolPlatform/message v0.0.0-20231013100104-b4639a25ce8c
+	github.com/NpoolPlatform/message v0.0.0-20231019084608-f9a7b04c1f0b
 	github.com/NpoolPlatform/notif-middleware v0.0.0-20231011082608-04973d328d1f
 	github.com/NpoolPlatform/review-middleware v0.0.0-20231011072605-f58c410c0758
 	github.com/go-resty/resty/v2 v2.7.0
