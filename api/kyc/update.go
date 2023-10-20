@@ -16,12 +16,11 @@ import (
 func (s *Server) UpdateKycReview(ctx context.Context, in *npool.UpdateKycReviewRequest) (*npool.UpdateKycReviewResponse, error) {
 	handler, err := kyc1.NewHandler(
 		ctx,
-		kyc1.WithAppID(&in.AppID),
-		kyc1.WithUserID(&in.AppID, &in.UserID),
-		kyc1.WithReviewID(&in.ReviewID),
-		kyc1.WithTargetAppID(&in.AppID),
-		kyc1.WithState(&in.State, in.Message),
-		kyc1.WithMessage(in.Message),
+		kyc1.WithAppID(&in.AppID, true),
+		kyc1.WithUserID(&in.UserID, true),
+		kyc1.WithReviewID(&in.ReviewID, true),
+		kyc1.WithState(&in.State, true),
+		kyc1.WithMessage(in.Message, false),
 	)
 	if err != nil {
 		logger.Sugar().Errorw(
@@ -51,12 +50,12 @@ func (s *Server) UpdateKycReview(ctx context.Context, in *npool.UpdateKycReviewR
 func (s *Server) UpdateAppKycReview(ctx context.Context, in *npool.UpdateAppKycReviewRequest) (*npool.UpdateAppKycReviewResponse, error) {
 	handler, err := kyc1.NewHandler(
 		ctx,
-		kyc1.WithAppID(&in.AppID),
-		kyc1.WithUserID(&in.AppID, &in.UserID),
-		kyc1.WithTargetAppID(&in.TargetAppID),
-		kyc1.WithReviewID(&in.ReviewID),
-		kyc1.WithState(&in.State, in.Message),
-		kyc1.WithMessage(in.Message),
+		kyc1.WithAppID(&in.AppID, true),
+		kyc1.WithTargetAppID(&in.TargetAppID, true),
+		kyc1.WithUserID(&in.UserID, true),
+		kyc1.WithReviewID(&in.ReviewID, true),
+		kyc1.WithState(&in.State, true),
+		kyc1.WithMessage(in.Message, false),
 	)
 	if err != nil {
 		logger.Sugar().Errorw(

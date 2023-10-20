@@ -7,7 +7,6 @@ import (
 	kycmwcli "github.com/NpoolPlatform/appuser-middleware/pkg/client/kyc"
 	usercli "github.com/NpoolPlatform/appuser-middleware/pkg/client/user"
 	"github.com/NpoolPlatform/go-service-framework/pkg/logger"
-	"github.com/NpoolPlatform/libent-cruder/pkg/cruder"
 	kycmwpb "github.com/NpoolPlatform/message/npool/appuser/mw/v1/kyc"
 	reviewtypes "github.com/NpoolPlatform/message/npool/basetypes/review/v1"
 	basetypes "github.com/NpoolPlatform/message/npool/basetypes/v1"
@@ -16,90 +15,141 @@ import (
 	npool "github.com/NpoolPlatform/message/npool/review/gw/v2/kyc"
 	reviewmwpb "github.com/NpoolPlatform/message/npool/review/mw/v2/review"
 	notifmwcli "github.com/NpoolPlatform/notif-middleware/pkg/client/notif"
-	review1 "github.com/NpoolPlatform/review-gateway/pkg/review"
 	reviewcli "github.com/NpoolPlatform/review-middleware/pkg/client/review"
 )
 
-func (h *Handler) UpdateKycReview(ctx context.Context) (*npool.KycReview, error) {
-	exist, err := reviewcli.ExistReviewConds(ctx, &reviewmwpb.ExistReviewCondsRequest{
-		Conds: &reviewmwpb.Conds{
-			AppID: &basetypes.StringVal{Op: cruder.EQ, Value: *h.TargetAppID},
-			ID:    &basetypes.StringVal{Op: cruder.EQ, Value: *h.ReviewID},
-		},
-	})
+type updateHandler struct {
+	*Handler
+	review *reviewmwpb.Review
+	kyc    *kycmwpb.Kyc
+}
+
+func (h *updateHandler) checkUser(ctx context.Context) error {
+	info, err := usercli.GetUser(ctx, *h.AppID, *h.UserID)
 	if err != nil {
-		return nil, err
+		return err
 	}
-	if !exist {
-		return nil, fmt.Errorf("can not find review")
+	if info == nil {
+		return fmt.Errorf("invalid user")
 	}
+	return nil
+}
 
-	handler, err := review1.NewHandler(
-		ctx,
-		review1.WithAppID(h.AppID),
-		review1.WithUserID(h.AppID, h.UserID),
-		review1.WithReviewID(h.ReviewID),
-		review1.WithState(h.State, h.Message),
-		review1.WithMessage(h.Message),
-	)
+func (h *updateHandler) checkReview(ctx context.Context) error {
+	info, err := reviewcli.GetReview(ctx, *h.ReviewID)
 	if err != nil {
-		return nil, err
+		return err
+	}
+	if info == nil {
+		return fmt.Errorf("invalid review")
 	}
 
-	objID, err := handler.ValidateReview(ctx)
+	appID := *h.AppID
+	if h.TargetAppID != nil {
+		appID = *h.TargetAppID
+	}
+	if appID != *h.AppID {
+		return fmt.Errorf("appid mismatch")
+	}
+	if *h.State == reviewtypes.ReviewState_Rejected && h.Message == nil {
+		return fmt.Errorf("message is must")
+	}
+
+	h.review = info
+	return nil
+}
+
+func (h *updateHandler) getKyc(ctx context.Context) error {
+	info, err := kycmwcli.GetKyc(ctx, h.review.ObjectID)
 	if err != nil {
-		return nil, err
+		return err
+	}
+	if info == nil {
+		return fmt.Errorf("invalid kyc")
+	}
+	if info.ReviewID != *h.ReviewID {
+		return fmt.Errorf("reviewid mismatch")
 	}
 
-	kycInfo, err := kycmwcli.GetKyc(ctx, objID)
-	if err != nil {
-		return nil, err
-	}
-	if kycInfo == nil {
-		return nil, fmt.Errorf("invalid kyc")
-	}
-	if kycInfo.ReviewID != *h.ReviewID {
-		return nil, fmt.Errorf("invalid review")
-	}
+	h.kyc = info
+	return nil
+}
 
-	userInfo, err := usercli.GetUser(ctx, kycInfo.AppID, kycInfo.UserID)
-	if err != nil {
-		return nil, err
+func (h *updateHandler) updateReview(ctx context.Context) error {
+	if _, err := reviewcli.UpdateReview(ctx, &reviewmwpb.ReviewReq{
+		ID:      &h.review.ID,
+		State:   h.State,
+		Message: h.Message,
+	}); err != nil {
+		return err
 	}
-	if userInfo == nil {
-		return nil, fmt.Errorf("invalid user")
-	}
+	return nil
+}
 
-	if err := handler.UpdateReview(ctx); err != nil {
-		return nil, err
-	}
-
-	eventType := basetypes.UsedFor_KYCApproved
+func (h *updateHandler) updateKyc(ctx context.Context) error {
 	kycState := basetypes.KycState_Approved
 	if *h.State == reviewtypes.ReviewState_Rejected {
 		kycState = basetypes.KycState_Rejected
+	}
+
+	if _, err := kycmwcli.UpdateKyc(ctx, &kycmwpb.KycReq{
+		ID:    &h.kyc.ID,
+		State: &kycState,
+	}); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (h *updateHandler) generateNotifs(ctx context.Context) error {
+	info, err := usercli.GetUser(ctx, h.kyc.AppID, h.kyc.UserID)
+	if err != nil {
+		return err
+	}
+	if info == nil {
+		return fmt.Errorf("invalid user")
+	}
+
+	eventType := basetypes.UsedFor_KYCApproved
+	if *h.State == reviewtypes.ReviewState_Rejected {
 		eventType = basetypes.UsedFor_KYCRejected
 	}
-
-	_, err = kycmwcli.UpdateKyc(ctx, &kycmwpb.KycReq{
-		ID:    &objID,
-		State: &kycState,
-	})
-	if err != nil {
-		return nil, err
-	}
-
-	_, err = notifmwcli.GenerateNotifs(ctx, &notifmwpb.GenerateNotifsRequest{
-		AppID:     kycInfo.AppID,
-		UserID:    kycInfo.UserID,
+	if _, err = notifmwcli.GenerateNotifs(ctx, &notifmwpb.GenerateNotifsRequest{
+		AppID:     h.kyc.AppID,
+		UserID:    h.kyc.UserID,
 		EventType: eventType,
 		NotifType: basetypes.NotifType_NotifUnicast,
 		Vars: &tmplmwpb.TemplateVars{
-			Username: &userInfo.Username,
+			Username: &info.Username,
 		},
-	})
-	if err != nil {
+	}); err != nil {
 		logger.Sugar().Errorw("UpdateKycReview", "Generate Notif Failed", "Error", err)
+	}
+	return nil
+}
+
+func (h *Handler) UpdateKycReview(ctx context.Context) (*npool.KycReview, error) {
+	handler := &updateHandler{
+		Handler: h,
+	}
+
+	if err := handler.checkUser(ctx); err != nil {
+		return nil, err
+	}
+	if err := handler.checkReview(ctx); err != nil {
+		return nil, err
+	}
+	if err := handler.getKyc(ctx); err != nil {
+		return nil, err
+	}
+	if err := handler.updateReview(ctx); err != nil {
+		return nil, err
+	}
+	if err := handler.updateKyc(ctx); err != nil {
+		return nil, err
+	}
+	if err := handler.generateNotifs(ctx); err != nil {
+		return nil, err
 	}
 
 	return h.GetKycReview(ctx)
