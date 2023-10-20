@@ -101,8 +101,7 @@ func (h *queryHandler) formalize() {
 	}
 }
 
-//nolint
-func (h *Handler) GetKycReviews(ctx context.Context) ([]*npool.KycReview, uint32, error) { //nolint
+func (h *Handler) GetKycReviews(ctx context.Context) ([]*npool.KycReview, uint32, error) {
 	kycs, total, err := kycmwcli.GetKycs(ctx, &kycmwpb.Conds{
 		AppID: &basetypes.StringVal{Op: cruder.EQ, Value: *h.AppID},
 	}, h.Offset, h.Limit)
