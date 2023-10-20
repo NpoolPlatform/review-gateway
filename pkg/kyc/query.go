@@ -115,6 +115,7 @@ func (h *Handler) GetKycReviews(ctx context.Context) ([]*npool.KycReview, uint32
 	handler := &queryHandler{
 		Handler:   h,
 		kycs:      kycs,
+		userMap:   map[string]*appusermwpb.User{},
 		reviewMap: map[string]*reviewmwpb.Review{},
 	}
 
