@@ -34,6 +34,7 @@ func NewHandler(ctx context.Context, options ...func(context.Context, *Handler) 
 	return handler, nil
 }
 
+//nolint
 func WithAppID(id *string, must bool) func(context.Context, *Handler) error {
 	return func(ctx context.Context, h *Handler) error {
 		if id == nil {
@@ -57,6 +58,7 @@ func WithAppID(id *string, must bool) func(context.Context, *Handler) error {
 	}
 }
 
+//nolint
 func WithTargetAppID(id *string, must bool) func(context.Context, *Handler) error {
 	return func(ctx context.Context, h *Handler) error {
 		if id == nil {

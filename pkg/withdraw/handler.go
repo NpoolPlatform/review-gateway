@@ -12,6 +12,7 @@ import (
 )
 
 type Handler struct {
+	WithdrawID  *string
 	AppID       *string
 	TargetAppID *string
 	UserID      *string
