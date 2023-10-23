@@ -95,6 +95,7 @@ func (h *queryHandler) getAccounts(ctx context.Context) error {
 	}
 
 	infos, _, err := useraccmwcli.GetAccounts(ctx, &useraccmwpb.Conds{
+		AppID:      &basetypes.StringVal{Op: cruder.EQ, Value: *h.TargetAppID},
 		AccountIDs: &basetypes.StringSliceVal{Op: cruder.IN, Value: ids},
 	}, 0, int32(len(ids)))
 	if err != nil {
