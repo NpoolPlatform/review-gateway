@@ -12,6 +12,7 @@ import (
 	"google.golang.org/grpc/status"
 )
 
+//nolint
 func (s *Server) UpdateWithdrawReview(ctx context.Context, in *npool.UpdateWithdrawReviewRequest) (*npool.UpdateWithdrawReviewResponse, error) {
 	handler, err := withdraw1.NewHandler(
 		ctx,
@@ -46,6 +47,7 @@ func (s *Server) UpdateWithdrawReview(ctx context.Context, in *npool.UpdateWithd
 	}, nil
 }
 
+//nolint
 func (s *Server) UpdateAppWithdrawReview(ctx context.Context, in *npool.UpdateAppWithdrawReviewRequest) (*npool.UpdateAppWithdrawReviewResponse, error) {
 	handler, err := withdraw1.NewHandler(
 		ctx,

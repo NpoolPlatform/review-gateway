@@ -112,7 +112,7 @@ func (h *updateHandler) updateKyc(ctx context.Context) error {
 	return nil
 }
 
-func (h *updateHandler) generateNotifs(ctx context.Context) error {
+func (h *updateHandler) generateNotifs(ctx context.Context) {
 	eventType := basetypes.UsedFor_KYCApproved
 	if *h.State == reviewtypes.ReviewState_Rejected {
 		eventType = basetypes.UsedFor_KYCRejected
@@ -128,7 +128,6 @@ func (h *updateHandler) generateNotifs(ctx context.Context) error {
 	}); err != nil {
 		logger.Sugar().Errorw("UpdateKycReview", "Generate Notif Failed", "Error", err)
 	}
-	return nil
 }
 
 func (h *Handler) UpdateKycReview(ctx context.Context) (*npool.KycReview, error) {
@@ -151,9 +150,7 @@ func (h *Handler) UpdateKycReview(ctx context.Context) (*npool.KycReview, error)
 	if err := handler.updateKyc(ctx); err != nil {
 		return nil, err
 	}
-	if err := handler.generateNotifs(ctx); err != nil {
-		return nil, err
-	}
+	handler.generateNotifs(ctx)
 
 	return h.GetKycReview(ctx)
 }
