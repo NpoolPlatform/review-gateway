@@ -13,89 +13,144 @@ import (
 	ledgertypes "github.com/NpoolPlatform/message/npool/basetypes/ledger/v1"
 	reviewtypes "github.com/NpoolPlatform/message/npool/basetypes/review/v1"
 	basetypes "github.com/NpoolPlatform/message/npool/basetypes/v1"
+	withdrawmwpb "github.com/NpoolPlatform/message/npool/ledger/mw/v2/withdraw"
 	npool "github.com/NpoolPlatform/message/npool/review/gw/v2/withdraw"
-	review1 "github.com/NpoolPlatform/review-gateway/pkg/review"
+	reviewmwpb "github.com/NpoolPlatform/message/npool/review/mw/v2/review"
+	reviewmwcli "github.com/NpoolPlatform/review-middleware/pkg/client/review"
 )
 
-//nolint:gocyclo
-func (h *Handler) UpdateWithdrawReview(ctx context.Context) (*npool.WithdrawReview, error) {
-	reviewID := h.ReviewID.String()
-	handler, err := review1.NewHandler(
-		ctx,
-		review1.WithAppID(h.AppID),
-		review1.WithUserID(h.AppID, h.UserID),
-		review1.WithReviewID(&reviewID),
-		review1.WithState(h.State, h.Message),
-		review1.WithMessage(h.Message),
-	)
+type updateHandler struct {
+	*Handler
+	review   *reviewmwpb.Review
+	withdraw *withdrawmwpb.Withdraw
+}
+
+func (h *updateHandler) checkUser(ctx context.Context) error {
+	info, err := usermwcli.GetUser(ctx, *h.AppID, *h.UserID)
 	if err != nil {
-		return nil, err
+		return err
 	}
+	if info == nil {
+		return fmt.Errorf("invalid user")
+	}
+	return nil
+}
 
-	objID, err := handler.ValidateReview(ctx)
+func (h *updateHandler) checkReview(ctx context.Context) error {
+	info, err := reviewmwcli.GetReview(ctx, *h.ReviewID)
 	if err != nil {
-		return nil, err
+		return err
+	}
+	if info == nil {
+		return fmt.Errorf("invalid review")
+	}
+	if *h.TargetAppID != info.AppID {
+		return fmt.Errorf("appid mismatch")
+	}
+	if info.State != reviewtypes.ReviewState_Wait {
+		return fmt.Errorf("current review state can not be updated")
+	}
+	if *h.State == reviewtypes.ReviewState_Rejected && h.Message == nil {
+		return fmt.Errorf("message is must")
 	}
 
-	w, err := withdrawmwcli.GetWithdraw(ctx, objID)
+	h.review = info
+	return nil
+}
+
+func (h *updateHandler) getWithdraw(ctx context.Context) error {
+	info, err := withdrawmwcli.GetWithdraw(ctx, h.review.ObjectID)
 	if err != nil {
-		return nil, err
+		return err
 	}
-	if w == nil {
-		return nil, fmt.Errorf("invalid withdraw")
+	if info == nil {
+		return fmt.Errorf("invalid withdraw")
+	}
+	if info.State != ledgertypes.WithdrawState_Reviewing {
+		return fmt.Errorf("withdraw state not reviewing")
 	}
 
-	if w.State != ledgertypes.WithdrawState_Reviewing {
-		return nil, fmt.Errorf("not reviewing")
-	}
+	h.WithdrawID = &info.ID
+	h.withdraw = info
+	return nil
+}
 
-	kyc, err := kycmwcli.GetKycOnly(ctx, &kycmwpb.Conds{
-		AppID:  &basetypes.StringVal{Op: cruder.EQ, Value: w.AppID},
-		UserID: &basetypes.StringVal{Op: cruder.EQ, Value: w.UserID},
+func (h *updateHandler) checkKyc(ctx context.Context) error {
+	info, err := kycmwcli.GetKycOnly(ctx, &kycmwpb.Conds{
+		AppID:  &basetypes.StringVal{Op: cruder.EQ, Value: h.review.AppID},
+		UserID: &basetypes.StringVal{Op: cruder.EQ, Value: *h.UserID},
 	})
 	if err != nil {
-		return nil, err
+		return err
 	}
-	if kyc == nil {
-		return nil, fmt.Errorf("kyc review not created")
+	if info == nil {
+		return fmt.Errorf("kyc review not created")
+	}
+	if info.ReviewID != *h.ReviewID {
+		return fmt.Errorf("reviewid mismatch")
+	}
+	if info.State != basetypes.KycState_Approved {
+		return fmt.Errorf("kyc not approved")
 	}
 
-	if kyc.State != basetypes.KycState_Approved {
-		return nil, fmt.Errorf("kyc review not approved")
-	}
-
-	userInfo, err := usermwcli.GetUser(ctx, w.AppID, w.UserID)
+	info1, err := usermwcli.GetUser(ctx, info.AppID, info.UserID)
 	if err != nil {
-		return nil, err
+		return err
 	}
-	if userInfo == nil {
-		return nil, fmt.Errorf("invalid user")
+	if info1 == nil {
+		return fmt.Errorf("invalid user")
 	}
 
-	coin, err := coinmwcli.GetCoin(ctx, w.CoinTypeID)
+	return nil
+}
+
+func (h *updateHandler) updateReview(ctx context.Context) error {
+	if _, err := reviewmwcli.UpdateReview(ctx, &reviewmwpb.ReviewReq{
+		ID:         &h.review.ID,
+		ReviewerID: h.UserID,
+		State:      h.State,
+		Message:    h.Message,
+	}); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (h *updateHandler) checkCoin(ctx context.Context) error {
+	coin, err := coinmwcli.GetCoin(ctx, h.withdraw.CoinTypeID)
 	if err != nil {
-		return nil, err
+		return err
 	}
 	if coin == nil {
-		return nil, fmt.Errorf("invalid cointypeid")
+		return fmt.Errorf("invalid cointypeid")
 	}
 	if coin.Disabled {
-		return nil, fmt.Errorf("coin disabled")
+		return fmt.Errorf("coin disabled")
+	}
+	return nil
+}
+
+func (h *Handler) UpdateWithdrawReview(ctx context.Context) (*npool.WithdrawReview, error) {
+	handler := &updateHandler{
+		Handler: h,
 	}
 
-	// TODO: make sure review state and withdraw state integrity
-	switch *h.State {
-	case reviewtypes.ReviewState_Rejected:
-	case reviewtypes.ReviewState_Approved:
-	default:
-		return nil, fmt.Errorf("unknown state")
-	}
-
-	if err != nil {
+	if err := handler.checkUser(ctx); err != nil {
 		return nil, err
 	}
-
-	if err := handler.UpdateReview(ctx); err != nil {
+	if err := handler.checkReview(ctx); err != nil {
+		return nil, err
+	}
+	if err := handler.getWithdraw(ctx); err != nil {
+		return nil, err
+	}
+	if err := handler.checkKyc(ctx); err != nil {
+		return nil, err
+	}
+	if err := handler.checkCoin(ctx); err != nil {
+		return nil, err
+	}
+	if err := handler.updateReview(ctx); err != nil {
 		return nil, err
 	}
 

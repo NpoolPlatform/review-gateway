@@ -37,7 +37,7 @@ func (h *queryHandler) getReviews(ctx context.Context) error {
 	}
 
 	infos, _, err := reviewmwcli.GetReviews(ctx, &reviewmwpb.Conds{
-		ObjectType: &basetypes.Uint32Val{Op: cruder.EQ, Value: uint32(reviewtypes.ReviewObjectType_ObjectKyc)},
+		ObjectType: &basetypes.Uint32Val{Op: cruder.EQ, Value: uint32(reviewtypes.ReviewObjectType_ObjectWithdrawal)},
 		EntIDs:     &basetypes.StringSliceVal{Op: cruder.IN, Value: ids},
 	}, 0, int32(len(ids)))
 	if err != nil {
@@ -53,7 +53,7 @@ func (h *queryHandler) getReviews(ctx context.Context) error {
 func (h *queryHandler) getUsers(ctx context.Context) error {
 	ids := []string{}
 	for _, withdraw := range h.withdraws {
-		ids = append(ids, withdraw.ReviewID)
+		ids = append(ids, withdraw.UserID)
 	}
 
 	infos, _, err := appusermwcli.GetUsers(ctx, &appusermwpb.Conds{
@@ -76,7 +76,7 @@ func (h *queryHandler) getAppCoins(ctx context.Context) error {
 	}
 
 	infos, _, err := appcoinmwcli.GetCoins(ctx, &appcoinmwpb.Conds{
-		AppID:       &basetypes.StringVal{Op: cruder.EQ, Value: *h.AppID},
+		AppID:       &basetypes.StringVal{Op: cruder.EQ, Value: *h.TargetAppID},
 		CoinTypeIDs: &basetypes.StringSliceVal{Op: cruder.IN, Value: ids},
 	}, 0, int32(len(ids)))
 	if err != nil {
@@ -159,7 +159,7 @@ func (h *queryHandler) formalize() {
 
 func (h *Handler) GetWithdrawReviews(ctx context.Context) ([]*npool.WithdrawReview, uint32, error) {
 	withdraws, total, err := withdrawcli.GetWithdraws(ctx, &withdrawmwpb.Conds{
-		AppID: &basetypes.StringVal{Op: cruder.EQ, Value: *h.AppID},
+		AppID: &basetypes.StringVal{Op: cruder.EQ, Value: *h.TargetAppID},
 	}, h.Offset, h.Limit)
 	if err != nil {
 		return nil, 0, err

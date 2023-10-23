@@ -51,7 +51,8 @@ func (h *queryHandler) getUsers(ctx context.Context) error {
 	}
 
 	infos, _, err := appusermwcli.GetUsers(ctx, &appusermwpb.Conds{
-		IDs: &basetypes.StringSliceVal{Op: cruder.IN, Value: ids},
+		AppID: &basetypes.StringVal{Op: cruder.EQ, Value: *h.TargetAppID},
+		IDs:   &basetypes.StringSliceVal{Op: cruder.IN, Value: ids},
 	}, 0, int32(len(ids)))
 	if err != nil {
 		return err
@@ -88,12 +89,12 @@ func (h *queryHandler) formalize() {
 			BackImg:      kyc.BackImg,
 			SelfieImg:    kyc.SelfieImg,
 			EntityType:   kyc.EntityType,
+			KycState:     kyc.State,
 			ReviewID:     rv.EntID,
 			ObjectType:   rv.ObjectType,
 			Domain:       rv.Domain,
 			Reviewer:     rv.ReviewerID,
 			ReviewState:  rv.State,
-			KycState:     kyc.State,
 			Message:      rv.Message,
 			CreatedAt:    rv.CreatedAt,
 			UpdatedAt:    rv.UpdatedAt,
@@ -103,7 +104,7 @@ func (h *queryHandler) formalize() {
 
 func (h *Handler) GetKycReviews(ctx context.Context) ([]*npool.KycReview, uint32, error) {
 	kycs, total, err := kycmwcli.GetKycs(ctx, &kycmwpb.Conds{
-		AppID: &basetypes.StringVal{Op: cruder.EQ, Value: *h.AppID},
+		AppID: &basetypes.StringVal{Op: cruder.EQ, Value: *h.TargetAppID},
 	}, h.Offset, h.Limit)
 	if err != nil {
 		return nil, 0, err

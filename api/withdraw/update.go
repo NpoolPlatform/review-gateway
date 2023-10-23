@@ -15,11 +15,12 @@ import (
 func (s *Server) UpdateWithdrawReview(ctx context.Context, in *npool.UpdateWithdrawReviewRequest) (*npool.UpdateWithdrawReviewResponse, error) {
 	handler, err := withdraw1.NewHandler(
 		ctx,
-		withdraw1.WithAppID(&in.AppID),
-		withdraw1.WithUserID(&in.AppID, &in.UserID),
-		withdraw1.WithReviewID(&in.ReviewID),
-		withdraw1.WithState(&in.State, in.Message),
-		withdraw1.WithMessage(in.Message),
+		withdraw1.WithAppID(&in.AppID, true),
+		withdraw1.WithUserID(&in.UserID, true),
+		withdraw1.WithTargetAppID(&in.AppID, true),
+		withdraw1.WithReviewID(&in.ReviewID, true),
+		withdraw1.WithState(&in.State, true),
+		withdraw1.WithMessage(in.Message, false),
 	)
 	if err != nil {
 		logger.Sugar().Errorw(
@@ -48,12 +49,12 @@ func (s *Server) UpdateWithdrawReview(ctx context.Context, in *npool.UpdateWithd
 func (s *Server) UpdateAppWithdrawReview(ctx context.Context, in *npool.UpdateAppWithdrawReviewRequest) (*npool.UpdateAppWithdrawReviewResponse, error) {
 	handler, err := withdraw1.NewHandler(
 		ctx,
-		withdraw1.WithAppID(&in.AppID),
-		withdraw1.WithUserID(&in.AppID, &in.UserID),
-		withdraw1.WithTargetAppID(&in.TargetAppID),
-		withdraw1.WithReviewID(&in.ReviewID),
-		withdraw1.WithState(&in.State, in.Message),
-		withdraw1.WithMessage(in.Message),
+		withdraw1.WithAppID(&in.AppID, true),
+		withdraw1.WithUserID(&in.UserID, true),
+		withdraw1.WithTargetAppID(&in.TargetAppID, true),
+		withdraw1.WithReviewID(&in.ReviewID, true),
+		withdraw1.WithState(&in.State, true),
+		withdraw1.WithMessage(in.Message, false),
 	)
 	if err != nil {
 		logger.Sugar().Errorw(

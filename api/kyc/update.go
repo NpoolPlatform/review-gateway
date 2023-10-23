@@ -16,6 +16,7 @@ func (s *Server) UpdateKycReview(ctx context.Context, in *npool.UpdateKycReviewR
 	handler, err := kyc1.NewHandler(
 		ctx,
 		kyc1.WithAppID(&in.AppID, true),
+		kyc1.WithTargetAppID(&in.AppID, true),
 		kyc1.WithUserID(&in.UserID, true),
 		kyc1.WithReviewID(&in.ReviewID, true),
 		kyc1.WithState(&in.State, true),

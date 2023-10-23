@@ -45,13 +45,11 @@ func (h *updateHandler) checkReview(ctx context.Context) error {
 	if info == nil {
 		return fmt.Errorf("invalid review")
 	}
-
-	appID := *h.AppID
-	if h.TargetAppID != nil {
-		appID = *h.TargetAppID
-	}
-	if appID != info.AppID {
+	if *h.TargetAppID != info.AppID {
 		return fmt.Errorf("appid mismatch")
+	}
+	if info.State != reviewtypes.ReviewState_Wait {
+		return fmt.Errorf("current state can not be updated")
 	}
 	if *h.State == reviewtypes.ReviewState_Rejected && h.Message == nil {
 		return fmt.Errorf("message is must")
@@ -72,6 +70,7 @@ func (h *updateHandler) getKyc(ctx context.Context) error {
 	if info.ReviewID != *h.ReviewID {
 		return fmt.Errorf("reviewid mismatch")
 	}
+	h.KycID = &info.ID
 	h.kyc = info
 
 	info1, err := usercli.GetUser(ctx, info.AppID, info.UserID)
