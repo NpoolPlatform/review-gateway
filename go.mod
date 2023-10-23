@@ -8,12 +8,11 @@ require (
 	github.com/NpoolPlatform/basal-middleware v0.0.0-20231015112137-254853c60eec
 	github.com/NpoolPlatform/chain-middleware v0.0.0-20231020114413-49166aeb1ec8
 	github.com/NpoolPlatform/go-service-framework v0.0.0-20230930023319-e48074d9472e
-	github.com/NpoolPlatform/ledger-gateway v0.0.0-20231020120307-3063a37cd9e5
 	github.com/NpoolPlatform/ledger-middleware v0.0.0-20231011072101-96b312d4e534
 	github.com/NpoolPlatform/libent-cruder v0.0.0-20231008051607-f64457cf6ab6
-	github.com/NpoolPlatform/message v0.0.0-20231020111219-963077006b79
+	github.com/NpoolPlatform/message v0.0.0-20231023081228-133aed0617a6
 	github.com/NpoolPlatform/notif-middleware v0.0.0-20231011082608-04973d328d1f
-	github.com/NpoolPlatform/review-middleware v0.0.0-20231020071916-cd4f2128abf7
+	github.com/NpoolPlatform/review-middleware v0.0.0-20231023081338-4dbc64c47c63
 	github.com/go-resty/resty/v2 v2.7.0
 	github.com/google/uuid v1.3.0
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.15.2
@@ -25,6 +24,8 @@ require (
 )
 
 require (
+	entgo.io/ent v0.12.0 // indirect
+	github.com/BurntSushi/toml v1.2.0 // indirect
 	github.com/Shonminh/apollo-client v0.4.0 // indirect
 	github.com/ThreeDotsLabs/watermill v1.2.0 // indirect
 	github.com/ThreeDotsLabs/watermill-amqp/v2 v2.0.7 // indirect
@@ -40,22 +41,31 @@ require (
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/fatih/color v1.13.0 // indirect
 	github.com/fsnotify/fsnotify v1.6.0 // indirect
+	github.com/gin-gonic/gin v1.7.7 // indirect
 	github.com/go-chassis/go-archaius v1.5.3 // indirect
 	github.com/go-chassis/openlog v1.1.3 // indirect
 	github.com/go-logr/logr v1.2.3 // indirect
 	github.com/go-logr/stdr v1.2.2 // indirect
 	github.com/go-playground/universal-translator v0.18.1 // indirect
+	github.com/go-playground/validator/v10 v10.11.0 // indirect
+	github.com/go-redis/redis/v8 v8.11.5 // indirect
+	github.com/go-sql-driver/mysql v1.7.0 // indirect
 	github.com/golang/protobuf v1.5.3 // indirect
+	github.com/google/btree v1.0.1 // indirect
 	github.com/gorilla/websocket v1.5.0 // indirect
 	github.com/grpc-ecosystem/go-grpc-middleware v1.3.0 // indirect
 	github.com/grpc-ecosystem/go-grpc-prometheus v1.2.0 // indirect
 	github.com/hashicorp/consul/api v1.12.0 // indirect
+	github.com/hashicorp/consul/sdk v0.9.0 // indirect
 	github.com/hashicorp/errwrap v1.1.0 // indirect
 	github.com/hashicorp/go-cleanhttp v0.5.2 // indirect
 	github.com/hashicorp/go-hclog v1.2.0 // indirect
 	github.com/hashicorp/go-immutable-radix v1.3.1 // indirect
+	github.com/hashicorp/go-msgpack v1.1.5 // indirect
 	github.com/hashicorp/go-multierror v1.1.1 // indirect
 	github.com/hashicorp/go-rootcerts v1.0.2 // indirect
+	github.com/hashicorp/go-sockaddr v1.0.2 // indirect
+	github.com/hashicorp/go-uuid v1.0.2 // indirect
 	github.com/hashicorp/golang-lru v0.5.5-0.20210104140557-80c98217689d // indirect
 	github.com/hashicorp/hcl v1.0.0 // indirect
 	github.com/hashicorp/serf v0.9.7 // indirect
@@ -93,6 +103,7 @@ require (
 	go.opentelemetry.io/otel/sdk v1.6.3 // indirect
 	go.opentelemetry.io/otel/trace v1.10.0 // indirect
 	go.uber.org/atomic v1.10.0 // indirect
+	go.uber.org/goleak v1.1.12 // indirect
 	go.uber.org/multierr v1.8.0 // indirect
 	go.uber.org/ratelimit v0.2.0 // indirect
 	go.uber.org/zap v1.24.0 // indirect

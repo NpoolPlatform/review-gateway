@@ -83,7 +83,7 @@ func (h *queryHandler) getAppCoins(ctx context.Context) error {
 		return err
 	}
 	for _, info := range infos {
-		h.coinMap[info.ID] = info
+		h.coinMap[info.EntID] = info
 	}
 	return nil
 }
