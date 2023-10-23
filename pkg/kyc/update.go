@@ -8,6 +8,7 @@ import (
 	usercli "github.com/NpoolPlatform/appuser-middleware/pkg/client/user"
 	"github.com/NpoolPlatform/go-service-framework/pkg/logger"
 	kycmwpb "github.com/NpoolPlatform/message/npool/appuser/mw/v1/kyc"
+	appusermwpb "github.com/NpoolPlatform/message/npool/appuser/mw/v1/user"
 	reviewtypes "github.com/NpoolPlatform/message/npool/basetypes/review/v1"
 	basetypes "github.com/NpoolPlatform/message/npool/basetypes/v1"
 	notifmwpb "github.com/NpoolPlatform/message/npool/notif/mw/v1/notif"
@@ -22,6 +23,7 @@ type updateHandler struct {
 	*Handler
 	review *reviewmwpb.Review
 	kyc    *kycmwpb.Kyc
+	user   *appusermwpb.User
 }
 
 func (h *updateHandler) checkUser(ctx context.Context) error {
@@ -48,7 +50,7 @@ func (h *updateHandler) checkReview(ctx context.Context) error {
 	if h.TargetAppID != nil {
 		appID = *h.TargetAppID
 	}
-	if appID != *h.AppID {
+	if appID != info.AppID {
 		return fmt.Errorf("appid mismatch")
 	}
 	if *h.State == reviewtypes.ReviewState_Rejected && h.Message == nil {
@@ -70,16 +72,26 @@ func (h *updateHandler) getKyc(ctx context.Context) error {
 	if info.ReviewID != *h.ReviewID {
 		return fmt.Errorf("reviewid mismatch")
 	}
-
 	h.kyc = info
+
+	info1, err := usercli.GetUser(ctx, info.AppID, info.UserID)
+	if err != nil {
+		return err
+	}
+	if info1 == nil {
+		return fmt.Errorf("invalid user")
+	}
+	h.user = info1
+
 	return nil
 }
 
 func (h *updateHandler) updateReview(ctx context.Context) error {
 	if _, err := reviewcli.UpdateReview(ctx, &reviewmwpb.ReviewReq{
-		ID:      &h.review.ID,
-		State:   h.State,
-		Message: h.Message,
+		ID:         &h.review.ID,
+		ReviewerID: h.UserID,
+		State:      h.State,
+		Message:    h.Message,
 	}); err != nil {
 		return err
 	}
@@ -102,25 +114,17 @@ func (h *updateHandler) updateKyc(ctx context.Context) error {
 }
 
 func (h *updateHandler) generateNotifs(ctx context.Context) error {
-	info, err := usercli.GetUser(ctx, h.kyc.AppID, h.kyc.UserID)
-	if err != nil {
-		return err
-	}
-	if info == nil {
-		return fmt.Errorf("invalid user")
-	}
-
 	eventType := basetypes.UsedFor_KYCApproved
 	if *h.State == reviewtypes.ReviewState_Rejected {
 		eventType = basetypes.UsedFor_KYCRejected
 	}
-	if _, err = notifmwcli.GenerateNotifs(ctx, &notifmwpb.GenerateNotifsRequest{
+	if _, err := notifmwcli.GenerateNotifs(ctx, &notifmwpb.GenerateNotifsRequest{
 		AppID:     h.kyc.AppID,
 		UserID:    h.kyc.UserID,
 		EventType: eventType,
 		NotifType: basetypes.NotifType_NotifUnicast,
 		Vars: &tmplmwpb.TemplateVars{
-			Username: &info.Username,
+			Username: &h.user.Username,
 		},
 	}); err != nil {
 		logger.Sugar().Errorw("UpdateKycReview", "Generate Notif Failed", "Error", err)
