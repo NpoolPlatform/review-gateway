@@ -18,6 +18,7 @@ import (
 	npool "github.com/NpoolPlatform/message/npool/review/gw/v2/withdraw"
 	reviewmwpb "github.com/NpoolPlatform/message/npool/review/mw/v2/review"
 	reviewmwcli "github.com/NpoolPlatform/review-middleware/pkg/client/review"
+	"github.com/google/uuid"
 )
 
 type queryHandler struct {
@@ -110,7 +111,7 @@ func (h *queryHandler) getAccounts(ctx context.Context) error {
 
 func (h *queryHandler) formalize() {
 	for _, withdraw := range h.withdraws {
-		rv, ok := h.reviewMap[withdraw.ReviewID]
+		user, ok := h.userMap[withdraw.UserID]
 		if !ok {
 			continue
 		}
@@ -118,15 +119,38 @@ func (h *queryHandler) formalize() {
 		if !ok {
 			continue
 		}
-		user, ok := h.userMap[withdraw.UserID]
-		if !ok {
-			continue
-		}
-
 		address := withdraw.Address
 		acc, ok := h.accountMap[withdraw.AccountID]
 		if ok {
 			address = acc.Address
+		}
+		rv, ok := h.reviewMap[withdraw.ReviewID]
+		if !ok {
+			if withdraw.ReviewID == uuid.Nil.String() {
+				h.infos = append(h.infos, &npool.WithdrawReview{
+					UserID:                user.ID,
+					KycState:              user.State,
+					EmailAddress:          user.EmailAddress,
+					PhoneNO:               user.PhoneNO,
+					WithdrawID:            withdraw.ID,
+					WithdrawState:         withdraw.State,
+					Amount:                withdraw.Amount,
+					PlatformTransactionID: withdraw.PlatformTransactionID,
+					ChainTransactionID:    withdraw.ChainTransactionID,
+					FeeAmount:             "TODO: to be filled",
+					CoinTypeID:            withdraw.CoinTypeID,
+					ReviewID:              uuid.Nil.String(),
+					Reviewer:              uuid.Nil.String(),
+					ObjectType:            reviewtypes.ReviewObjectType_ObjectWithdrawal,
+					Domain:                "",
+					CreatedAt:             withdraw.CreatedAt,
+					UpdatedAt:             withdraw.UpdatedAt,
+					Message:               "",
+					State:                 reviewtypes.ReviewState(withdraw.State),
+					Trigger:               reviewtypes.ReviewTriggerType_AutoReviewed,
+				})
+			}
+			continue
 		}
 
 		h.infos = append(h.infos, &npool.WithdrawReview{
@@ -141,6 +165,10 @@ func (h *queryHandler) formalize() {
 			ChainTransactionID:    withdraw.ChainTransactionID,
 			FeeAmount:             "TODO: to be filled",
 			CoinTypeID:            withdraw.CoinTypeID,
+			CoinName:              coin.Name,
+			CoinLogo:              coin.Logo,
+			CoinUnit:              coin.Unit,
+			Address:               address,
 			ReviewID:              rv.EntID,
 			Reviewer:              rv.ReviewerID,
 			ObjectType:            rv.ObjectType,
@@ -150,10 +178,6 @@ func (h *queryHandler) formalize() {
 			Message:               rv.Message,
 			State:                 rv.State,
 			Trigger:               rv.Trigger,
-			CoinName:              coin.Name,
-			CoinLogo:              coin.Logo,
-			CoinUnit:              coin.Unit,
-			Address:               address,
 		})
 	}
 }
