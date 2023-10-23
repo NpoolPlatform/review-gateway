@@ -7,7 +7,7 @@ import (
 	useraccmwcli "github.com/NpoolPlatform/account-middleware/pkg/client/user"
 	appusermwcli "github.com/NpoolPlatform/appuser-middleware/pkg/client/user"
 	appcoinmwcli "github.com/NpoolPlatform/chain-middleware/pkg/client/app/coin"
-	withdrawcli "github.com/NpoolPlatform/ledger-middleware/pkg/client/withdraw"
+	withdrawmwcli "github.com/NpoolPlatform/ledger-middleware/pkg/client/withdraw"
 	cruder "github.com/NpoolPlatform/libent-cruder/pkg/cruder"
 	useraccmwpb "github.com/NpoolPlatform/message/npool/account/mw/v1/user"
 	appusermwpb "github.com/NpoolPlatform/message/npool/appuser/mw/v1/user"
@@ -159,7 +159,7 @@ func (h *queryHandler) formalize() {
 }
 
 func (h *Handler) GetWithdrawReviews(ctx context.Context) ([]*npool.WithdrawReview, uint32, error) {
-	withdraws, total, err := withdrawcli.GetWithdraws(ctx, &withdrawmwpb.Conds{
+	withdraws, total, err := withdrawmwcli.GetWithdraws(ctx, &withdrawmwpb.Conds{
 		AppID: &basetypes.StringVal{Op: cruder.EQ, Value: *h.TargetAppID},
 	}, h.Offset, h.Limit)
 	if err != nil {
@@ -199,7 +199,7 @@ func (h *Handler) GetWithdrawReview(ctx context.Context) (*npool.WithdrawReview,
 	if h.WithdrawID == nil {
 		return nil, fmt.Errorf("invalid withdrawid")
 	}
-	withdraw, err := withdrawcli.GetWithdraw(ctx, *h.WithdrawID)
+	withdraw, err := withdrawmwcli.GetWithdraw(ctx, *h.WithdrawID)
 	if err != nil {
 		return nil, err
 	}
