@@ -6,7 +6,6 @@ import (
 
 	kycmwcli "github.com/NpoolPlatform/appuser-middleware/pkg/client/kyc"
 	appusermwcli "github.com/NpoolPlatform/appuser-middleware/pkg/client/user"
-	"github.com/NpoolPlatform/go-service-framework/pkg/logger"
 	cruder "github.com/NpoolPlatform/libent-cruder/pkg/cruder"
 	kycmwpb "github.com/NpoolPlatform/message/npool/appuser/mw/v1/kyc"
 	appusermwpb "github.com/NpoolPlatform/message/npool/appuser/mw/v1/user"
@@ -148,6 +147,7 @@ func (h *Handler) GetKycReview(ctx context.Context) (*npool.KycReview, error) {
 	handler := &queryHandler{
 		Handler:   h,
 		kycs:      []*kycmwpb.Kyc{kyc},
+		userMap:   map[string]*appusermwpb.User{},
 		reviewMap: map[string]*reviewmwpb.Review{},
 	}
 
