@@ -12,7 +12,7 @@ require (
 	github.com/NpoolPlatform/libent-cruder v0.0.0-20231008051607-f64457cf6ab6
 	github.com/NpoolPlatform/message v0.0.0-20231023093827-9dae75969da1
 	github.com/NpoolPlatform/notif-middleware v0.0.0-20231011082608-04973d328d1f
-	github.com/NpoolPlatform/review-middleware v0.0.0-20231024044240-02d1c96f2319
+	github.com/NpoolPlatform/review-middleware v0.0.0-20231024080459-bf41f3bc38cd
 	github.com/go-resty/resty/v2 v2.7.0
 	github.com/google/uuid v1.3.0
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.15.2

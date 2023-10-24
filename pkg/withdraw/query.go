@@ -18,7 +18,6 @@ import (
 	npool "github.com/NpoolPlatform/message/npool/review/gw/v2/withdraw"
 	reviewmwpb "github.com/NpoolPlatform/message/npool/review/mw/v2/review"
 	reviewmwcli "github.com/NpoolPlatform/review-middleware/pkg/client/review"
-	"github.com/google/uuid"
 )
 
 type queryHandler struct {
@@ -84,7 +83,7 @@ func (h *queryHandler) getAppCoins(ctx context.Context) error {
 		return err
 	}
 	for _, info := range infos {
-		h.coinMap[info.EntID] = info
+		h.coinMap[info.CoinTypeID] = info
 	}
 	return nil
 }
@@ -126,30 +125,6 @@ func (h *queryHandler) formalize() {
 		}
 		rv, ok := h.reviewMap[withdraw.ReviewID]
 		if !ok {
-			if withdraw.ReviewID == uuid.Nil.String() {
-				h.infos = append(h.infos, &npool.WithdrawReview{
-					UserID:                user.ID,
-					KycState:              user.State,
-					EmailAddress:          user.EmailAddress,
-					PhoneNO:               user.PhoneNO,
-					WithdrawID:            withdraw.ID,
-					WithdrawState:         withdraw.State,
-					Amount:                withdraw.Amount,
-					PlatformTransactionID: withdraw.PlatformTransactionID,
-					ChainTransactionID:    withdraw.ChainTransactionID,
-					FeeAmount:             "TODO: to be filled",
-					CoinTypeID:            withdraw.CoinTypeID,
-					ReviewID:              uuid.Nil.String(),
-					Reviewer:              uuid.Nil.String(),
-					ObjectType:            reviewtypes.ReviewObjectType_ObjectWithdrawal,
-					Domain:                "",
-					CreatedAt:             withdraw.CreatedAt,
-					UpdatedAt:             withdraw.UpdatedAt,
-					Message:               "",
-					State:                 reviewtypes.ReviewState(withdraw.State),
-					Trigger:               reviewtypes.ReviewTriggerType_AutoReviewed,
-				})
-			}
 			continue
 		}
 
@@ -194,11 +169,12 @@ func (h *Handler) GetWithdrawReviews(ctx context.Context) ([]*npool.WithdrawRevi
 	}
 
 	handler := &queryHandler{
-		Handler:   h,
-		withdraws: withdraws,
-		userMap:   map[string]*appusermwpb.User{},
-		coinMap:   map[string]*appcoinmwpb.Coin{},
-		reviewMap: map[string]*reviewmwpb.Review{},
+		Handler:    h,
+		withdraws:  withdraws,
+		userMap:    map[string]*appusermwpb.User{},
+		coinMap:    map[string]*appcoinmwpb.Coin{},
+		reviewMap:  map[string]*reviewmwpb.Review{},
+		accountMap: map[string]*useraccmwpb.Account{},
 	}
 
 	if err := handler.getReviews(ctx); err != nil {
@@ -232,11 +208,12 @@ func (h *Handler) GetWithdrawReview(ctx context.Context) (*npool.WithdrawReview,
 	}
 
 	handler := &queryHandler{
-		Handler:   h,
-		withdraws: []*withdrawmwpb.Withdraw{withdraw},
-		userMap:   map[string]*appusermwpb.User{},
-		coinMap:   map[string]*appcoinmwpb.Coin{},
-		reviewMap: map[string]*reviewmwpb.Review{},
+		Handler:    h,
+		withdraws:  []*withdrawmwpb.Withdraw{withdraw},
+		userMap:    map[string]*appusermwpb.User{},
+		coinMap:    map[string]*appcoinmwpb.Coin{},
+		reviewMap:  map[string]*reviewmwpb.Review{},
+		accountMap: map[string]*useraccmwpb.Account{},
 	}
 	if err := handler.getReviews(ctx); err != nil {
 		return nil, err

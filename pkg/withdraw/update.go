@@ -77,23 +77,20 @@ func (h *updateHandler) getWithdraw(ctx context.Context) error {
 
 func (h *updateHandler) checkKyc(ctx context.Context) error {
 	info, err := kycmwcli.GetKycOnly(ctx, &kycmwpb.Conds{
-		AppID:  &basetypes.StringVal{Op: cruder.EQ, Value: h.review.AppID},
-		UserID: &basetypes.StringVal{Op: cruder.EQ, Value: *h.UserID},
+		AppID:  &basetypes.StringVal{Op: cruder.EQ, Value: h.withdraw.AppID},
+		UserID: &basetypes.StringVal{Op: cruder.EQ, Value: h.withdraw.UserID},
 	})
 	if err != nil {
 		return err
 	}
 	if info == nil {
-		return fmt.Errorf("kyc review not created")
-	}
-	if info.ReviewID != *h.ReviewID {
-		return fmt.Errorf("reviewid mismatch")
+		return fmt.Errorf("kyc not approved")
 	}
 	if info.State != basetypes.KycState_Approved {
 		return fmt.Errorf("kyc not approved")
 	}
 
-	info1, err := usermwcli.GetUser(ctx, info.AppID, info.UserID)
+	info1, err := usermwcli.GetUser(ctx, h.withdraw.AppID, h.withdraw.UserID)
 	if err != nil {
 		return err
 	}

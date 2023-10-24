@@ -65,8 +65,8 @@ github.com/NpoolPlatform/message v0.0.0-20231023093827-9dae75969da1 h1:aNhLVM7eE
 github.com/NpoolPlatform/message v0.0.0-20231023093827-9dae75969da1/go.mod h1:PxJpF0vSSOke+NJskbRBRQ2fK2K3SRe8zaEja+GxSHk=
 github.com/NpoolPlatform/notif-middleware v0.0.0-20231011082608-04973d328d1f h1:fNbQbFiQJsf0BgIPieD+bBHDY1J8R9ozUcNcgjB6AVQ=
 github.com/NpoolPlatform/notif-middleware v0.0.0-20231011082608-04973d328d1f/go.mod h1:ivPfLCMLtZNWER7o6zQvkOq3/BFcFiUy/7A918iRbBw=
-github.com/NpoolPlatform/review-middleware v0.0.0-20231024044240-02d1c96f2319 h1:3WodBzYhp7n2eDc1Igp5MS9SPTQn9pTl+ixJ7P5+2JQ=
-github.com/NpoolPlatform/review-middleware v0.0.0-20231024044240-02d1c96f2319/go.mod h1:odsu2N3DxeguTCRg/nuvHia4ICUsuzkiIWtUqArbyvk=
+github.com/NpoolPlatform/review-middleware v0.0.0-20231024080459-bf41f3bc38cd h1:Mv7E+6LyMwT48sELvrr0YgI62IGqxfinF7rxWPFhfxA=
+github.com/NpoolPlatform/review-middleware v0.0.0-20231024080459-bf41f3bc38cd/go.mod h1:odsu2N3DxeguTCRg/nuvHia4ICUsuzkiIWtUqArbyvk=
 github.com/OneOfOne/xxhash v1.2.2 h1:KMrpdQIwFcEqXDklaen+P1axHaj9BSKzvpUUfnHldSE=
 github.com/OneOfOne/xxhash v1.2.2/go.mod h1:HSdplMjZKSmBqAxg5vPj2TmRDmfkzw+cTzAElWljhcU=
 github.com/Shonminh/apollo-client v0.4.0 h1:AXGp4wOahrEKjheMXehgsG9B8dEfLQHttRLHeEefvus=
