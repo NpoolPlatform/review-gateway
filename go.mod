@@ -10,13 +10,12 @@ require (
 	github.com/NpoolPlatform/go-service-framework v0.0.0-20230930023319-e48074d9472e
 	github.com/NpoolPlatform/ledger-middleware v0.0.0-20231011072101-96b312d4e534
 	github.com/NpoolPlatform/libent-cruder v0.0.0-20231008051607-f64457cf6ab6
-	github.com/NpoolPlatform/message v0.0.0-20231023081228-133aed0617a6
+	github.com/NpoolPlatform/message v0.0.0-20231023093827-9dae75969da1
 	github.com/NpoolPlatform/notif-middleware v0.0.0-20231011082608-04973d328d1f
-	github.com/NpoolPlatform/review-middleware v0.0.0-20231023081338-4dbc64c47c63
+	github.com/NpoolPlatform/review-middleware v0.0.0-20231024044240-02d1c96f2319
 	github.com/go-resty/resty/v2 v2.7.0
 	github.com/google/uuid v1.3.0
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.15.2
-	github.com/streadway/amqp v1.0.0
 	github.com/stretchr/testify v1.8.3
 	github.com/urfave/cli/v2 v2.17.2-0.20221006022127-8f469abc00aa
 	google.golang.org/grpc v1.55.0
