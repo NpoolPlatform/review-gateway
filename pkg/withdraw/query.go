@@ -69,7 +69,7 @@ func (h *queryHandler) getUsers(ctx context.Context) error {
 	return nil
 }
 
-func (h *queryHandler) getAppCoins(ctx context.Context) error {
+func (h *queryHandler) getAppCoins(ctx context.Context) error { //nolint
 	ids := []string{}
 	for _, withdraw := range h.withdraws {
 		ids = append(ids, withdraw.CoinTypeID)
@@ -88,7 +88,7 @@ func (h *queryHandler) getAppCoins(ctx context.Context) error {
 	return nil
 }
 
-func (h *queryHandler) getAccounts(ctx context.Context) error {
+func (h *queryHandler) getAccounts(ctx context.Context) error { //nolint
 	ids := []string{}
 	for _, withdraw := range h.withdraws {
 		ids = append(ids, withdraw.AccountID)
