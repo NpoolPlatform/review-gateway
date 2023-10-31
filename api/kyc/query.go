@@ -15,7 +15,7 @@ import (
 func (s *Server) GetKycReviews(ctx context.Context, in *npool.GetKycReviewsRequest) (*npool.GetKycReviewsResponse, error) {
 	handler, err := kyc1.NewHandler(
 		ctx,
-		kyc1.WithAppID(&in.AppID),
+		kyc1.WithTargetAppID(&in.AppID, true),
 		kyc1.WithOffset(in.Offset),
 		kyc1.WithLimit(in.Limit),
 	)

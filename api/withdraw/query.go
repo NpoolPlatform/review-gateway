@@ -15,7 +15,7 @@ import (
 func (s *Server) GetWithdrawReviews(ctx context.Context, in *npool.GetWithdrawReviewsRequest) (*npool.GetWithdrawReviewsResponse, error) {
 	handler, err := withdraw1.NewHandler(
 		ctx,
-		withdraw1.WithAppID(&in.AppID),
+		withdraw1.WithTargetAppID(&in.AppID, true),
 		withdraw1.WithOffset(in.Offset),
 		withdraw1.WithLimit(in.Limit),
 	)

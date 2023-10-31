@@ -5,17 +5,17 @@ import (
 	"fmt"
 
 	appcli "github.com/NpoolPlatform/appuser-middleware/pkg/client/app"
-	usermwcli "github.com/NpoolPlatform/appuser-middleware/pkg/client/user"
 	reviewtypes "github.com/NpoolPlatform/message/npool/basetypes/review/v1"
 	constant "github.com/NpoolPlatform/review-gateway/pkg/const"
 	"github.com/google/uuid"
 )
 
 type Handler struct {
+	WithdrawID  *string
 	AppID       *string
 	TargetAppID *string
 	UserID      *string
-	ReviewID    *uuid.UUID
+	ReviewID    *string
 	LangID      *string
 	Domain      *string
 	State       *reviewtypes.ReviewState
@@ -34,75 +34,92 @@ func NewHandler(ctx context.Context, options ...func(context.Context, *Handler) 
 	return handler, nil
 }
 
-func WithAppID(appID *string) func(context.Context, *Handler) error {
+//nolint
+func WithAppID(id *string, must bool) func(context.Context, *Handler) error {
 	return func(ctx context.Context, h *Handler) error {
-		_, err := uuid.Parse(*appID)
-		if err != nil {
+		if id == nil {
+			if must {
+				return fmt.Errorf("invalid appid")
+			}
+			return nil
+		}
+		if _, err := uuid.Parse(*id); err != nil {
 			return err
 		}
-		exist, err := appcli.ExistApp(ctx, *appID)
+		exist, err := appcli.ExistApp(ctx, *id)
 		if err != nil {
 			return err
 		}
 		if !exist {
 			return fmt.Errorf("invalid app")
 		}
-
-		h.AppID = appID
+		h.AppID = id
 		return nil
 	}
 }
 
-func WithTargetAppID(appID *string) func(context.Context, *Handler) error {
+//nolint
+func WithTargetAppID(id *string, must bool) func(context.Context, *Handler) error {
 	return func(ctx context.Context, h *Handler) error {
-		_, err := uuid.Parse(*appID)
-		if err != nil {
+		if id == nil {
+			if must {
+				return fmt.Errorf("invalid appid")
+			}
+			return nil
+		}
+		if _, err := uuid.Parse(*id); err != nil {
 			return err
 		}
-		exist, err := appcli.ExistApp(ctx, *appID)
+		exist, err := appcli.ExistApp(ctx, *id)
 		if err != nil {
 			return err
 		}
 		if !exist {
 			return fmt.Errorf("invalid app")
 		}
-		h.TargetAppID = appID
+		h.TargetAppID = id
 		return nil
 	}
 }
 
-func WithUserID(appID, userID *string) func(context.Context, *Handler) error {
+func WithUserID(id *string, must bool) func(context.Context, *Handler) error {
 	return func(ctx context.Context, h *Handler) error {
-		_, err := uuid.Parse(*userID)
-		if err != nil {
+		if id == nil {
+			if must {
+				return fmt.Errorf("invalid userid")
+			}
+			return nil
+		}
+		if _, err := uuid.Parse(*id); err != nil {
 			return err
 		}
-		user, err := usermwcli.GetUser(ctx, *appID, *userID)
-		if err != nil {
-			return err
-		}
-		if user == nil {
-			return fmt.Errorf("user not found")
-		}
-		h.UserID = userID
+		h.UserID = id
 		return nil
 	}
 }
 
-func WithReviewID(id *string) func(context.Context, *Handler) error {
+func WithReviewID(id *string, must bool) func(context.Context, *Handler) error {
 	return func(ctx context.Context, h *Handler) error {
-		_id, err := uuid.Parse(*id)
-		if err != nil {
+		if id == nil {
+			if must {
+				return fmt.Errorf("invalid reviewid")
+			}
+			return nil
+		}
+		if _, err := uuid.Parse(*id); err != nil {
 			return err
 		}
-		h.ReviewID = &_id
+		h.ReviewID = id
 		return nil
 	}
 }
 
-func WithState(state *reviewtypes.ReviewState, message *string) func(context.Context, *Handler) error {
+func WithState(state *reviewtypes.ReviewState, must bool) func(context.Context, *Handler) error {
 	return func(ctx context.Context, h *Handler) error {
 		if state == nil {
+			if must {
+				return fmt.Errorf("invalid state")
+			}
 			return nil
 		}
 		switch *state {
@@ -111,17 +128,17 @@ func WithState(state *reviewtypes.ReviewState, message *string) func(context.Con
 		default:
 			return fmt.Errorf("invalid review state")
 		}
-		if *state == reviewtypes.ReviewState_Rejected && message == nil {
-			return fmt.Errorf("message is empty")
-		}
 		h.State = state
 		return nil
 	}
 }
 
-func WithMessage(message *string) func(context.Context, *Handler) error {
+func WithMessage(message *string, must bool) func(context.Context, *Handler) error {
 	return func(ctx context.Context, h *Handler) error {
 		if message == nil {
+			if must {
+				return fmt.Errorf("message is must")
+			}
 			return nil
 		}
 		h.Message = message
