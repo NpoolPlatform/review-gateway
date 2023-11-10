@@ -119,7 +119,7 @@ func (h *updateHandler) generateNotifs(ctx context.Context) {
 	}
 	if _, err := notifmwcli.GenerateNotifs(ctx, &notifmwpb.GenerateNotifsRequest{
 		AppID:     h.kyc.AppID,
-		UserID:    h.kyc.UserID,
+		UserID:    &h.kyc.UserID,
 		EventType: eventType,
 		NotifType: basetypes.NotifType_NotifUnicast,
 		Vars: &tmplmwpb.TemplateVars{
