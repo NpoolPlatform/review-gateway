@@ -70,7 +70,7 @@ func (h *updateHandler) getKyc(ctx context.Context) error {
 	if info.ReviewID != *h.ReviewID {
 		return fmt.Errorf("reviewid mismatch")
 	}
-	h.KycID = &info.ID
+	h.KycID = &info.EntID
 	h.kyc = info
 
 	info1, err := usercli.GetUser(ctx, info.AppID, info.UserID)

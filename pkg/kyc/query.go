@@ -51,15 +51,15 @@ func (h *queryHandler) getUsers(ctx context.Context) error {
 	}
 
 	infos, _, err := appusermwcli.GetUsers(ctx, &appusermwpb.Conds{
-		AppID: &basetypes.StringVal{Op: cruder.EQ, Value: *h.TargetAppID},
-		IDs:   &basetypes.StringSliceVal{Op: cruder.IN, Value: ids},
+		AppID:  &basetypes.StringVal{Op: cruder.EQ, Value: *h.TargetAppID},
+		EntIDs: &basetypes.StringSliceVal{Op: cruder.IN, Value: ids},
 	}, 0, int32(len(ids)))
 	if err != nil {
 		return err
 	}
 
 	for _, info := range infos {
-		h.userMap[info.ID] = info
+		h.userMap[info.EntID] = info
 	}
 	return nil
 }
@@ -76,13 +76,13 @@ func (h *queryHandler) formalize() {
 		}
 
 		h.infos = append(h.infos, &npool.KycReview{
-			UserID:       user.ID,
+			UserID:       user.EntID,
 			EmailAddress: user.EmailAddress,
 			PhoneNO:      user.PhoneNO,
 			Username:     user.Username,
 			FirstName:    user.FirstName,
 			LastName:     user.LastName,
-			KycID:        kyc.ID,
+			KycID:        kyc.EntID,
 			DocumentType: kyc.DocumentType,
 			IDNumber:     kyc.IDNumber,
 			FrontImg:     kyc.FrontImg,

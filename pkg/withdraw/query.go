@@ -57,14 +57,14 @@ func (h *queryHandler) getUsers(ctx context.Context) error {
 	}
 
 	infos, _, err := appusermwcli.GetUsers(ctx, &appusermwpb.Conds{
-		IDs: &basetypes.StringSliceVal{Op: cruder.IN, Value: ids},
+		EntIDs: &basetypes.StringSliceVal{Op: cruder.IN, Value: ids},
 	}, 0, int32(len(ids)))
 	if err != nil {
 		return err
 	}
 
 	for _, info := range infos {
-		h.userMap[info.ID] = info
+		h.userMap[info.EntID] = info
 	}
 	return nil
 }
@@ -129,7 +129,7 @@ func (h *queryHandler) formalize() {
 		}
 
 		h.infos = append(h.infos, &npool.WithdrawReview{
-			UserID:                user.ID,
+			UserID:                user.EntID,
 			KycState:              user.State,
 			EmailAddress:          user.EmailAddress,
 			PhoneNO:               user.PhoneNO,
