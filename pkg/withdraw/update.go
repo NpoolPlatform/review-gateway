@@ -70,7 +70,7 @@ func (h *updateHandler) getWithdraw(ctx context.Context) error {
 		return fmt.Errorf("withdraw state not reviewing")
 	}
 
-	h.WithdrawID = &info.ID
+	h.WithdrawID = &info.EntID
 	h.withdraw = info
 	return nil
 }
