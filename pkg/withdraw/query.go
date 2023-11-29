@@ -133,7 +133,7 @@ func (h *queryHandler) formalize() {
 			KycState:              user.State,
 			EmailAddress:          user.EmailAddress,
 			PhoneNO:               user.PhoneNO,
-			WithdrawID:            withdraw.ID,
+			WithdrawID:            withdraw.EntID,
 			WithdrawState:         withdraw.State,
 			Amount:                withdraw.Amount,
 			PlatformTransactionID: withdraw.PlatformTransactionID,
