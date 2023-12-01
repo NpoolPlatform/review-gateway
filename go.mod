@@ -25,6 +25,7 @@ require (
 require (
 	entgo.io/ent v0.12.0 // indirect
 	github.com/BurntSushi/toml v1.2.0 // indirect
+	github.com/NpoolPlatform/sphinx-proxy v0.0.0-20231130023745-fe7e3a58a9f0 // indirect
 	github.com/Shonminh/apollo-client v0.4.0 // indirect
 	github.com/ThreeDotsLabs/watermill v1.2.0 // indirect
 	github.com/ThreeDotsLabs/watermill-amqp/v2 v2.0.7 // indirect
