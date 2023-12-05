@@ -103,7 +103,7 @@ func (h *queryHandler) getAccounts(ctx context.Context) error { //nolint
 	}
 
 	for _, info := range infos {
-		h.accountMap[info.ID] = info
+		h.accountMap[info.EntID] = info
 	}
 	return nil
 }
