@@ -234,5 +234,4 @@ func (h *Handler) GetCouponWithdrawReview(ctx context.Context) (*npool.CouponWit
 		return nil, fmt.Errorf("too many record")
 	}
 	return handler.infos[0], nil
-
 }
