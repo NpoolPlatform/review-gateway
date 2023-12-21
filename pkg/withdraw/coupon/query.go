@@ -6,14 +6,14 @@ import (
 
 	appusermwcli "github.com/NpoolPlatform/appuser-middleware/pkg/client/user"
 	appcoinmwcli "github.com/NpoolPlatform/chain-middleware/pkg/client/app/coin"
-	couponmwcli "github.com/NpoolPlatform/inspire-middleware/pkg/client/coupon"
+	allocatedmwcli "github.com/NpoolPlatform/inspire-middleware/pkg/client/coupon/allocated"
 	couponwithdrawmwcli "github.com/NpoolPlatform/ledger-middleware/pkg/client/withdraw/coupon"
 	cruder "github.com/NpoolPlatform/libent-cruder/pkg/cruder"
 	appusermwpb "github.com/NpoolPlatform/message/npool/appuser/mw/v1/user"
 	reviewtypes "github.com/NpoolPlatform/message/npool/basetypes/review/v1"
 	basetypes "github.com/NpoolPlatform/message/npool/basetypes/v1"
 	appcoinmwpb "github.com/NpoolPlatform/message/npool/chain/mw/v1/app/coin"
-	couponmwpb "github.com/NpoolPlatform/message/npool/inspire/mw/v1/coupon"
+	allocatedmwpb "github.com/NpoolPlatform/message/npool/inspire/mw/v1/coupon/allocated"
 	couponwithdrawmwpb "github.com/NpoolPlatform/message/npool/ledger/mw/v2/withdraw/coupon"
 	npool "github.com/NpoolPlatform/message/npool/review/gw/v2/withdraw/coupon"
 	reviewmwpb "github.com/NpoolPlatform/message/npool/review/mw/v2/review"
@@ -22,10 +22,10 @@ import (
 
 type queryHandler struct {
 	*Handler
-	userMap         map[string]*appusermwpb.User
-	reviewMap       map[string]*reviewmwpb.Review
-	coinMap         map[string]*appcoinmwpb.Coin
-	couponMap       map[string]*couponmwpb.Coupon
+	appusers        map[string]*appusermwpb.User
+	reviews         map[string]*reviewmwpb.Review
+	appcoins        map[string]*appcoinmwpb.Coin
+	allocateds      map[string]*allocatedmwpb.Coupon
 	couponwithdraws []*couponwithdrawmwpb.CouponWithdraw
 	infos           []*npool.CouponWithdrawReview
 }
@@ -45,7 +45,7 @@ func (h *queryHandler) getReviews(ctx context.Context) error {
 	}
 
 	for _, info := range infos {
-		h.reviewMap[info.EntID] = info
+		h.reviews[info.EntID] = info
 	}
 	return nil
 }
@@ -64,7 +64,7 @@ func (h *queryHandler) getUsers(ctx context.Context) error {
 	}
 
 	for _, info := range infos {
-		h.userMap[info.EntID] = info
+		h.appusers[info.EntID] = info
 	}
 	return nil
 }
@@ -83,7 +83,7 @@ func (h *queryHandler) getAppCoins(ctx context.Context) error { //nolint
 		return err
 	}
 	for _, info := range infos {
-		h.coinMap[info.CoinTypeID] = info
+		h.appcoins[info.CoinTypeID] = info
 	}
 	return nil
 }
@@ -91,10 +91,10 @@ func (h *queryHandler) getAppCoins(ctx context.Context) error { //nolint
 func (h *queryHandler) getCoupons(ctx context.Context) error { //nolint
 	ids := []string{}
 	for _, withdraw := range h.couponwithdraws {
-		ids = append(ids, withdraw.CouponID)
+		ids = append(ids, withdraw.AllocatedID)
 	}
 
-	infos, _, err := couponmwcli.GetCoupons(ctx, &couponmwpb.Conds{
+	infos, _, err := allocatedmwcli.GetCoupons(ctx, &allocatedmwpb.Conds{
 		AppID:  &basetypes.StringVal{Op: cruder.EQ, Value: *h.TargetAppID},
 		EntIDs: &basetypes.StringSliceVal{Op: cruder.IN, Value: ids},
 	}, 0, int32(len(ids)))
@@ -103,26 +103,26 @@ func (h *queryHandler) getCoupons(ctx context.Context) error { //nolint
 	}
 
 	for _, info := range infos {
-		h.couponMap[info.EntID] = info
+		h.allocateds[info.EntID] = info
 	}
 	return nil
 }
 
 func (h *queryHandler) formalize() {
 	for _, withdraw := range h.couponwithdraws {
-		user, ok := h.userMap[withdraw.UserID]
+		user, ok := h.appusers[withdraw.UserID]
 		if !ok {
 			continue
 		}
-		coin, ok := h.coinMap[withdraw.CoinTypeID]
+		coin, ok := h.appcoins[withdraw.CoinTypeID]
 		if !ok {
 			continue
 		}
-		rv, ok := h.reviewMap[withdraw.ReviewID]
+		rv, ok := h.reviews[withdraw.ReviewID]
 		if !ok {
 			continue
 		}
-		coupon, ok := h.couponMap[withdraw.CouponID]
+		coupon, ok := h.allocateds[withdraw.AllocatedID]
 		if !ok {
 			continue
 		}
@@ -149,7 +149,7 @@ func (h *queryHandler) formalize() {
 			Message:             rv.Message,
 			State:               rv.State,
 			Trigger:             rv.Trigger,
-			CouponID:            withdraw.CouponID,
+			AllocatedID:         withdraw.AllocatedID,
 			CouponName:          coupon.Message,
 		})
 	}
@@ -169,10 +169,10 @@ func (h *Handler) GetCouponWithdrawReviews(ctx context.Context) ([]*npool.Coupon
 	handler := &queryHandler{
 		Handler:         h,
 		couponwithdraws: withdraws,
-		userMap:         map[string]*appusermwpb.User{},
-		coinMap:         map[string]*appcoinmwpb.Coin{},
-		reviewMap:       map[string]*reviewmwpb.Review{},
-		couponMap:       map[string]*couponmwpb.Coupon{},
+		appusers:        map[string]*appusermwpb.User{},
+		appcoins:        map[string]*appcoinmwpb.Coin{},
+		reviews:         map[string]*reviewmwpb.Review{},
+		allocateds:      map[string]*allocatedmwpb.Coupon{},
 	}
 
 	if err := handler.getReviews(ctx); err != nil {
@@ -208,10 +208,10 @@ func (h *Handler) GetCouponWithdrawReview(ctx context.Context) (*npool.CouponWit
 	handler := &queryHandler{
 		Handler:         h,
 		couponwithdraws: []*couponwithdrawmwpb.CouponWithdraw{withdraw},
-		userMap:         map[string]*appusermwpb.User{},
-		coinMap:         map[string]*appcoinmwpb.Coin{},
-		reviewMap:       map[string]*reviewmwpb.Review{},
-		couponMap:       map[string]*couponmwpb.Coupon{},
+		appusers:        map[string]*appusermwpb.User{},
+		appcoins:        map[string]*appcoinmwpb.Coin{},
+		reviews:         map[string]*reviewmwpb.Review{},
+		allocateds:      map[string]*allocatedmwpb.Coupon{},
 	}
 	if err := handler.getReviews(ctx); err != nil {
 		return nil, err
