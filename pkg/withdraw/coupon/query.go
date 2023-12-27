@@ -192,7 +192,6 @@ func (h *Handler) GetCouponWithdrawReviews(ctx context.Context) ([]*npool.Coupon
 	return handler.infos, total, nil
 }
 
-// nolint
 func (h *Handler) GetCouponWithdrawReview(ctx context.Context) (*npool.CouponWithdrawReview, error) {
 	if h.CouponWithdrawID == nil {
 		return nil, fmt.Errorf("invalid withdrawid")
