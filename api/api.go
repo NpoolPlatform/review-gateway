@@ -7,6 +7,7 @@ import (
 
 	"github.com/NpoolPlatform/review-gateway/api/kyc"
 	"github.com/NpoolPlatform/review-gateway/api/withdraw"
+	couponwithdraw "github.com/NpoolPlatform/review-gateway/api/withdraw/coupon"
 
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"google.golang.org/grpc"
@@ -19,6 +20,7 @@ type Server struct {
 func Register(server grpc.ServiceRegistrar) {
 	review.RegisterGatewayServer(server, &Server{})
 	withdraw.Register(server)
+	couponwithdraw.Register(server)
 	kyc.Register(server)
 }
 
@@ -27,6 +29,9 @@ func RegisterGateway(mux *runtime.ServeMux, endpoint string, opts []grpc.DialOpt
 		return err
 	}
 	if err := withdraw.RegisterGateway(mux, endpoint, opts); err != nil {
+		return err
+	}
+	if err := couponwithdraw.RegisterGateway(mux, endpoint, opts); err != nil {
 		return err
 	}
 	if err := kyc.RegisterGateway(mux, endpoint, opts); err != nil {
