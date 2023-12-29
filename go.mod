@@ -8,12 +8,12 @@ require (
 	github.com/NpoolPlatform/basal-middleware v0.0.0-20231015112137-254853c60eec
 	github.com/NpoolPlatform/chain-middleware v0.0.0-20231020114413-49166aeb1ec8
 	github.com/NpoolPlatform/go-service-framework v0.0.0-20230930023319-e48074d9472e
-	github.com/NpoolPlatform/inspire-middleware v0.0.0-20231215074039-363823384215
-	github.com/NpoolPlatform/ledger-middleware v0.0.0-20231221073633-8654965dbb90
+	github.com/NpoolPlatform/inspire-middleware v0.0.0-20231228095131-4bb790ea36b7
+	github.com/NpoolPlatform/ledger-middleware v0.0.0-20231228095239-939d4d04d313
 	github.com/NpoolPlatform/libent-cruder v0.0.0-20231008051607-f64457cf6ab6
-	github.com/NpoolPlatform/message v0.0.0-20231221083641-0f550a9318c9
+	github.com/NpoolPlatform/message v0.0.0-20231228094846-44c92902376f
 	github.com/NpoolPlatform/notif-middleware v0.0.0-20231110071848-7e72bb63090a
-	github.com/NpoolPlatform/review-middleware v0.0.0-20231031085621-a1ee14e144fd
+	github.com/NpoolPlatform/review-middleware v0.0.0-20231228095444-154602cd0116
 	github.com/go-resty/resty/v2 v2.7.0
 	github.com/google/uuid v1.3.0
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.15.2
