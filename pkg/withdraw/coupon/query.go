@@ -130,6 +130,7 @@ func (h *queryHandler) formalize() {
 		h.infos = append(h.infos, &npool.CouponWithdrawReview{
 			ID:                  rv.ID,
 			EntID:               rv.EntID,
+			AppID:               rv.AppID,
 			UserID:              user.EntID,
 			KycState:            user.State,
 			EmailAddress:        user.EmailAddress,
@@ -162,6 +163,7 @@ func (h *Handler) GetCouponWithdrawReviews(ctx context.Context) ([]*npool.Coupon
 	if err != nil {
 		return nil, 0, err
 	}
+	fmt.Println("withdraws: ", withdraws)
 	if len(withdraws) == 0 {
 		return nil, 0, nil
 	}
