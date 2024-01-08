@@ -104,6 +104,23 @@ spec:
             backend:
               serviceName: review-gateway
               servicePort: 50450
+
+          - path: /api/review/v2/get/couponwithdrawreviews
+            backend:
+              serviceName: review-gateway
+              servicePort: 50450
+          - path: /api/review/v2/get/app/couponwithdrawreviews
+            backend:
+              serviceName: review-gateway
+              servicePort: 50450
+          - path: /api/review/v2/update/couponwithdrawreview
+            backend:
+              serviceName: review-gateway
+              servicePort: 50450
+          - path: /api/review/v2/update/app/couponwithdrawreview
+            backend:
+              serviceName: review-gateway
+              servicePort: 50450
     - host: api.procyon.vip
       http: *http_rules
     - host: api.xpool.top
