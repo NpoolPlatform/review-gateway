@@ -29,6 +29,9 @@ type updateHandler struct {
 }
 
 func (h *updateHandler) rewardKYC() {
+	if *h.State == reviewtypes.ReviewState_Rejected {
+		return
+	}
 	if err := pubsub.WithPublisher(func(publisher *pubsub.Publisher) error {
 		req := &eventmwpb.CalcluateEventRewardsRequest{
 			AppID:       *h.AppID,
