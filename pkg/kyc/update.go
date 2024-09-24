@@ -35,7 +35,7 @@ func (h *updateHandler) rewardKYC() {
 	if err := pubsub.WithPublisher(func(publisher *pubsub.Publisher) error {
 		req := &eventmwpb.CalcluateEventRewardsRequest{
 			AppID:       *h.AppID,
-			UserID:      *h.UserID,
+			UserID:      h.kyc.UserID,
 			EventType:   basetypes.UsedFor_KYCApproved,
 			Consecutive: 1,
 		}
@@ -50,7 +50,7 @@ func (h *updateHandler) rewardKYC() {
 		logger.Sugar().Errorw(
 			"rewardKYC",
 			"AppID", *h.AppID,
-			"UserID", h.UserID,
+			"UserID", h.kyc.UserID,
 			"Error", err,
 		)
 	}
