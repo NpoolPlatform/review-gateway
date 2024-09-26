@@ -4,14 +4,14 @@ go 1.17
 
 require (
 	github.com/NpoolPlatform/account-middleware v0.0.0-20240711084532-91d043378264
-	github.com/NpoolPlatform/appuser-middleware v0.0.0-20240108100407-73a6fe90209e
+	github.com/NpoolPlatform/appuser-middleware v0.0.0-20240926060520-1949246cf711
 	github.com/NpoolPlatform/basal-middleware v0.0.0-20231015112137-254853c60eec
 	github.com/NpoolPlatform/chain-middleware v0.0.0-20240711085642-93249f191575
 	github.com/NpoolPlatform/go-service-framework v0.0.0-20240510075442-89278cb5cf47
-	github.com/NpoolPlatform/inspire-middleware v0.0.0-20240711084912-bda64205c476
-	github.com/NpoolPlatform/ledger-middleware v0.0.0-20240711091502-eaf1d4c83d6d
+	github.com/NpoolPlatform/inspire-middleware v0.0.0-20240926040710-f354d0cc54d1
+	github.com/NpoolPlatform/ledger-middleware v0.0.0-20240926060549-586842176038
 	github.com/NpoolPlatform/libent-cruder v0.0.0-20240514082633-598d5fc7b1e3
-	github.com/NpoolPlatform/message v0.0.0-20240711072021-f19e78dccbfb
+	github.com/NpoolPlatform/message v0.0.0-20240926035258-262baa9486ff
 	github.com/NpoolPlatform/notif-middleware v0.0.0-20240711094100-57fe099fcd64
 	github.com/NpoolPlatform/review-middleware v0.0.0-20240108100223-106962e5a9c2
 	github.com/go-resty/resty/v2 v2.7.0

@@ -7,10 +7,12 @@ import (
 	kycmwcli "github.com/NpoolPlatform/appuser-middleware/pkg/client/kyc"
 	usercli "github.com/NpoolPlatform/appuser-middleware/pkg/client/user"
 	"github.com/NpoolPlatform/go-service-framework/pkg/logger"
+	"github.com/NpoolPlatform/go-service-framework/pkg/pubsub"
 	kycmwpb "github.com/NpoolPlatform/message/npool/appuser/mw/v1/kyc"
 	appusermwpb "github.com/NpoolPlatform/message/npool/appuser/mw/v1/user"
 	reviewtypes "github.com/NpoolPlatform/message/npool/basetypes/review/v1"
 	basetypes "github.com/NpoolPlatform/message/npool/basetypes/v1"
+	eventmwpb "github.com/NpoolPlatform/message/npool/inspire/mw/v1/event"
 	notifmwpb "github.com/NpoolPlatform/message/npool/notif/mw/v1/notif"
 	tmplmwpb "github.com/NpoolPlatform/message/npool/notif/mw/v1/template"
 	npool "github.com/NpoolPlatform/message/npool/review/gw/v2/kyc"
@@ -24,6 +26,34 @@ type updateHandler struct {
 	review *reviewmwpb.Review
 	kyc    *kycmwpb.Kyc
 	user   *appusermwpb.User
+}
+
+func (h *updateHandler) rewardKYC() {
+	if *h.State == reviewtypes.ReviewState_Rejected {
+		return
+	}
+	if err := pubsub.WithPublisher(func(publisher *pubsub.Publisher) error {
+		req := &eventmwpb.CalcluateEventRewardsRequest{
+			AppID:       *h.AppID,
+			UserID:      h.kyc.UserID,
+			EventType:   basetypes.UsedFor_KYCApproved,
+			Consecutive: 1,
+		}
+		return publisher.Update(
+			basetypes.MsgID_CalculateEventRewardReq.String(),
+			nil,
+			nil,
+			nil,
+			req,
+		)
+	}); err != nil {
+		logger.Sugar().Errorw(
+			"rewardKYC",
+			"AppID", *h.AppID,
+			"UserID", h.kyc.UserID,
+			"Error", err,
+		)
+	}
 }
 
 func (h *updateHandler) checkUser(ctx context.Context) error {
@@ -151,6 +181,8 @@ func (h *Handler) UpdateKycReview(ctx context.Context) (*npool.KycReview, error)
 		return nil, err
 	}
 	handler.generateNotifs(ctx)
+
+	handler.rewardKYC()
 
 	return h.GetKycReview(ctx)
 }
