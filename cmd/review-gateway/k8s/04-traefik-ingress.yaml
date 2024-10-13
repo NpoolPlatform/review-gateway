@@ -35,6 +35,8 @@ spec:
       http: *http_rules
     - host: api.jh-testing.npool.top
       http: *http_rules
+    - host: api.harbin-testing.npool.top
+      http: *http_rules
     - host: api.procyon.npool.top
       http: *http_rules
     - host: api.procyon.xpool.top
@@ -136,6 +138,8 @@ spec:
     - host: api.ohhash.com
       http: *http_rules
     - host: api.jh-testing.npool.top
+      http: *http_rules
+    - host: api.harbin-testing.npool.top
       http: *http_rules
     - host: api.procyon.npool.top
       http: *http_rules
